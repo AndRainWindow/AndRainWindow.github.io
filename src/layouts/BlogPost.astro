@@ -1,86 +1,850 @@
 ---
-import { Image } from 'astro:assets';
 import type { CollectionEntry } from 'astro:content';
 import BaseHead from '../components/BaseHead.astro';
-import Footer from '../components/Footer.astro';
-import FormattedDate from '../components/FormattedDate.astro';
-import Header from '../components/Header.astro';
+import { SITE_DESCRIPTION } from '../consts';
 
 type Props = CollectionEntry<'blog'>['data'];
 
-const { title, description, pubDate, updatedDate, heroImage } = Astro.props;
+const {
+	title,
+	topics,
+	date,
+	updated,
+	heroImage,
+	wordCount,
+	readingTime
+} = Astro.props;
 ---
 
-<html lang="en">
-	<head>
-		<BaseHead title={title} description={description} />
-		<style>
-			main {
-				width: calc(100% - 2em);
-				max-width: 100%;
-				margin: 0;
-			}
-			.hero-image {
-				width: 100%;
-			}
-			.hero-image img {
-				display: block;
-				margin: 0 auto;
-				border-radius: 12px;
-				box-shadow: var(--box-shadow);
-			}
-			.prose {
-				width: 720px;
-				max-width: calc(100% - 2em);
-				margin: auto;
-				padding: 1em;
-				color: rgb(var(--gray-dark));
-			}
-			.title {
-				margin-bottom: 1em;
-				padding: 1em 0;
-				text-align: center;
-				line-height: 1;
-			}
-			.title h1 {
-				margin: 0 0 0.5em 0;
-			}
-			.date {
-				margin-bottom: 0.5em;
-				color: rgb(var(--gray));
-			}
-			.last-updated-on {
-				font-style: italic;
-			}
-		</style>
-	</head>
+<!doctype html>
+<html lang="zh-CN">
 
-	<body>
-		<Header />
-		<main>
-			<article>
+<head>
+
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+	<link
+		href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500;600&display=swap"
+		rel="stylesheet"
+	>
+
+	<BaseHead
+		title={title}
+		description={SITE_DESCRIPTION}
+	/>
+
+	<style>
+
+		:global(html) {
+			background: #111;
+		}
+
+		:global(body) {
+			margin: 0;
+			padding: 0;
+			font-family: "Noto Serif SC", serif;
+		}
+
+
+		/* ======================
+		   固定背景
+		   ====================== */
+
+		.background {
+			position: fixed;
+			inset: -24px;
+
+			background-image:
+				url("/images/home/hero.jpg");
+
+			background-size: cover;
+			background-position: center;
+
+			filter:
+				blur(8px)
+				brightness(0.82);
+
+			transform: scale(1.03);
+
+			z-index: 0;
+		}
+
+
+		.background::after {
+			content: "";
+
+			position: absolute;
+			inset: 0;
+
+			background:
+				rgba(15, 20, 25, 0.12);
+
+			pointer-events: none;
+		}
+
+
+
+		/* ======================
+		   页面主体
+		   ====================== */
+
+		main {
+			position: relative;
+			z-index: 1;
+
+			width: 100%;
+			max-width: none;
+
+			margin: 0;
+			padding: 0;
+		}
+
+
+
+		/* ======================
+		   导航
+		   ====================== */
+
+		.home-nav {
+			position: relative;
+			z-index: 3;
+
+			height: 90px;
+
+			padding:
+				0 60px;
+
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+
+			color: white;
+		}
+
+
+		.logo {
+			font-size: 1.3rem;
+			letter-spacing: 2px;
+		}
+
+
+		.logo a {
+			color: white;
+			text-decoration: none;
+		}
+
+
+		.menu {
+			display: flex;
+			gap: 40px;
+		}
+
+
+		.menu a {
+			position: relative;
+
+			color:
+				rgba(255,255,255,0.85);
+
+			text-decoration: none;
+
+			font-size: 1rem;
+
+			transition:
+				opacity 0.2s ease;
+		}
+
+
+		.menu a:hover {
+			opacity: 0.6;
+		}
+
+
+		.menu a.active {
+			color: white;
+		}
+
+
+		.menu a.active::after {
+			content: "";
+
+			position: absolute;
+
+			left: 0;
+			right: 0;
+			bottom: -8px;
+
+			height: 1px;
+
+			background: white;
+		}
+
+
+
+		/* ======================
+		   文章整体
+		   ====================== */
+
+		.article-shell {
+			position: relative;
+			z-index: 2;
+
+			width:
+				calc(100% - 60px);
+
+			max-width: 1050px;
+
+			margin:
+				70px auto 120px;
+		}
+
+
+
+		/* ======================
+		   文章封面
+		   ====================== */
+
+		.hero-image {
+			position: relative;
+
+			width: 100%;
+			height: 480px;
+
+			overflow: hidden;
+
+			border-radius:
+				18px 18px 0 0;
+		}
+
+
+		.hero-image img {
+			display: block;
+
+			width: 100%;
+			height: 100%;
+
+			object-fit: cover;
+		}
+
+
+		.hero-image::after {
+			content: "";
+
+			position: absolute;
+			inset: 0;
+
+			background:
+				linear-gradient(
+					to bottom,
+					transparent 55%,
+					rgba(0,0,0,0.18) 100%
+				);
+		}
+
+
+
+		/* ======================
+		   正文玻璃卡片
+		   ====================== */
+
+		.article-card {
+			background:
+				rgba(255,255,255,0.88);
+
+			backdrop-filter:
+				blur(10px)
+				saturate(130%);
+
+			-webkit-backdrop-filter:
+				blur(10px)
+				saturate(130%);
+
+			border:
+				1px solid
+				rgba(255,255,255,0.35);
+
+			border-radius: 18px;
+
+			box-shadow:
+				0 18px 60px
+					rgba(0,0,0,0.14);
+
+			overflow: hidden;
+		}
+
+
+		.article-card.has-cover {
+			border-radius:
+				18px;
+		}
+
+
+		.article-content {
+			width: 820px;
+
+			max-width:
+				calc(100% - 80px);
+
+			margin: auto;
+
+			padding:
+				55px 0 80px;
+		}
+
+
+
+		/* ======================
+		   标题
+		   ====================== */
+
+		.article-header {
+			margin-bottom: 45px;
+		}
+
+
+		.article-title {
+			margin: 0;
+
+			font-size:
+				clamp(2.4rem, 5vw, 3.8rem);
+
+			font-weight: 500;
+
+			line-height: 1.35;
+
+			letter-spacing: 2px;
+
+			color: #1e1e1e;
+		}
+
+
+
+		/* ======================
+		   文章统计
+		   ====================== */
+
+		.article-meta {
+			display: flex;
+			flex-wrap: wrap;
+
+			gap:
+				10px 24px;
+
+			margin-top: 22px;
+
+			font-family:
+				-apple-system,
+				BlinkMacSystemFont,
+				"Segoe UI",
+				"PingFang SC",
+				sans-serif;
+
+			font-size: 0.9rem;
+
+			color: #737b84;
+		}
+
+
+		.meta-item {
+			display: inline-flex;
+			align-items: center;
+
+			gap: 6px;
+		}
+
+
+
+		/* ======================
+		   标签
+		   ====================== */
+
+		.topics {
+			display: flex;
+			flex-wrap: wrap;
+
+			gap: 8px;
+
+			margin-top: 18px;
+		}
+
+
+		.topic {
+			padding:
+				4px 12px;
+
+			border:
+				1px solid
+				rgba(80, 90, 100, 0.20);
+
+			border-radius: 999px;
+
+			font-family:
+				-apple-system,
+				BlinkMacSystemFont,
+				"Segoe UI",
+				"PingFang SC",
+				sans-serif;
+
+			font-size: 0.84rem;
+
+			color: #66707a;
+
+			background:
+				rgba(255,255,255,0.35);
+		}
+
+
+		.article-divider {
+			margin:
+				32px 0 0;
+
+			border: none;
+
+			border-top:
+				1px solid
+				rgba(100,110,120,0.18);
+		}
+
+
+
+		/* ======================
+		   正文
+		   ====================== */
+
+		.prose {
+			font-family:
+				-apple-system,
+				BlinkMacSystemFont,
+				"Segoe UI",
+				"PingFang SC",
+				"Hiragino Sans GB",
+				"Microsoft YaHei",
+				sans-serif;
+
+			font-size: 1.02rem;
+
+			line-height: 1.9;
+
+			color: #292d32;
+		}
+
+
+		:global(.prose p) {
+			margin:
+				1.2em 0;
+		}
+
+
+		:global(.prose h1),
+		:global(.prose h2),
+		:global(.prose h3),
+		:global(.prose h4) {
+			font-family:
+				"Noto Serif SC",
+				serif;
+
+			color: #202328;
+
+			line-height: 1.45;
+		}
+
+
+		:global(.prose h2) {
+			margin:
+				2.3em 0 0.8em;
+
+			font-size: 1.75rem;
+
+			padding-bottom: 10px;
+
+			border-bottom:
+				1px solid
+					rgba(100,110,120,0.16);
+		}
+
+
+		:global(.prose h3) {
+			margin:
+				2em 0 0.7em;
+
+			font-size: 1.4rem;
+		}
+
+
+		:global(.prose img) {
+			display: block;
+
+			max-width: 100%;
+			height: auto;
+
+			margin:
+				30px auto;
+
+			border-radius: 10px;
+		}
+
+
+		:global(.prose blockquote) {
+			margin:
+				1.5em 0;
+
+			padding:
+				12px 20px;
+
+			border-left:
+				3px solid #8a949e;
+
+			background:
+				rgba(0,0,0,0.035);
+
+			color: #555e67;
+		}
+
+
+		:global(.prose pre) {
+			overflow-x: auto;
+
+			padding: 20px;
+
+			border-radius: 10px;
+
+			background: #171a1f;
+
+			color: #e8e8e8;
+		}
+
+
+		:global(.prose code) {
+			font-family:
+				"JetBrains Mono",
+				Consolas,
+				monospace;
+		}
+
+
+		:global(.prose :not(pre) > code) {
+			padding:
+				2px 6px;
+
+			border-radius: 5px;
+
+			background:
+				rgba(0,0,0,0.06);
+
+			color: #444;
+		}
+
+
+		:global(.prose a) {
+			color: #356b84;
+
+			text-decoration:
+				underline;
+
+			text-decoration-color:
+				rgba(53,107,132,0.35);
+
+			text-underline-offset:
+				3px;
+		}
+
+
+		:global(.prose hr) {
+			margin:
+				2.5em 0;
+
+			border: none;
+
+			border-top:
+				1px solid
+					rgba(100,110,120,0.2);
+		}
+
+
+
+		/* ======================
+		   Footer
+		   ====================== */
+
+		.footer {
+			position: relative;
+			z-index: 2;
+
+			padding:
+				30px 20px 40px;
+
+			text-align: center;
+
+			color:
+				rgba(255,255,255,0.65);
+
+			font-size: 0.85rem;
+		}
+
+
+
+		/* ======================
+		   手机端
+		   ====================== */
+
+		@media(max-width: 760px) {
+
+			.home-nav {
+				height: 75px;
+
+				padding:
+					0 25px;
+			}
+
+
+			.menu {
+				gap: 16px;
+			}
+
+
+			.article-shell {
+				width:
+					calc(100% - 30px);
+
+				margin:
+					35px auto 80px;
+			}
+
+
+			.hero-image {
+				height: 260px;
+			}
+
+
+			.article-content {
+				max-width:
+					calc(100% - 40px);
+
+				padding:
+					38px 0 55px;
+			}
+
+
+			.article-title {
+				font-size: 2rem;
+			}
+
+
+			.article-meta {
+				gap:
+					8px 14px;
+			}
+
+		}
+
+	</style>
+
+</head>
+
+
+<body>
+
+
+<div class="background"></div>
+
+
+<main>
+
+
+	<nav class="home-nav">
+
+
+		<div class="logo">
+
+			<a href="/">
+				AndRainWindow
+			</a>
+
+		</div>
+
+
+		<div class="menu">
+
+			<a href="/">
+				首页
+			</a>
+
+			<a href="/photos/">
+				摄影
+			</a>
+
+			<a
+				class="active"
+				href="/blog/"
+			>
+				博客
+			</a>
+
+		</div>
+
+
+	</nav>
+
+
+
+	<div class="article-shell">
+
+
+		<article class="article-card">
+
+
+			{heroImage && (
+
 				<div class="hero-image">
-					{heroImage && <Image width={1020} height={510} src={heroImage} alt="" />}
+
+					<img
+						src={heroImage}
+						alt={title}
+					/>
+
 				</div>
-				<div class="prose">
-					<div class="title">
-						<div class="date">
-							<FormattedDate date={pubDate} />
-							{
-								updatedDate && (
-									<div class="last-updated-on">
-										Last updated on <FormattedDate date={updatedDate} />
-									</div>
-								)
-							}
-						</div>
-						<h1>{title}</h1>
-						<hr />
+
+			)}
+
+
+
+			<div class="article-content">
+
+
+				<header class="article-header">
+
+
+					<h1 class="article-title">
+						{title}
+					</h1>
+
+
+
+					<div class="article-meta">
+
+
+						{date && (
+
+							<span class="meta-item">
+
+								<span>▣</span>
+
+								{date.toLocaleDateString(
+									'zh-CN',
+									{
+										year: 'numeric',
+										month: '2-digit',
+										day: '2-digit'
+									}
+								)}
+
+							</span>
+
+						)}
+
+
+						{updated && (
+
+							<span class="meta-item">
+
+								<span>↻</span>
+
+								更新于
+
+								{updated.toLocaleDateString(
+									'zh-CN',
+									{
+										year: 'numeric',
+										month: '2-digit',
+										day: '2-digit'
+									}
+								)}
+
+							</span>
+
+						)}
+
+
+						{wordCount && (
+
+							<span class="meta-item">
+
+								<span>T</span>
+
+								约 {wordCount} 字
+
+							</span>
+
+						)}
+
+
+						{readingTime && (
+
+							<span class="meta-item">
+
+								<span>◷</span>
+
+								预计阅读 {readingTime} 分钟
+
+							</span>
+
+						)}
+
+
 					</div>
+
+
+
+					{topics && (
+
+						<div class="topics">
+
+							{topics.split(',').map((topic) => (
+
+								<span class="topic">
+									{topic.trim()}
+								</span>
+
+							))}
+
+						</div>
+
+					)}
+
+
+					<hr class="article-divider" />
+
+
+				</header>
+
+
+
+				<div class="prose">
+
 					<slot />
+
 				</div>
-			</article>
-		</main>
-		<Footer />
-	</body>
+
+
+			</div>
+
+
+		</article>
+
+
+	</div>
+
+
+</main>
+
+
+
+<footer class="footer">
+	© 2026 AndRainWindow
+</footer>
+
+
+</body>
+
 </html>

@@ -1,114 +1,508 @@
 ---
-import { Image } from 'astro:assets';
-import { getCollection } from 'astro:content';
 import BaseHead from '../../components/BaseHead.astro';
-import Footer from '../../components/Footer.astro';
-import FormattedDate from '../../components/FormattedDate.astro';
-import Header from '../../components/Header.astro';
+import SiteNav from '../../components/SiteNav.astro';
+import { getCollection } from 'astro:content';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
 
 const posts = (await getCollection('blog')).sort(
-	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
+	(a, b) =>
+		(b.data.date?.valueOf() ?? 0) -
+		(a.data.date?.valueOf() ?? 0)
 );
+
+function getExcerpt(body = '') {
+	return body
+		.replace(/!\[[^\]]*\]\([^)]+\)/g, '')
+		.replace(/!\[\[[^\]]+\]\]/g, '')
+		.replace(/#{1,6}\s/g, '')
+		.replace(/[*_>`~\-]/g, '')
+		.replace(/\[(.*?)\]\(.*?\)/g, '$1')
+		.replace(/\s+/g, ' ')
+		.trim()
+		.slice(0, 150);
+}
 ---
 
 <!doctype html>
-<html lang="en">
-	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-		<style>
-			main {
-				width: 960px;
+<html lang="zh-CN">
+
+<head>
+
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+	<link
+		href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500;600&display=swap"
+		rel="stylesheet"
+	>
+
+	<BaseHead
+		title={`博客 | ${SITE_TITLE}`}
+		description={SITE_DESCRIPTION}
+	/>
+
+	<style>
+
+		:global(html) {
+			background: #111;
+		}
+
+		:global(body) {
+			margin: 0;
+			padding: 0;
+			font-family: "Noto Serif SC", serif;
+		}
+
+		main {
+			position: relative;
+			z-index: 1;
+			width: 100%;
+			max-width: none;
+			margin: 0;
+			padding: 0;
+		}
+
+
+
+		/* ======================
+		   固定背景
+		   ====================== */
+
+		.background {
+			position: fixed;
+			inset: -24px;
+
+			background-image:
+				url("/images/home/hero.jpg");
+
+			background-size: cover;
+			background-position: center;
+
+			filter:
+				blur(8px)
+				brightness(0.82);
+
+			transform: scale(1.03);
+
+			z-index: 0;
+		}
+
+
+		.background::after {
+			content: "";
+
+			position: absolute;
+			inset: 0;
+
+			background:
+				rgba(15, 20, 25, 0.12);
+		}
+
+
+
+		/* ======================
+		   页面标题
+		   ====================== */
+
+		.blog-header {
+			position: relative;
+			z-index: 2;
+
+			max-width: 1050px;
+
+			margin:
+				80px auto 70px;
+
+			padding:
+				0 30px;
+
+			color: white;
+		}
+
+
+		.blog-header h1 {
+			margin: 0;
+
+			font-family:
+				"Noto Serif SC",
+				serif;
+
+			font-size:
+				clamp(2.6rem, 6vw, 4.5rem);
+
+			font-weight: 300;
+
+			letter-spacing: 8px;
+
+			color: white;
+		}
+
+
+		.blog-header p {
+			margin-top: 20px;
+
+			font-style: italic;
+
+			font-size: 1.05rem;
+
+			color:
+				rgba(255,255,255,0.72);
+		}
+
+
+
+		/* ======================
+		   文章信息流
+		   ====================== */
+
+		.feed {
+			position: relative;
+			z-index: 2;
+
+			max-width: 1050px;
+
+			margin:
+				0 auto;
+
+			padding:
+				0 30px 120px;
+
+			display: flex;
+			flex-direction: column;
+
+			gap: 26px;
+		}
+
+
+
+		.post-card {
+			display: grid;
+
+			grid-template-columns:
+				320px 1fr;
+
+			min-height: 220px;
+
+			overflow: hidden;
+
+			text-decoration: none;
+
+			color: #171717;
+
+			background:
+				rgba(255,255,255,0.80);
+
+			backdrop-filter:
+				blur(14px)
+				saturate(140%);
+
+			-webkit-backdrop-filter:
+				blur(14px)
+				saturate(140%);
+
+			border:
+				1px solid
+				rgba(255,255,255,0.35);
+
+			border-radius: 14px;
+
+			box-shadow:
+				0 12px 40px
+				rgba(0,0,0,0.10);
+
+			transition:
+				transform 0.25s ease,
+				background 0.25s ease,
+				box-shadow 0.25s ease;
+		}
+
+
+		.post-card:hover {
+			transform:
+				translateY(-4px);
+
+			background:
+				rgba(255,255,255,0.88);
+
+			box-shadow:
+				0 18px 50px
+					rgba(0,0,0,0.14);
+		}
+
+
+
+		.post-image {
+			width: 100%;
+			height: 100%;
+
+			min-height: 220px;
+
+			object-fit: cover;
+
+			transition:
+				transform 0.4s ease;
+		}
+
+
+		.post-card:hover .post-image {
+			transform:
+				scale(1.025);
+		}
+
+
+
+		.post-content {
+			padding:
+				32px 36px;
+
+			display: flex;
+			flex-direction: column;
+
+			justify-content: center;
+		}
+
+
+
+		.post-title {
+			margin: 0;
+
+			font-size: 1.65rem;
+
+			font-weight: 600;
+
+			line-height: 1.4;
+		}
+
+
+
+		.post-meta {
+			margin-top: 10px;
+
+			display: flex;
+			flex-wrap: wrap;
+
+			gap: 12px;
+
+			font-size: 0.88rem;
+
+			color: #707070;
+		}
+
+
+
+		.post-excerpt {
+			margin:
+				18px 0 0;
+
+			font-family:
+				-apple-system,
+				BlinkMacSystemFont,
+				"Segoe UI",
+				"PingFang SC",
+				sans-serif;
+
+			font-size: 0.96rem;
+
+			line-height: 1.8;
+
+			color: #444;
+
+			display: -webkit-box;
+
+			-webkit-line-clamp: 3;
+			-webkit-box-orient: vertical;
+
+			overflow: hidden;
+		}
+
+
+
+		.read-more {
+			margin-top: 20px;
+
+			font-size: 0.9rem;
+
+			color: #555;
+		}
+
+
+
+		/* ======================
+		   页脚
+		   ====================== */
+
+		.footer {
+			position: relative;
+			z-index: 2;
+
+			padding:
+				35px 20px;
+
+			text-align: center;
+
+			color:
+				rgba(255,255,255,0.65);
+
+			font-size: 0.85rem;
+		}
+
+
+
+		/* ======================
+		   手机
+		   ====================== */
+
+		@media(max-width: 760px) {
+
+			.blog-header {
+				margin:
+					60px auto 45px;
 			}
-			ul {
-				display: flex;
-				flex-wrap: wrap;
-				gap: 2rem;
-				list-style-type: none;
-				margin: 0;
-				padding: 0;
+
+
+			.post-card {
+				grid-template-columns:
+					1fr;
 			}
-			ul li {
-				width: calc(50% - 1rem);
+
+
+			.post-image {
+				height: 220px;
 			}
-			ul li * {
-				text-decoration: none;
-				transition: 0.2s ease;
+
+
+			.post-content {
+				padding:
+					25px;
 			}
-			ul li:first-child {
-				width: 100%;
-				margin-bottom: 1rem;
-				text-align: center;
+
+
+			.post-title {
+				font-size: 1.4rem;
 			}
-			ul li:first-child img {
-				width: 100%;
-			}
-			ul li:first-child .title {
-				font-size: 2.369rem;
-			}
-			ul li img {
-				margin-bottom: 0.5rem;
-				border-radius: 12px;
-			}
-			ul li a {
-				display: block;
-			}
-			.title {
-				margin: 0;
-				color: rgb(var(--black));
-				line-height: 1;
-			}
-			.date {
-				margin: 0;
-				color: rgb(var(--gray));
-			}
-			ul li a:hover h4,
-			ul li a:hover .date {
-				color: rgb(var(--accent));
-			}
-			ul a:hover img {
-				box-shadow: var(--box-shadow);
-			}
-			@media (max-width: 720px) {
-				ul {
-					gap: 0.5em;
-				}
-				ul li {
-					width: 100%;
-					text-align: center;
-				}
-				ul li:first-child {
-					margin-bottom: 0;
-				}
-				ul li:first-child .title {
-					font-size: 1.563em;
-				}
-			}
-		</style>
-	</head>
-	<body>
-		<Header />
-		<main>
-			<section>
-				<ul>
-					{
-						posts.map((post) => (
-							<li>
-								<a href={`/blog/${post.id}/`}>
-									{post.data.heroImage && (
-										<Image width={720} height={360} src={post.data.heroImage} alt="" />
-									)}
-									<h4 class="title">{post.data.title}</h4>
-									<p class="date">
-										<FormattedDate date={post.data.pubDate} />
-									</p>
-								</a>
-							</li>
-						))
+
+		}
+
+	</style>
+
+</head>
+
+
+<body>
+
+
+<div class="background"></div>
+
+
+<main>
+
+	<SiteNav active="blog" />
+
+
+
+	<header class="blog-header">
+
+		<h1>
+			博客
+		</h1>
+
+		<p>
+			write down what I want to write
+		</p>
+
+	</header>
+
+
+
+	<section class="feed">
+
+
+		{posts.map((post) => (
+
+			<a
+				class="post-card"
+				href={`/blog/${post.id}/`}
+			>
+
+
+				<img
+					class="post-image"
+					src={
+						post.data.heroImage
+						?? "/images/covers/default.jpg"
 					}
-				</ul>
-			</section>
-		</main>
-		<Footer />
-	</body>
+					alt={post.data.title}
+				/>
+
+
+				<div class="post-content">
+
+
+					<h2 class="post-title">
+						{post.data.title}
+					</h2>
+
+
+					<div class="post-meta">
+
+						{post.data.date && (
+							<span>
+								📅 创作于 {post.data.date.toLocaleDateString('zh-CN')}
+							</span>
+						)}
+
+						{post.data.updated && (
+							<span>
+								↻ 更新于 {post.data.updated.toLocaleDateString('zh-CN')}
+							</span>
+						)}
+
+						{post.data.wordCount && (
+							<span>
+								约 {post.data.wordCount} 字
+							</span>
+						)}
+
+						{post.data.topics && (
+							<span>
+								{post.data.topics}
+							</span>
+						)}
+
+					</div>
+
+
+					<p class="post-excerpt">
+						{getExcerpt(post.body)}
+						{getExcerpt(post.body).length >= 150 ? '…' : ''}
+					</p>
+
+
+					<div class="read-more">
+						阅读全文 →
+					</div>
+
+
+				</div>
+
+
+			</a>
+
+		))}
+
+
+	</section>
+
+
+</main>
+
+
+
+<footer class="footer">
+	© 2026 AndRainWindow
+</footer>
+
+
+</body>
+
 </html>

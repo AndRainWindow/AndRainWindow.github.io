@@ -1,49 +1,1009 @@
 ---
 import BaseHead from '../components/BaseHead.astro';
 import Footer from '../components/Footer.astro';
-import Header from '../components/Header.astro';
+import SiteNav from '../components/SiteNav.astro';
+import { getCollection } from 'astro:content';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import RecentPhotos from '../components/RecentPhotos.astro';
+
+const recentPosts = (await getCollection('blog'))
+	.sort(
+		(a, b) =>
+			(b.data.date?.valueOf() ?? 0) -
+			(a.data.date?.valueOf() ?? 0)
+	)
+	.slice(0, 6);
+
+function getExcerpt(body = '') {
+	return body
+		.replace(/!\[[^\]]*\]\([^)]+\)/g, '')
+		.replace(/!\[\[[^\]]+\]\]/g, '')
+		.replace(/#{1,6}\s/g, '')
+		.replace(/[*_>`~]/g, '')
+		.replace(/\[(.*?)\]\(.*?\)/g, '$1')
+		.replace(/\s+/g, ' ')
+		.trim()
+		.slice(0, 65);
+}
+
+function getPostUrl(id: string) {
+	return `/blog/${id.replace(/\.mdx?$/, '')}/`;
+}
 ---
 
 <!doctype html>
-<html lang="en">
-	<head>
-		<BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
-	</head>
-	<body>
-		<Header />
-		<main>
-			<h1>🧑‍🚀 Hello, Astronaut!</h1>
+<html lang="zh-CN">
+
+<head>
+
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+	<link
+		href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500;600&display=swap"
+		rel="stylesheet"
+	>
+
+	<BaseHead
+		title={SITE_TITLE}
+		description={SITE_DESCRIPTION}
+	/>
+
+
+	<style>
+
+		:global(html) {
+			background: #fff;
+		}
+
+
+		:global(body) {
+			margin: 0;
+			padding: 0;
+
+			font-family:
+				"Noto Serif SC",
+				serif;
+		}
+
+
+		main {
+			position: relative;
+			z-index: 1;
+
+			width: 100%;
+			max-width: none;
+
+			margin: 0;
+			padding: 0;
+		}
+
+
+
+		/* =========================
+		   全局固定背景
+		   ========================= */
+
+		.background {
+			position: fixed;
+
+			top: -24px;
+			left: -24px;
+
+			width:
+				calc(100vw + 48px);
+
+			height:
+				calc(100svh + 48px);
+
+			background-image:
+				url("/images/home/hero.jpg");
+
+			background-size: cover;
+			background-position: center;
+
+			z-index: 0;
+
+			filter:
+				blur(var(--bg-blur, 0px))
+				brightness(var(--bg-brightness, 1));
+
+			transform:
+				scale(1.02);
+
+			will-change: filter;
+		}
+
+
+		.background::after {
+			content: "";
+
+			position: absolute;
+			inset: 0;
+
+			background:
+				rgba(0, 0, 0, 0.10);
+
+			pointer-events: none;
+		}
+
+
+
+		/* =========================
+		   Hero
+		   ========================= */
+
+		.hero {
+			position: relative;
+
+			height: 100vh;
+			min-height: 100svh;
+
+			display: flex;
+			align-items: center;
+			justify-content: center;
+
+			color: white;
+		}
+
+
+.logo {
+			font-size: 1.3rem;
+			letter-spacing: 2px;
+		}
+
+
+.menu a {
+			color: white;
+
+			text-decoration: none;
+
+			font-size: 1rem;
+
+			transition:
+				opacity 0.2s ease;
+		}
+
+
+.hero-content {
+			position: relative;
+			z-index: 2;
+
+			text-align: center;
+
+			transform:
+				translateY(-160px);
+		}
+
+
+		.hero h1 {
+			margin: 0;
+
+			font-size: 4.5rem;
+			font-weight: 300;
+
+			letter-spacing: 10px;
+
+			color: white;
+
+			text-shadow:
+				0 2px 15px
+				rgba(0, 0, 0, 0.18);
+		}
+
+
+		.hero p {
+			margin-top: 35px;
+
+			font-size: 1.1rem;
+			font-style: italic;
+
+			color:
+				rgba(255, 255, 255, 0.9);
+
+			text-shadow:
+				0 2px 10px
+				rgba(0, 0, 0, 0.18);
+		}
+
+
+		.scroll {
+			position: absolute;
+
+			bottom: 35px;
+			left: 50%;
+
+			transform:
+				translateX(-50%);
+
+			font-size: 2rem;
+
+			color: white;
+
+			animation:
+				scrollBounce
+				2.2s
+				ease-in-out
+				infinite;
+		}
+
+
+		@keyframes scrollBounce {
+
+			0%,
+			100% {
+				transform:
+					translate(-50%, 0);
+			}
+
+			50% {
+				transform:
+					translate(-50%, 8px);
+			}
+
+		}
+
+
+
+		/* =========================
+		   下方内容
+		   ========================= */
+
+		.content {
+			position: relative;
+			z-index: 1;
+
+			background:
+				linear-gradient(
+					to bottom,
+
+					rgba(255,255,255,0.00) 0px,
+
+					rgba(255,255,255,0.06) 250px,
+
+					rgba(255,255,255,0.16) 600px,
+
+					rgba(255,255,255,0.30) 1100px,
+
+					rgba(255,255,255,0.45) 100%
+				);
+		}
+
+
+
+		/* =========================
+		   Photography
+		   ========================= */
+
+		.section {
+			position: relative;
+
+			max-width: 1200px;
+
+			margin: auto;
+
+			padding:
+				140px 30px;
+		}
+
+
+		.section h2 {
+			margin:
+				0 0 60px;
+
+			text-align: center;
+
+			font-size: 2.5rem;
+			font-weight: 300;
+
+			color: white;
+		}
+
+
+		.preview {
+			display: block;
+
+			width: 100%;
+			height: 600px;
+
+			object-fit: cover;
+
+			border-radius: 12px;
+
+			box-shadow:
+				0 15px 50px
+				rgba(0,0,0,0.08);
+		}
+
+
+		.link {
+			display: block;
+
+			margin-top: 30px;
+
+			text-align: center;
+
+			text-decoration: none;
+
+			color: #333;
+
+			transition:
+				opacity 0.2s ease;
+		}
+
+
+		.link:hover {
+			opacity: 0.6;
+		}
+
+
+
+		/* =========================
+		   Blog 首页展示
+		   ========================= */
+
+		.blog-section {
+			position: relative;
+			z-index: 2;
+
+			max-width: 1200px;
+
+			margin: auto;
+
+			padding:
+				120px 30px
+				150px;
+		}
+
+
+		.blog-heading {
+			text-align: center;
+
+			margin-bottom: 55px;
+		}
+
+
+		.blog-heading h2 {
+			margin: 0;
+
+			font-size: 2.7rem;
+			font-weight: 300;
+
+			color: white;
+		}
+
+
+		.blog-heading p {
+			margin-top: 14px;
+
+			font-size: 0.95rem;
+
+			color:
+				rgba(255,255,255,0.72);
+		}
+
+
+
+		/* 3 × 2 */
+
+		.blog-grid {
+			display: grid;
+
+			grid-template-columns:
+				repeat(3, minmax(0, 1fr));
+
+			gap: 28px;
+		}
+
+
+
+		/* 单张文章卡片 */
+
+		.blog-card {
+			display: flex;
+			flex-direction: column;
+
+			min-width: 0;
+
+			overflow: hidden;
+
+			color: #1f2328;
+
+			text-decoration: none;
+
+			background:
+				rgba(255,255,255,0.84);
+
+			backdrop-filter:
+				blur(12px)
+				saturate(135%);
+
+			-webkit-backdrop-filter:
+				blur(12px)
+				saturate(135%);
+
+			border:
+				1px solid
+				rgba(255,255,255,0.38);
+
+			border-radius: 14px;
+
+			box-shadow:
+				0 10px 35px
+					rgba(0,0,0,0.09);
+
+			transition:
+				transform 0.25s ease,
+				box-shadow 0.25s ease,
+				background 0.25s ease;
+		}
+
+
+		.blog-card:hover {
+			transform:
+				translateY(-5px);
+
+			background:
+				rgba(255,255,255,0.92);
+
+			box-shadow:
+				0 18px 48px
+					rgba(0,0,0,0.14);
+		}
+
+
+
+		/* 卡片封面 */
+
+		.blog-cover {
+			width: 100%;
+			height: 210px;
+
+			overflow: hidden;
+
+			background:
+				rgba(255,255,255,0.35);
+		}
+
+
+		.blog-cover img {
+			display: block;
+
+			width: 100%;
+			height: 100%;
+
+			object-fit: cover;
+
+			transition:
+				transform 0.4s ease;
+		}
+
+
+		.blog-card:hover
+		.blog-cover img {
+			transform:
+				scale(1.035);
+		}
+
+
+
+		/* 卡片内容 */
+
+		.blog-card-content {
+			display: flex;
+			flex: 1;
+			flex-direction: column;
+
+			padding:
+				24px 25px
+				25px;
+		}
+
+
+		.blog-card h3 {
+			margin: 0;
+
+			font-size: 1.28rem;
+			font-weight: 600;
+
+			line-height: 1.45;
+
+			color: #202225;
+		}
+
+
+		.blog-excerpt {
+			margin:
+				12px 0 0;
+
+			min-height: 3.3em;
+
+			font-family:
+				-apple-system,
+				BlinkMacSystemFont,
+				"Segoe UI",
+				"PingFang SC",
+				sans-serif;
+
+			font-size: 0.9rem;
+
+			line-height: 1.7;
+
+			color: #50565d;
+
+			display: -webkit-box;
+
+			-webkit-line-clamp: 2;
+			-webkit-box-orient: vertical;
+
+			overflow: hidden;
+		}
+
+
+
+		/* 卡片底部 */
+
+		.blog-meta {
+			display: flex;
+			align-items: center;
+			justify-content: space-between;
+
+			gap: 12px;
+
+			margin-top: auto;
+			padding-top: 22px;
+
+			font-family:
+				-apple-system,
+				BlinkMacSystemFont,
+				"Segoe UI",
+				"PingFang SC",
+				sans-serif;
+
+			font-size: 0.78rem;
+
+			color: #858b92;
+		}
+
+
+		.blog-meta span {
+			min-width: 0;
+		}
+
+
+		.blog-meta .blog-topic {
+			overflow: hidden;
+
+			text-overflow: ellipsis;
+
+			white-space: nowrap;
+
+			text-align: right;
+		}
+
+
+
+		/* 查看全部 */
+
+		.blog-more {
+			display: block;
+			width: fit-content;
+			margin:
+				48px auto 0;
+			color:
+				rgba(255,255,255,0.88);
+			text-decoration: none;
+			font-size: 16px;
+			transition:
+				opacity 0.2s ease,
+				transform 0.2s ease;
+		}
+
+		
+		.blog-more:hover {
+			opacity: 0.65;
+
+			transform:
+				translateX(3px);
+		}
+
+
+
+		/* Footer 在固定背景上面 */
+
+		:global(.site-footer) {
+			position: relative;
+			z-index: 2;
+
+			margin: 0;
+			padding: 30px 20px;
+
+			min-height: 0;
+			height: auto;
+
+			text-align: center;
+
+			background: transparent;
+			color: rgba(255, 255, 255, 0.65);
+		}
+
+
+
+		/* =========================
+		   平板
+		   ========================= */
+
+		@media(
+			min-width: 701px
+		)
+		and
+		(max-width: 1000px) {
+
+			.blog-grid {
+				grid-template-columns:
+					repeat(2, minmax(0, 1fr));
+			}
+
+		}
+
+
+
+		/* =========================
+		   手机
+		   ========================= */
+
+		@media(max-width: 700px) {
+
+.menu {
+				gap: 15px;
+			}
+
+
+			.hero-content {
+				transform:
+					translateY(-100px);
+			}
+
+
+			.hero h1 {
+				font-size: 2.8rem;
+
+				letter-spacing: 5px;
+			}
+
+
+			.preview {
+				height: 420px;
+			}
+
+
+			.section {
+				padding:
+					100px 20px;
+			}
+
+
+			.blog-section {
+				padding:
+					90px 20px
+					110px;
+			}
+
+
+			.blog-grid {
+				grid-template-columns:
+					1fr;
+			}
+
+
+			.blog-cover {
+				height: 230px;
+			}
+
+		}
+
+	</style>
+
+</head>
+
+
+<body>
+
+
+<div class="background"></div>
+
+
+<main>
+
+
+	<section class="hero">
+
+
+		<SiteNav active="home" overlay />
+
+
+
+		<div class="hero-content">
+
+			<h1>
+				野渡无人舟自横
+			</h1>
+
 			<p>
-				Welcome to the official <a href="https://astro.build/">Astro</a> blog starter template. This template
-				serves as a lightweight, minimally-styled starting point for anyone looking to build a personal
-				website, blog, or portfolio with Astro.
+				Record what I see, explore what I don't know.
 			</p>
-			<p>
-				This template comes with a few integrations already configured in your{' '}
-				<code>astro.config.mjs</code> file. You can customize your setup with{' '}
-				<a href="https://astro.build/integrations">Astro Integrations</a> to add tools like Tailwind,
-				React, or Vue to your project.
-			</p>
-			<p>Here are a few ideas on how to get started with the template:</p>
-			<ul>
-				<li>Edit this page in <code>src/pages/index.astro</code></li>
-				<li>Edit the site header items in <code>src/components/Header.astro</code></li>
-				<li>Add your name to the footer in <code>src/components/Footer.astro</code></li>
-				<li>Check out the included blog posts in <code>src/content/blog/</code></li>
-				<li>Customize the blog post page layout in <code>src/layouts/BlogPost.astro</code></li>
-			</ul>
-			<p>
-				Have fun! If you get stuck, remember to{' '}
-				<a href="https://docs.astro.build/">read the docs</a>{' '}
-				or <a href="https://astro.build/chat">join us on Discord</a> to ask questions.
-			</p>
-			<p>
-				Looking for a blog template with a bit more personality? Check out{' '}
-				<a href="https://github.com/Charca/astro-blog-template">astro-blog-template</a>{' '}
-				by <a href="https://twitter.com/Charca">Maxi Ferreira</a>.
-			</p>
-		</main>
-		<Footer />
-	</body>
+
+		</div>
+
+
+
+		<div class="scroll">
+			⌄
+		</div>
+
+
+	</section>
+
+
+
+	<div class="content">
+
+
+		<!-- Photography -->
+
+		<RecentPhotos />
+
+
+
+		<!-- Blog -->
+
+		<section class="blog-section">
+
+
+			<div class="blog-heading">
+
+				<h2>
+					Blog
+				</h2>
+
+				<p>
+					最近写下的一些东西
+				</p>
+
+			</div>
+
+
+
+			<div class="blog-grid">
+
+
+				{recentPosts.map((post) => (
+
+					<a
+						class="blog-card"
+						href={getPostUrl(post.id)}
+					>
+
+
+						<div class="blog-cover">
+
+							<img
+								src={
+									post.data.heroImage
+									?? "/images/covers/default.jpg"
+								}
+								alt={post.data.title}
+							/>
+
+						</div>
+
+
+
+						<div class="blog-card-content">
+
+
+							<h3>
+								{post.data.title}
+							</h3>
+
+
+
+							<p class="blog-excerpt">
+
+								{getExcerpt(post.body)}
+
+								{
+									getExcerpt(post.body).length >= 65
+										? '…'
+										: ''
+								}
+
+							</p>
+
+
+
+							<div class="blog-meta">
+
+
+								{post.data.date && (
+
+									<span>
+
+										{post.data.date.toLocaleDateString(
+											'zh-CN',
+											{
+												year: 'numeric',
+												month: '2-digit',
+												day: '2-digit'
+											}
+										)}
+
+									</span>
+
+								)}
+
+
+								{post.data.topics && (
+
+									<span class="blog-topic">
+
+										{post.data.topics}
+
+									</span>
+
+								)}
+
+
+							</div>
+
+
+						</div>
+
+
+					</a>
+
+				))}
+
+
+			</div>
+
+
+
+			<a
+				class="blog-more"
+				href="/blog/"
+			>
+				查看全部文章 →
+			</a>
+
+
+		</section>
+
+
+	</div>
+
+
+</main>
+
+
+
+<Footer />
+
+
+
+<script>
+
+	const background =
+		document.querySelector(".background");
+
+
+	if (background instanceof HTMLElement) {
+
+
+		let ticking = false;
+
+
+		const updateBackground = () => {
+
+
+			const scrollY =
+				window.scrollY;
+
+
+			const height =
+				window.innerHeight;
+
+
+			const blurStart =
+				height * 0.55;
+
+
+			const blurEnd =
+				height * 1.30;
+
+
+			const progress =
+				Math.min(
+					Math.max(
+						(scrollY - blurStart) /
+						(blurEnd - blurStart),
+
+						0
+					),
+
+					1
+				);
+
+
+			const blur =
+				progress * 12;
+
+
+			const brightness =
+				1 - progress * 0.06;
+
+
+			background.style.setProperty(
+				"--bg-blur",
+				`${blur}px`
+			);
+
+
+			background.style.setProperty(
+				"--bg-brightness",
+				`${brightness}`
+			);
+
+
+			ticking = false;
+
+		};
+
+
+
+		const onScroll = () => {
+
+
+			if (!ticking) {
+
+
+				requestAnimationFrame(
+					updateBackground
+				);
+
+
+				ticking = true;
+
+			}
+
+
+		};
+
+
+
+		updateBackground();
+
+
+		window.addEventListener(
+			"scroll",
+			onScroll,
+			{
+				passive: true
+			}
+		);
+
+
+		window.addEventListener(
+			"resize",
+			updateBackground
+		);
+
+
+	}
+
+</script>
+
+
+</body>
+
 </html>

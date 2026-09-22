@@ -1,0 +1,438 @@
+---
+import BaseHead from '../../components/BaseHead.astro';
+import SiteNav from '../../components/SiteNav.astro';
+import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
+import photosData from '../../data/photos.json';
+
+const photos = [...photosData].sort(
+	(a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
+);
+
+const years = [...new Set(
+	photos.map((photo) => photo.date.slice(0, 4))
+)];
+---
+
+<!doctype html>
+<html lang="zh-CN">
+
+<head>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link
+		href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500;600&display=swap"
+		rel="stylesheet"
+	>
+
+	<BaseHead
+		title={`摄影 | ${SITE_TITLE}`}
+		description={SITE_DESCRIPTION}
+	/>
+
+	<style>
+		:global(html) {
+			background: #111;
+			scroll-behavior: smooth;
+		}
+
+		:global(body) {
+			margin: 0;
+			padding: 0;
+			font-family: "Noto Serif SC", serif;
+		}
+
+		.background {
+			position: fixed;
+			inset: -24px;
+			background-image: url("/images/home/hero.jpg");
+			background-size: cover;
+			background-position: center;
+			filter: blur(10px) brightness(0.72);
+			transform: scale(1.03);
+			z-index: 0;
+		}
+
+		.background::after {
+			content: "";
+			position: absolute;
+			inset: 0;
+			background: rgba(18, 27, 35, 0.16);
+		}
+
+		main {
+			position: relative;
+			z-index: 1;
+			width: 100%;
+			max-width: none;
+			margin: 0;
+			padding: 0;
+		}
+
+		.page-title {
+			max-width: 1450px;
+			margin: 65px auto 90px;
+			padding: 0 35px;
+			color: white;
+		}
+
+		.page-title h1 {
+			margin: 0;
+			font-size: clamp(2.8rem, 6vw, 5rem);
+			font-weight: 300;
+			letter-spacing: 8px;
+			color: white;
+			font-family: "Noto Serif SC", serif;;
+		}
+
+		.page-title p {
+			margin: 18px 0 0;
+			color: rgba(255,255,255,0.65);
+			font-style: italic;
+		}
+
+		.photo-layout {
+			max-width: 1450px;
+			margin: 0 auto;
+			padding: 0 35px 140px;
+			display: grid;
+			grid-template-columns: 150px minmax(0, 1fr) 310px;
+			gap: 55px;
+			align-items: start;
+		}
+
+		.timeline,
+		.photo-info {
+			position: sticky;
+			top: 90px;
+			height: fit-content;
+		}
+
+		.timeline {
+			color: rgba(255,255,255,0.72);
+		}
+
+		.timeline-year {
+			margin-bottom: 22px;
+		}
+
+		.timeline-year h2 {
+			margin: 0 0 12px;
+			font-size: 1.1rem;
+			font-weight: 500;
+			color: white;
+		}
+
+		.timeline-link {
+			position: relative;
+			display: block;
+			padding: 7px 0 7px 20px;
+			color: rgba(255,255,255,0.55);
+			text-decoration: none;
+			font-size: 0.9rem;
+			transition: color 0.2s ease;
+		}
+
+		.timeline-link::before {
+			content: "";
+			position: absolute;
+			left: 4px;
+			top: 50%;
+			width: 5px;
+			height: 5px;
+			border-radius: 50%;
+			background: rgba(255,255,255,0.35);
+			transform: translateY(-50%);
+			transition: all 0.2s ease;
+		}
+
+		.timeline-link:hover,
+		.timeline-link.active {
+			color: white;
+		}
+
+		.timeline-link.active::before {
+			width: 7px;
+			height: 7px;
+			left: 3px;
+			background: white;
+		}
+
+		.photo-stream {
+			display: flex;
+			flex-direction: column;
+			gap: 120px;
+		}
+
+		.photo-item {
+			scroll-margin-top: 70px;
+		}
+
+		.photo-frame {
+			width: 100%;
+			background: rgba(255,255,255,0.06);
+			border: 1px solid rgba(255,255,255,0.12);
+			border-radius: 14px;
+			overflow: hidden;
+			box-shadow: 0 18px 60px rgba(0,0,0,0.18);
+		}
+
+		.photo-frame img {
+			display: block;
+			width: 100%;
+			height: auto;
+			object-fit: contain;
+		}
+
+		.mobile-info {
+			display: none;
+		}
+
+		.photo-info {
+			padding: 24px 0;
+			color: white;
+		}
+
+		.photo-info h2 {
+			margin: 0;
+			font-size: 1.8rem;
+			font-weight: 400;
+			line-height: 1.45;
+			color: white;
+		}
+
+		.photo-date {
+			margin-top: 12px;
+			font-size: 0.86rem;
+			color: rgba(255,255,255,0.55);
+		}
+
+		.photo-location {
+			margin-top: 4px;
+			font-size: 0.92rem;
+			color: rgba(255,255,255,0.72);
+		}
+
+		.photo-camera {
+			margin-top: 18px;
+			font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+			font-size: 0.82rem;
+			color: rgba(255,255,255,0.48);
+		}
+
+		.photo-note {
+			margin-top: 32px;
+			font-size: 1rem;
+			line-height: 2;
+			color: rgba(255,255,255,0.78);
+			white-space: pre-line;
+		}
+
+		.footer {
+			position: relative;
+			z-index: 2;
+			padding: 30px 20px 40px;
+			text-align: center;
+			color: rgba(255,255,255,0.55);
+			font-size: 0.85rem;
+		}
+
+		@media (max-width: 1050px) {
+			.photo-layout {
+				grid-template-columns: 110px minmax(0, 1fr) 250px;
+				gap: 30px;
+			}
+		}
+
+		@media (max-width: 760px) {
+			.page-title {
+				margin: 45px auto 60px;
+				padding: 0 20px;
+			}
+
+			.photo-layout {
+				display: block;
+				padding: 0 20px 90px;
+			}
+
+			.timeline,
+			.photo-info {
+				display: none;
+			}
+
+			.photo-stream {
+				gap: 75px;
+			}
+
+			.mobile-info {
+				display: block;
+				padding: 18px 2px 0;
+				color: white;
+			}
+
+			.mobile-info h2 {
+				margin: 0;
+				font-size: 1.5rem;
+				font-weight: 400;
+				color: white;
+			}
+
+			.mobile-meta {
+				margin-top: 8px;
+				font-size: 0.84rem;
+				color: rgba(255,255,255,0.55);
+			}
+
+			.mobile-note {
+				margin-top: 18px;
+				line-height: 1.9;
+				color: rgba(255,255,255,0.76);
+			}
+		}
+	</style>
+</head>
+
+<body>
+
+<div class="background"></div>
+
+<main>
+
+	<SiteNav active="photos" />
+
+	<header class="page-title">
+		<h1>摄影</h1>
+		<p>Record what remains after the moment has passed.</p>
+	</header>
+
+	<div class="photo-layout">
+
+		<aside class="timeline">
+			{years.map((year) => (
+				<div class="timeline-year">
+					<h2>{year}</h2>
+
+					{photos
+						.filter((photo) => photo.date.startsWith(year))
+						.map((photo) => (
+							<a
+								class="timeline-link"
+								href={`#${photo.id}`}
+								data-photo-id={photo.id}
+							>
+								{photo.date.slice(5).replace('-', '.')}
+							</a>
+						))
+					}
+				</div>
+			))}
+		</aside>
+
+		<section class="photo-stream">
+
+			{photos.map((photo) => (
+
+				<article
+					id={photo.id}
+					class="photo-item"
+					data-photo={JSON.stringify(photo)}
+				>
+
+					<div class="photo-frame">
+						<img
+							src={photo.image}
+							alt={photo.title}
+							loading="lazy"
+						/>
+					</div>
+
+					<div class="mobile-info">
+						<h2>{photo.title}</h2>
+
+						<div class="mobile-meta">
+							{photo.date} · {photo.location}
+						</div>
+
+						<p class="mobile-note">
+							{photo.note}
+						</p>
+					</div>
+
+				</article>
+
+			))}
+
+		</section>
+
+		<aside class="photo-info">
+			<h2 id="info-title">{photos[0]?.title}</h2>
+			<div class="photo-date" id="info-date">{photos[0]?.date}</div>
+			<div class="photo-location" id="info-location">{photos[0]?.location}</div>
+			<div class="photo-camera" id="info-camera">{photos[0]?.camera}</div>
+			<p class="photo-note" id="info-note">{photos[0]?.note}</p>
+		</aside>
+
+	</div>
+
+</main>
+
+<footer class="footer">
+	© 2026 AndRainWindow
+</footer>
+
+<script>
+	const items = [...document.querySelectorAll('.photo-item')];
+	const timelineLinks = [...document.querySelectorAll('.timeline-link')];
+
+	const title = document.querySelector('#info-title');
+	const date = document.querySelector('#info-date');
+	const location = document.querySelector('#info-location');
+	const camera = document.querySelector('#info-camera');
+	const note = document.querySelector('#info-note');
+
+	function setActive(item) {
+		if (!(item instanceof HTMLElement)) return;
+
+		const raw = item.dataset.photo;
+		if (!raw) return;
+
+		const photo = JSON.parse(raw);
+
+		if (title) title.textContent = photo.title ?? '';
+		if (date) date.textContent = photo.date ?? '';
+		if (location) location.textContent = photo.location ?? '';
+		if (camera) camera.textContent = photo.camera ?? '';
+		if (note) note.textContent = photo.note ?? '';
+
+		timelineLinks.forEach((link) => {
+			link.classList.toggle(
+				'active',
+				link.getAttribute('data-photo-id') === item.id
+			);
+		});
+	}
+
+	if (items.length > 0) {
+		setActive(items[0]);
+
+		const observer = new IntersectionObserver(
+			(entries) => {
+				const visible = entries
+					.filter((entry) => entry.isIntersecting)
+					.sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+
+				if (visible.length > 0) {
+					setActive(visible[0].target);
+				}
+			},
+			{
+				rootMargin: '-30% 0px -30% 0px',
+				threshold: [0.1, 0.3, 0.6]
+			}
+		);
+
+		items.forEach((item) => observer.observe(item));
+	}
+</script>
+
+</body>
+</html>

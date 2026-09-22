@@ -1,0 +1,563 @@
+---
+import photosData from '../data/photos.json';
+
+const recentPhotos = [...photosData]
+	.sort(
+		(a, b) =>
+			new Date(b.date).getTime() -
+			new Date(a.date).getTime()
+	)
+	.slice(0, 5);
+---
+
+<section class="recent-photos">
+
+	<div class="section-heading">
+		<h2>Photography</h2>
+		<p>最近记录下的一些东西。</p>
+	</div>
+
+	<div
+		class="photo-carousel"
+		data-photo-carousel
+		tabindex="0"
+		aria-label="最近摄影作品"
+	>
+
+		<div class="photo-track" data-photo-track>
+
+			{recentPhotos.map((photo, index) => (
+
+				<a
+					class="photo-slide"
+					href="/photos/"
+					aria-label={`查看作品：${photo.title}`}
+				>
+
+					<img
+						src={photo.image}
+						alt={photo.title}
+						loading={index === 0 ? 'eager' : 'lazy'}
+					/>
+
+					<div class="photo-overlay">
+
+						<div>
+							<h3>{photo.title}</h3>
+
+							<p>
+								{photo.date}
+								{photo.location && ` · ${photo.location}`}
+							</p>
+						</div>
+
+						<div class="photo-count">
+							<span data-photo-current>01</span>
+							<span>/</span>
+							<span>
+								{String(recentPhotos.length).padStart(2, '0')}
+							</span>
+						</div>
+
+					</div>
+
+				</a>
+
+			))}
+
+		</div>
+
+
+		<div class="photo-dots" aria-hidden="true">
+
+			{recentPhotos.map((_, index) => (
+				<span
+					class:list={[
+						'photo-dot',
+						{ active: index === 0 }
+					]}
+					data-photo-dot
+				></span>
+			))}
+
+		</div>
+
+	</div>
+
+
+	<a
+		class="photo-more"
+		href="/photos/"
+	>
+		
+	</a>
+
+</section>
+
+
+<style>
+
+	.recent-photos {
+		position: relative;
+
+		max-width: 1200px;
+
+		margin: 0 auto;
+
+		padding:
+			140px 30px;
+	}
+
+
+	.section-heading h2 {
+		margin:
+			0 0 60px;
+
+		text-align: center;
+
+		font-size: 2.5rem;
+		font-weight: 300;
+
+		color: white;
+	}
+
+	.section-heading p {
+		margin:
+			0 0 60px;
+
+		text-align: center;
+		margin-top: 14px;
+		font-size: 0.95rem;
+		color:
+			rgba(255,255,255,0.72);
+	}
+
+
+	/* =========================
+	   Carousel
+	   ========================= */
+
+	.photo-carousel {
+		position: relative;
+
+		width: 100%;
+
+		overflow: hidden;
+
+		border-radius: 12px;
+
+		box-shadow:
+			0 15px 50px
+				rgba(0,0,0,0.10);
+
+		outline: none;
+
+		cursor: ns-resize;
+	}
+
+
+	.photo-track {
+		display: flex;
+
+		width: 100%;
+
+		transition:
+			transform 0.65s
+			cubic-bezier(
+				0.22,
+				1,
+				0.36,
+				1
+			);
+
+		will-change: transform;
+	}
+
+
+	.photo-slide {
+		position: relative;
+
+		flex:
+			0 0 100%;
+
+		width: 100%;
+		height: 600px;
+
+		overflow: hidden;
+
+		color: white;
+		text-decoration: none;
+	}
+
+
+	.photo-slide img {
+		display: block;
+
+		width: 100%;
+		height: 100%;
+
+		object-fit: cover;
+
+		transition:
+			transform 0.8s ease;
+	}
+
+
+	.photo-slide:hover img {
+		transform:
+			scale(1.015);
+	}
+
+
+
+	/* 底部轻微渐变，只负责文字可读性 */
+
+	.photo-slide::after {
+		content: "";
+
+		position: absolute;
+		inset: 0;
+
+		background:
+			linear-gradient(
+				to bottom,
+				transparent 58%,
+				rgba(0,0,0,0.42) 100%
+			);
+
+		pointer-events: none;
+	}
+
+
+
+	/* =========================
+	   Caption
+	   ========================= */
+
+	.photo-overlay {
+		position: absolute;
+
+		left: 34px;
+		right: 34px;
+		bottom: 28px;
+
+		z-index: 2;
+
+		display: flex;
+		align-items: end;
+		justify-content: space-between;
+
+		gap: 30px;
+	}
+
+
+	.photo-overlay h3 {
+		margin: 0;
+		color: white;
+		font-size: 1.4rem;
+		font-weight: 400;
+
+		letter-spacing: 1px;
+	}
+
+
+	.photo-overlay p {
+		margin:
+			7px 0 0;
+
+		font-family:
+			-apple-system,
+			BlinkMacSystemFont,
+			"Segoe UI",
+			"PingFang SC",
+			sans-serif;
+
+		font-size: 0.82rem;
+
+		color:
+			rgba(255,255,255,0.72);
+	}
+
+
+	.photo-count {
+		display: flex;
+
+		gap: 5px;
+
+		font-family:
+			-apple-system,
+			BlinkMacSystemFont,
+			"Segoe UI",
+			sans-serif;
+
+		font-size: 0.8rem;
+
+		color:
+			rgba(255,255,255,0.72);
+	}
+
+
+
+	/* =========================
+	   Dots
+	   ========================= */
+
+	.photo-dots {
+		position: absolute;
+
+		left: 50%;
+		bottom: 22px;
+
+		z-index: 3;
+
+		display: flex;
+
+		gap: 8px;
+
+		transform:
+			translateX(-50%);
+	}
+
+
+	.photo-dot {
+		width: 20px;
+		height: 2px;
+
+		background:
+			rgba(255,255,255,0.35);
+
+		transition:
+			width 0.25s ease,
+			background 0.25s ease;
+	}
+
+
+	.photo-dot.active {
+		width: 34px;
+
+		background:
+			rgba(255,255,255,0.95);
+	}
+
+
+
+	/* =========================
+	   View Works
+	   ========================= */
+
+	.photo-more {
+		display: block;
+
+		width: fit-content;
+
+		margin:
+			32px auto 0;
+
+		color:
+			rgba(255,255,255,0.86);
+
+		text-decoration: none;
+
+		transition:
+			opacity 0.2s ease,
+			transform 0.2s ease;
+	}
+
+
+	.photo-more:hover {
+		opacity: 0.6;
+
+		transform:
+			translateX(3px);
+	}
+
+
+
+	@media(max-width: 700px) {
+
+		.recent-photos {
+			padding:
+				100px 20px;
+		}
+
+
+		.photo-slide {
+			height: 420px;
+		}
+
+
+		.photo-overlay {
+			left: 22px;
+			right: 22px;
+			bottom: 24px;
+		}
+
+
+		.photo-overlay h3 {
+			font-size: 1.15rem;
+		}
+
+
+		.photo-dots {
+			display: none;
+		}
+
+	}
+
+</style>
+
+
+<script>
+
+	const carousels =
+		document.querySelectorAll(
+			'[data-photo-carousel]'
+		);
+
+
+	carousels.forEach((carousel) => {
+
+		if (!(carousel instanceof HTMLElement)) {
+			return;
+		}
+
+
+		const track =
+			carousel.querySelector(
+				'[data-photo-track]'
+			);
+
+
+		const current =
+			carousel.querySelector(
+				'[data-photo-current]'
+			);
+
+
+		const dots = [
+			...carousel.querySelectorAll(
+				'[data-photo-dot]'
+			)
+		];
+
+
+		if (!(track instanceof HTMLElement)) {
+			return;
+		}
+
+
+		const count =
+			track.children.length;
+
+
+		if (count <= 1) {
+			return;
+		}
+
+
+		let index = 0;
+
+		let locked = false;
+
+
+
+		const render = () => {
+
+			track.style.transform =
+				`translateX(-${index * 100}%)`;
+
+
+			if (current) {
+				current.textContent =
+					String(index + 1)
+						.padStart(2, '0');
+			}
+
+
+			dots.forEach(
+				(dot, dotIndex) => {
+
+					dot.classList.toggle(
+						'active',
+						dotIndex === index
+					);
+
+				}
+			);
+
+		};
+
+
+
+		const move = (direction) => {
+
+			index =
+				(
+					index +
+					direction +
+					count
+				) % count;
+
+
+			render();
+
+		};
+
+
+
+		carousel.addEventListener(
+			'wheel',
+			(event) => {
+
+				if (
+					Math.abs(event.deltaY) < 10 &&
+					Math.abs(event.deltaX) < 10
+				) {
+					return;
+				}
+
+
+				event.preventDefault();
+
+
+				if (locked) {
+					return;
+				}
+
+
+				locked = true;
+
+
+				const delta =
+					Math.abs(event.deltaY) >=
+					Math.abs(event.deltaX)
+						? event.deltaY
+						: event.deltaX;
+
+
+				move(
+					delta > 0
+						? 1
+						: -1
+				);
+
+
+				window.setTimeout(
+					() => {
+						locked = false;
+					},
+					650
+				);
+
+			},
+			{
+				passive: false
+			}
+		);
+
+
+		render();
+
+	});
+
+</script>

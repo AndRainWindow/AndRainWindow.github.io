@@ -1,0 +1,29 @@
+[
+  {
+    "id": "wind-farm",
+    "title": "雾中的风机",
+    "date": "2026-09-22",
+    "location": "PingTan, Fujian",
+    "image": "/images/home/photo-preview.jpg",
+    "camera": "Sony Zve10 · 56mm",
+    "note": "海上似乎没有明确的边界。风机从雾里慢慢出现，白色结构在蓝灰色背景中显得有一点不真实。"
+  },
+  {
+    "id": "new-york",
+    "title": "城市之间",
+    "date": "2026-08-17",
+    "location": "New York, NY",
+    "image": "/images/home/hero.jpg",
+    "camera": "Sony α6700",
+    "note": "我更喜欢那些不太完整的瞬间。人、建筑和光线刚好在同一个画面里停留几秒，然后迅速消失。"
+  },
+  {
+    "id": "fragments",
+    "title": "Fragments",
+    "date": "2026-06-04",
+    "location": "New York, NY",
+    "image": "/images/covers/default.jpg",
+    "camera": "Sony α6700",
+    "note": "有些照片并不需要讲一个完整的故事。它只是保存了一种当时的空气、颜色和距离感。"
+  }
+]
