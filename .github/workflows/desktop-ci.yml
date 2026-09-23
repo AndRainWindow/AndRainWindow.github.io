@@ -1,0 +1,47 @@
+name: Desktop GUI CI
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'desktop/**'
+      - 'publisher/cli.py'
+      - '.github/workflows/desktop-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  check:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Check Python CLI
+        run: python -m py_compile publisher/cli.py
+
+      - name: Install desktop dependencies
+        working-directory: desktop
+        run: npm install
+
+      - name: Build React frontend
+        working-directory: desktop
+        run: npm run build
+
+      - name: Check Tauri Rust bridge
+        run: cargo check --manifest-path desktop/src-tauri/Cargo.toml

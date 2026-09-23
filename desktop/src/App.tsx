@@ -1,0 +1,550 @@
+import { useCallback, useEffect, useMemo, useState } from 'react';
+import { invoke } from '@tauri-apps/api/core';
+import { listen } from '@tauri-apps/api/event';
+import { open } from '@tauri-apps/plugin-dialog';
+import {
+  Activity,
+  AlertTriangle,
+  CheckCircle2,
+  FolderOpen,
+  Home,
+  Image as ImageIcon,
+  LoaderCircle,
+  Play,
+  RefreshCw,
+  Save,
+  ScrollText,
+  Send,
+  Settings,
+  Square,
+  type LucideIcon,
+} from 'lucide-react';
+
+type Page = 'overview' | 'publish' | 'images' | 'logs' | 'settings';
+type TaskName = 'publish' | 'migrate-webp' | 'cleanup-webp' | 'validate';
+type RunState = 'idle' | 'running' | 'success' | 'error';
+
+interface ConfigView {
+  vault: string;
+  project: string;
+  webpEnabled: boolean;
+}
+
+interface BackendEvent {
+  type: string;
+  level?: string;
+  message?: string;
+  current?: number;
+  total?: number;
+  filename?: string;
+  success?: number;
+  failed?: number;
+  skipped?: number;
+  exitCode?: number;
+  problems?: string[];
+  ok?: boolean;
+  summary?: Record<string, unknown>;
+  count?: number;
+}
+
+interface NavItem {
+  key: Page;
+  label: string;
+  icon: LucideIcon;
+}
+
+const navItems: NavItem[] = [
+  { key: 'overview', label: 'Overview', icon: Home },
+  { key: 'publish', label: 'Publish', icon: Send },
+  { key: 'images', label: 'Images', icon: ImageIcon },
+  { key: 'logs', label: 'Logs', icon: ScrollText },
+  { key: 'settings', label: 'Settings', icon: Settings },
+];
+
+const initialConfig: ConfigView = { vault: '', project: '', webpEnabled: true };
+
+function App() {
+  const [page, setPage] = useState<Page>('overview');
+  const [config, setConfig] = useState<ConfigView>(initialConfig);
+  const [draft, setDraft] = useState<ConfigView>(initialConfig);
+  const [logs, setLogs] = useState<string[]>([]);
+  const [runState, setRunState] = useState<RunState>('idle');
+  const [busy, setBusy] = useState(false);
+  const [currentFile, setCurrentFile] = useState('');
+  const [progress, setProgress] = useState({ current: 0, total: 0 });
+  const [resultText, setResultText] = useState('尚未运行任务');
+  const [validation, setValidation] = useState<string[]>([]);
+
+  const appendLog = useCallback((line: string) => {
+    setLogs((prev) => [...prev.slice(-399), line]);
+  }, []);
+
+  const handleBackendEvent = useCallback((raw: string) => {
+    let event: BackendEvent;
+    try {
+      event = JSON.parse(raw) as BackendEvent;
+    } catch {
+      appendLog(raw);
+      return;
+    }
+
+    switch (event.type) {
+      case 'start':
+        setRunState('running');
+        break;
+      case 'progress':
+        setProgress({ current: event.current ?? 0, total: event.total ?? 0 });
+        break;
+      case 'file':
+        setCurrentFile(event.filename ?? '');
+        break;
+      case 'log':
+        appendLog(`${event.level === 'error' ? '[ERROR] ' : ''}${event.message ?? ''}`);
+        break;
+      case 'validation':
+        setValidation(event.problems ?? []);
+        appendLog(event.ok ? '路径验证通过' : `路径验证失败：${(event.problems ?? []).join('；')}`);
+        break;
+      case 'complete': {
+        setRunState('success');
+        const pieces: string[] = [];
+        if (typeof event.success === 'number') pieces.push(`成功 ${event.success}`);
+        if (typeof event.failed === 'number') pieces.push(`失败 ${event.failed}`);
+        if (typeof event.skipped === 'number') pieces.push(`跳过 ${event.skipped}`);
+        if (typeof event.count === 'number') pieces.push(`处理 ${event.count}`);
+        if (event.summary) pieces.push(JSON.stringify(event.summary));
+        setResultText(pieces.join(' · ') || '任务完成');
+        break;
+      }
+      case 'error':
+        setRunState('error');
+        setResultText(event.message ?? '任务失败');
+        appendLog(`[ERROR] ${event.message ?? '任务失败'}`);
+        break;
+      case 'process_exit':
+        setBusy(false);
+        if ((event.exitCode ?? 1) !== 0) {
+          setRunState('error');
+          setResultText((prev) => (prev === '尚未运行任务' ? `进程退出码 ${event.exitCode}` : prev));
+        }
+        break;
+      default:
+        appendLog(raw);
+    }
+  }, [appendLog]);
+
+  useEffect(() => {
+    invoke<ConfigView>('get_config')
+      .then((value) => {
+        setConfig(value);
+        setDraft(value);
+      })
+      .catch((error) => appendLog(`[ERROR] 读取配置失败：${String(error)}`));
+
+    const unlistenPromise = listen<string>('publisher://event', (event) => {
+      handleBackendEvent(event.payload);
+    });
+
+    return () => {
+      void unlistenPromise.then((unlisten) => unlisten());
+    };
+  }, [appendLog, handleBackendEvent]);
+
+  const progressPercent = useMemo(() => {
+    if (!progress.total) return 0;
+    return Math.min(100, Math.round((progress.current / progress.total) * 100));
+  }, [progress]);
+
+  async function startTask(task: TaskName) {
+    if (busy) return;
+    setBusy(true);
+    setRunState('running');
+    setCurrentFile('');
+    setProgress({ current: 0, total: 0 });
+    setResultText('正在运行…');
+    appendLog(`> ${task}`);
+    try {
+      await invoke('start_task', { task });
+    } catch (error) {
+      setBusy(false);
+      setRunState('error');
+      setResultText(String(error));
+      appendLog(`[ERROR] ${String(error)}`);
+    }
+  }
+
+  async function cancelTask() {
+    try {
+      await invoke('cancel_task');
+      appendLog('已请求取消当前任务');
+    } catch (error) {
+      appendLog(`[ERROR] 取消失败：${String(error)}`);
+    }
+  }
+
+  async function pickDirectory(field: 'vault' | 'project') {
+    const selected = await open({ directory: true, multiple: false });
+    if (typeof selected === 'string') {
+      setDraft((prev) => ({ ...prev, [field]: selected }));
+    }
+  }
+
+  async function saveSettings() {
+    try {
+      await invoke('save_config', { config: draft });
+      setConfig(draft);
+      setResultText('配置已保存');
+      appendLog('配置已保存到 config.json');
+    } catch (error) {
+      setResultText(`保存失败：${String(error)}`);
+    }
+  }
+
+  async function validateSettings() {
+    const problems = await invoke<string[]>('validate_paths', {
+      vault: draft.vault,
+      project: draft.project,
+    });
+    setValidation(problems);
+    setResultText(problems.length ? `发现 ${problems.length} 个问题` : '路径验证通过');
+  }
+
+  async function reveal(path: string) {
+    if (!path) return;
+    try {
+      await invoke('open_folder', { path });
+    } catch (error) {
+      appendLog(`[ERROR] ${String(error)}`);
+    }
+  }
+
+  function renderPage() {
+    switch (page) {
+      case 'publish':
+        return (
+          <PageShell title="Publish" subtitle="把 Obsidian 中标记为公开的笔记发布到 Astro 内容目录。">
+            <TaskCard
+              title="发布全部公开笔记"
+              description="复用现有 Python Publisher；图片转换、封面、统计和正文处理逻辑都不会在 GUI 中重写。"
+              busy={busy}
+              actionLabel="开始发布"
+              onRun={() => startTask('publish')}
+              onCancel={cancelTask}
+            />
+            <ProgressPanel
+              state={runState}
+              percent={progressPercent}
+              current={progress.current}
+              total={progress.total}
+              currentFile={currentFile}
+              result={resultText}
+            />
+          </PageShell>
+        );
+      case 'images':
+        return (
+          <PageShell title="Images" subtitle="WebP 迁移与清理。迁移阶段默认保留原图。">
+            <div className="card-grid two">
+              <TaskCard
+                title="迁移 public/images"
+                description="扫描站点图片、生成 WebP，并更新本地引用。原图不会在这个步骤删除。"
+                busy={busy}
+                actionLabel="迁移到 WebP"
+                onRun={() => startTask('migrate-webp')}
+                onCancel={cancelTask}
+              />
+              <TaskCard
+                title="清理旧原图"
+                description="只应在站点 build 验证通过后执行。此操作会删除已被 WebP 替代的原图。"
+                busy={busy}
+                danger
+                actionLabel="清理旧原图"
+                onRun={() => {
+                  if (window.confirm('确认已经完成构建验证，并删除被 WebP 替代的原图？')) {
+                    void startTask('cleanup-webp');
+                  }
+                }}
+                onCancel={cancelTask}
+              />
+            </div>
+            <ProgressPanel
+              state={runState}
+              percent={progressPercent}
+              current={progress.current}
+              total={progress.total}
+              currentFile={currentFile}
+              result={resultText}
+            />
+          </PageShell>
+        );
+      case 'logs':
+        return (
+          <PageShell title="Logs" subtitle="Publisher 后端的实时 JSONL 事件和日志。">
+            <section className="panel log-panel">
+              <div className="panel-toolbar">
+                <span>{logs.length} lines</span>
+                <button className="button ghost" onClick={() => setLogs([])}>清空</button>
+              </div>
+              <pre className="log-view">{logs.length ? logs.join('\n') : '暂无日志。'}</pre>
+            </section>
+          </PageShell>
+        );
+      case 'settings':
+        return (
+          <PageShell title="Settings" subtitle="config.json 是 Publisher 与桌面 GUI 共用的配置源。">
+            <section className="panel settings-panel">
+              <PathField
+                label="Obsidian Vault"
+                value={draft.vault}
+                onChange={(value) => setDraft((prev) => ({ ...prev, vault: value }))}
+                onPick={() => pickDirectory('vault')}
+                onReveal={() => reveal(draft.vault)}
+              />
+              <PathField
+                label="Astro Project"
+                value={draft.project}
+                onChange={(value) => setDraft((prev) => ({ ...prev, project: value }))}
+                onPick={() => pickDirectory('project')}
+                onReveal={() => reveal(draft.project)}
+              />
+              <label className="switch-row">
+                <div>
+                  <strong>发布时转换 WebP</strong>
+                  <span>沿用 Publisher 当前的 WebP quality presets。</span>
+                </div>
+                <input
+                  type="checkbox"
+                  checked={draft.webpEnabled}
+                  onChange={(event) => setDraft((prev) => ({ ...prev, webpEnabled: event.target.checked }))}
+                />
+              </label>
+              {validation.length > 0 && (
+                <div className="validation-box">
+                  {validation.map((problem) => <div key={problem}>{problem}</div>)}
+                </div>
+              )}
+              <div className="action-row">
+                <button className="button secondary" onClick={validateSettings}>
+                  <RefreshCw size={16} /> 验证路径
+                </button>
+                <button className="button primary" onClick={saveSettings}>
+                  <Save size={16} /> 保存配置
+                </button>
+              </div>
+            </section>
+          </PageShell>
+        );
+      default:
+        return (
+          <PageShell title="Overview" subtitle="Obsidian → Python Publisher → Astro 的桌面控制台。">
+            <div className="hero-card">
+              <div>
+                <div className="eyebrow">AndRainWindow Publisher</div>
+                <h2>内容发布，不重写已经工作的后端。</h2>
+                <p>React + Tauri 只负责界面与进程桥接，核心发布逻辑仍由 Python Publisher 执行。</p>
+              </div>
+              <StatusBadge state={runState} />
+            </div>
+            <div className="card-grid three">
+              <InfoCard title="Vault" value={config.vault || '未配置'} onOpen={() => reveal(config.vault)} />
+              <InfoCard title="Project" value={config.project || '未配置'} onOpen={() => reveal(config.project)} />
+              <InfoCard title="WebP" value={config.webpEnabled ? 'Enabled' : 'Disabled'} />
+            </div>
+            <section className="panel quick-panel">
+              <div>
+                <h3>Quick publish</h3>
+                <p>直接执行一次完整发布，并在界面中显示当前文件、进度和日志。</p>
+              </div>
+              <button className="button primary" disabled={busy} onClick={() => startTask('publish')}>
+                {busy ? <LoaderCircle size={17} className="spin" /> : <Play size={17} />}
+                {busy ? '运行中' : '开始发布'}
+              </button>
+            </section>
+            <ProgressPanel
+              state={runState}
+              percent={progressPercent}
+              current={progress.current}
+              total={progress.total}
+              currentFile={currentFile}
+              result={resultText}
+            />
+          </PageShell>
+        );
+    }
+  }
+
+  return (
+    <div className="app-shell">
+      <aside className="sidebar">
+        <div className="brand-block">
+          <div className="brand-mark">AR</div>
+          <div>
+            <strong>AndRainWindow</strong>
+            <span>Publisher</span>
+          </div>
+        </div>
+        <nav className="sidebar-nav">
+          {navItems.map(({ key, label, icon: Icon }) => (
+            <button
+              key={key}
+              className={`nav-item ${page === key ? 'active' : ''}`}
+              onClick={() => setPage(key)}
+            >
+              <Icon size={18} />
+              <span>{label}</span>
+            </button>
+          ))}
+        </nav>
+        <div className="sidebar-footer">
+          <span className={`status-dot ${busy ? 'busy' : ''}`} />
+          {busy ? 'Publisher running' : 'Ready'}
+        </div>
+      </aside>
+      <main className="content-area">
+        {renderPage()}
+      </main>
+    </div>
+  );
+}
+
+function PageShell({ title, subtitle, children }: { title: string; subtitle: string; children: React.ReactNode }) {
+  return (
+    <div className="page">
+      <header className="page-header">
+        <h1>{title}</h1>
+        <p>{subtitle}</p>
+      </header>
+      <div className="page-body">{children}</div>
+    </div>
+  );
+}
+
+function StatusBadge({ state }: { state: RunState }) {
+  const content = {
+    idle: ['Ready', Activity],
+    running: ['Running', LoaderCircle],
+    success: ['Completed', CheckCircle2],
+    error: ['Needs attention', AlertTriangle],
+  } as const;
+  const [label, Icon] = content[state];
+  return (
+    <div className={`status-badge ${state}`}>
+      <Icon size={16} className={state === 'running' ? 'spin' : ''} />
+      {label}
+    </div>
+  );
+}
+
+function InfoCard({ title, value, onOpen }: { title: string; value: string; onOpen?: () => void }) {
+  return (
+    <section className="info-card">
+      <span>{title}</span>
+      <strong title={value}>{value}</strong>
+      {onOpen && (
+        <button className="text-button" onClick={onOpen}>
+          <FolderOpen size={15} /> 打开
+        </button>
+      )}
+    </section>
+  );
+}
+
+function TaskCard({
+  title,
+  description,
+  busy,
+  actionLabel,
+  onRun,
+  onCancel,
+  danger = false,
+}: {
+  title: string;
+  description: string;
+  busy: boolean;
+  actionLabel: string;
+  onRun: () => void;
+  onCancel: () => void;
+  danger?: boolean;
+}) {
+  return (
+    <section className="panel task-card">
+      <div>
+        <h3>{title}</h3>
+        <p>{description}</p>
+      </div>
+      <div className="action-row">
+        {busy && (
+          <button className="button secondary" onClick={onCancel}>
+            <Square size={15} /> 取消
+          </button>
+        )}
+        <button className={`button ${danger ? 'danger' : 'primary'}`} disabled={busy} onClick={onRun}>
+          {busy ? <LoaderCircle size={16} className="spin" /> : <Play size={16} />}
+          {busy ? '任务运行中' : actionLabel}
+        </button>
+      </div>
+    </section>
+  );
+}
+
+function ProgressPanel({
+  state,
+  percent,
+  current,
+  total,
+  currentFile,
+  result,
+}: {
+  state: RunState;
+  percent: number;
+  current: number;
+  total: number;
+  currentFile: string;
+  result: string;
+}) {
+  return (
+    <section className="panel progress-panel">
+      <div className="progress-heading">
+        <div>
+          <span className="section-label">Current task</span>
+          <strong>{currentFile || result}</strong>
+        </div>
+        <StatusBadge state={state} />
+      </div>
+      <div className="progress-track">
+        <div className="progress-bar" style={{ width: `${percent}%` }} />
+      </div>
+      <div className="progress-meta">
+        <span>{total ? `${current} / ${total}` : 'Waiting for progress'}</span>
+        <span>{percent}%</span>
+      </div>
+    </section>
+  );
+}
+
+function PathField({
+  label,
+  value,
+  onChange,
+  onPick,
+  onReveal,
+}: {
+  label: string;
+  value: string;
+  onChange: (value: string) => void;
+  onPick: () => void;
+  onReveal: () => void;
+}) {
+  return (
+    <div className="field-group">
+      <label>{label}</label>
+      <div className="path-row">
+        <input value={value} onChange={(event) => onChange(event.target.value)} spellCheck={false} />
+        <button className="icon-button" onClick={onPick} title="选择目录"><FolderOpen size={18} /></button>
+        <button className="icon-button" onClick={onReveal} title="打开目录"><Activity size={18} /></button>
+      </div>
+    </div>
+  );
+}
+
+export default App;
