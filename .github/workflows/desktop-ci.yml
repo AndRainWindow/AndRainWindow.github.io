@@ -5,7 +5,8 @@ on:
     branches: [main]
     paths:
       - 'desktop/**'
-      - 'publisher/cli.py'
+      - 'publisher/**'
+      - 'requirements.txt'
       - '.github/workflows/desktop-ci.yml'
   workflow_dispatch:
 
@@ -14,6 +15,7 @@ permissions:
 
 jobs:
   windows-build:
+    name: Windows build + installer
     runs-on: windows-latest
     steps:
       - name: Checkout
@@ -32,8 +34,11 @@ jobs:
         with:
           python-version: '3.13'
 
-      - name: Check Python CLI
-        run: python -m py_compile publisher/cli.py
+      - name: Check Python backend
+        run: |
+          python -m pip install -r requirements.txt
+          python -m py_compile publisher/cli.py
+          python -c "import publisher; from PIL import Image; print('Publisher backend ready')"
 
       - name: Install desktop dependencies
         working-directory: desktop
@@ -58,3 +63,62 @@ jobs:
           path: |
             desktop/src-tauri/target/release/andrainwindow-publisher.exe
             desktop/src-tauri/target/release/bundle/nsis/*.exe
+
+  cross-platform-check:
+    name: ${{ matrix.name }} compile check
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: Linux
+            os: ubuntu-latest
+          - name: macOS
+            os: macos-latest
+    runs-on: ${{ matrix.os }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Linux system dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y \
+            build-essential \
+            pkg-config \
+            libwebkit2gtk-4.1-dev \
+            libayatana-appindicator3-dev \
+            librsvg2-dev \
+            libxdo-dev \
+            libssl-dev \
+            patchelf
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Setup Rust
+        uses: dtolnay/rust-toolchain@stable
+
+      - name: Setup Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+
+      - name: Check Python backend
+        run: |
+          python -m pip install -r requirements.txt
+          python -m py_compile publisher/cli.py
+          python -c "import publisher; from PIL import Image; print('Publisher backend ready')"
+
+      - name: Install desktop dependencies
+        working-directory: desktop
+        run: npm install
+
+      - name: Build React frontend
+        working-directory: desktop
+        run: npm run build
+
+      - name: Check Tauri Rust bridge
+        run: cargo check --manifest-path desktop/src-tauri/Cargo.toml

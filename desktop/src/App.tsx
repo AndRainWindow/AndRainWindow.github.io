@@ -30,6 +30,14 @@ interface ConfigView {
   webpEnabled: boolean;
 }
 
+interface PythonInfo {
+  available: boolean;
+  executable: string;
+  version: string;
+  publisherReady: boolean;
+  error?: string | null;
+}
+
 interface BackendEvent {
   type: string;
   level?: string;
@@ -67,6 +75,8 @@ function App() {
   const [page, setPage] = useState<Page>('overview');
   const [config, setConfig] = useState<ConfigView>(initialConfig);
   const [draft, setDraft] = useState<ConfigView>(initialConfig);
+  const [pythonInfo, setPythonInfo] = useState<PythonInfo | null>(null);
+  const [pythonLoading, setPythonLoading] = useState(true);
   const [logs, setLogs] = useState<string[]>([]);
   const [runState, setRunState] = useState<RunState>('idle');
   const [busy, setBusy] = useState(false);
@@ -78,6 +88,25 @@ function App() {
   const appendLog = useCallback((line: string) => {
     setLogs((prev) => [...prev.slice(-399), line]);
   }, []);
+
+  const refreshPythonInfo = useCallback(async () => {
+    setPythonLoading(true);
+    try {
+      const value = await invoke<PythonInfo>('get_python_info');
+      setPythonInfo(value);
+    } catch (error) {
+      setPythonInfo({
+        available: false,
+        executable: '',
+        version: '',
+        publisherReady: false,
+        error: String(error),
+      });
+      appendLog(`[ERROR] Python 环境检查失败：${String(error)}`);
+    } finally {
+      setPythonLoading(false);
+    }
+  }, [appendLog]);
 
   const handleBackendEvent = useCallback((raw: string) => {
     let event: BackendEvent;
@@ -141,6 +170,8 @@ function App() {
       })
       .catch((error) => appendLog(`[ERROR] 读取配置失败：${String(error)}`));
 
+    void refreshPythonInfo();
+
     const unlistenPromise = listen<string>('publisher://event', (event) => {
       handleBackendEvent(event.payload);
     });
@@ -148,15 +179,29 @@ function App() {
     return () => {
       void unlistenPromise.then((unlisten) => unlisten());
     };
-  }, [appendLog, handleBackendEvent]);
+  }, [appendLog, handleBackendEvent, refreshPythonInfo]);
 
   const progressPercent = useMemo(() => {
     if (!progress.total) return 0;
     return Math.min(100, Math.round((progress.current / progress.total) * 100));
   }, [progress]);
 
+  const backendReady = pythonInfo?.publisherReady === true;
+  const pythonSummary = pythonLoading
+    ? 'Checking…'
+    : pythonInfo?.publisherReady
+      ? pythonInfo.version || 'Ready'
+      : pythonInfo?.available
+        ? 'Needs dependencies'
+        : 'Python not found';
+
   async function startTask(task: TaskName) {
     if (busy) return;
+    if (!backendReady) {
+      setResultText('Python / Publisher 环境尚未就绪');
+      setPage('settings');
+      return;
+    }
     setBusy(true);
     setRunState('running');
     setCurrentFile('');
@@ -195,6 +240,7 @@ function App() {
       setConfig(draft);
       setResultText('配置已保存');
       appendLog('配置已保存到 config.json');
+      await refreshPythonInfo();
     } catch (error) {
       setResultText(`保存失败：${String(error)}`);
     }
@@ -218,15 +264,31 @@ function App() {
     }
   }
 
+  function renderEnvironmentNotice() {
+    if (pythonLoading || backendReady) return null;
+    return (
+      <div className="notice warning">
+        <AlertTriangle size={17} />
+        <div>
+          <strong>Publisher 环境未就绪</strong>
+          <span>{pythonInfo?.error || '请在 Settings 中检查 Python、Pillow 与项目目录。'}</span>
+        </div>
+        <button className="text-button inline" onClick={() => setPage('settings')}>检查设置</button>
+      </div>
+    );
+  }
+
   function renderPage() {
     switch (page) {
       case 'publish':
         return (
           <PageShell title="Publish" subtitle="把 Obsidian 中标记为公开的笔记发布到 Astro 内容目录。">
+            {renderEnvironmentNotice()}
             <TaskCard
               title="发布全部公开笔记"
               description="复用现有 Python Publisher；图片转换、封面、统计和正文处理逻辑都不会在 GUI 中重写。"
               busy={busy}
+              disabled={!backendReady}
               actionLabel="开始发布"
               onRun={() => startTask('publish')}
               onCancel={cancelTask}
@@ -244,11 +306,13 @@ function App() {
       case 'images':
         return (
           <PageShell title="Images" subtitle="WebP 迁移与清理。迁移阶段默认保留原图。">
+            {renderEnvironmentNotice()}
             <div className="card-grid two">
               <TaskCard
                 title="迁移 public/images"
                 description="扫描站点图片、生成 WebP，并更新本地引用。原图不会在这个步骤删除。"
                 busy={busy}
+                disabled={!backendReady}
                 actionLabel="迁移到 WebP"
                 onRun={() => startTask('migrate-webp')}
                 onCancel={cancelTask}
@@ -257,6 +321,7 @@ function App() {
                 title="清理旧原图"
                 description="只应在站点 build 验证通过后执行。此操作会删除已被 WebP 替代的原图。"
                 busy={busy}
+                disabled={!backendReady}
                 danger
                 actionLabel="清理旧原图"
                 onRun={() => {
@@ -332,6 +397,7 @@ function App() {
                 </button>
               </div>
             </section>
+            <PythonPanel info={pythonInfo} loading={pythonLoading} onRefresh={refreshPythonInfo} />
           </PageShell>
         );
       default:
@@ -345,17 +411,24 @@ function App() {
               </div>
               <StatusBadge state={runState} />
             </div>
-            <div className="card-grid three">
+            {renderEnvironmentNotice()}
+            <div className="card-grid four">
               <InfoCard title="Vault" value={config.vault || '未配置'} onOpen={() => reveal(config.vault)} />
               <InfoCard title="Project" value={config.project || '未配置'} onOpen={() => reveal(config.project)} />
               <InfoCard title="WebP" value={config.webpEnabled ? 'Enabled' : 'Disabled'} />
+              <InfoCard
+                title="Python"
+                value={pythonSummary}
+                detail={pythonInfo?.executable || pythonInfo?.error || ''}
+                state={backendReady ? 'good' : pythonLoading ? 'neutral' : 'warning'}
+              />
             </div>
             <section className="panel quick-panel">
               <div>
                 <h3>Quick publish</h3>
                 <p>直接执行一次完整发布，并在界面中显示当前文件、进度和日志。</p>
               </div>
-              <button className="button primary" disabled={busy} onClick={() => startTask('publish')}>
+              <button className="button primary" disabled={busy || !backendReady} onClick={() => startTask('publish')}>
                 {busy ? <LoaderCircle size={17} className="spin" /> : <Play size={17} />}
                 {busy ? '运行中' : '开始发布'}
               </button>
@@ -396,8 +469,8 @@ function App() {
           ))}
         </nav>
         <div className="sidebar-footer">
-          <span className={`status-dot ${busy ? 'busy' : ''}`} />
-          {busy ? 'Publisher running' : 'Ready'}
+          <span className={`status-dot ${busy ? 'busy' : backendReady ? '' : 'warning'}`} />
+          {busy ? 'Publisher running' : backendReady ? 'Environment ready' : 'Environment check'}
         </div>
       </aside>
       <main className="content-area">
@@ -435,11 +508,24 @@ function StatusBadge({ state }: { state: RunState }) {
   );
 }
 
-function InfoCard({ title, value, onOpen }: { title: string; value: string; onOpen?: () => void }) {
+function InfoCard({
+  title,
+  value,
+  detail,
+  state = 'neutral',
+  onOpen,
+}: {
+  title: string;
+  value: string;
+  detail?: string;
+  state?: 'neutral' | 'good' | 'warning';
+  onOpen?: () => void;
+}) {
   return (
-    <section className="info-card">
+    <section className={`info-card ${state}`}>
       <span>{title}</span>
       <strong title={value}>{value}</strong>
+      {detail && <small title={detail}>{detail}</small>}
       {onOpen && (
         <button className="text-button" onClick={onOpen}>
           <FolderOpen size={15} /> 打开
@@ -449,10 +535,59 @@ function InfoCard({ title, value, onOpen }: { title: string; value: string; onOp
   );
 }
 
+function PythonPanel({
+  info,
+  loading,
+  onRefresh,
+}: {
+  info: PythonInfo | null;
+  loading: boolean;
+  onRefresh: () => void | Promise<void>;
+}) {
+  const ready = info?.publisherReady === true;
+  const label = loading ? 'Checking' : ready ? 'Ready' : 'Needs setup';
+  return (
+    <section className="panel environment-panel">
+      <div className="environment-heading">
+        <div>
+          <span className="section-label">Runtime environment</span>
+          <h3>Python Publisher</h3>
+          <p>桌面程序调用系统 Python，不内置第二份 Publisher 后端。</p>
+        </div>
+        <div className={`environment-chip ${ready ? 'good' : loading ? '' : 'warning'}`}>
+          {loading ? <LoaderCircle size={15} className="spin" /> : ready ? <CheckCircle2 size={15} /> : <AlertTriangle size={15} />}
+          {label}
+        </div>
+      </div>
+      <div className="environment-grid">
+        <div>
+          <span>Executable</span>
+          <strong>{info?.executable || '—'}</strong>
+        </div>
+        <div>
+          <span>Version</span>
+          <strong>{info?.version || '—'}</strong>
+        </div>
+        <div>
+          <span>Publisher + Pillow</span>
+          <strong>{ready ? 'Available' : 'Unavailable'}</strong>
+        </div>
+      </div>
+      {info?.error && <div className="environment-error">{info.error}</div>}
+      <div className="action-row">
+        <button className="button secondary" disabled={loading} onClick={() => void onRefresh()}>
+          <RefreshCw size={16} className={loading ? 'spin' : ''} /> 重新检查
+        </button>
+      </div>
+    </section>
+  );
+}
+
 function TaskCard({
   title,
   description,
   busy,
+  disabled = false,
   actionLabel,
   onRun,
   onCancel,
@@ -461,6 +596,7 @@ function TaskCard({
   title: string;
   description: string;
   busy: boolean;
+  disabled?: boolean;
   actionLabel: string;
   onRun: () => void;
   onCancel: () => void;
@@ -478,7 +614,7 @@ function TaskCard({
             <Square size={15} /> 取消
           </button>
         )}
-        <button className={`button ${danger ? 'danger' : 'primary'}`} disabled={busy} onClick={onRun}>
+        <button className={`button ${danger ? 'danger' : 'primary'}`} disabled={busy || disabled} onClick={onRun}>
           {busy ? <LoaderCircle size={16} className="spin" /> : <Play size={16} />}
           {busy ? '任务运行中' : actionLabel}
         </button>
