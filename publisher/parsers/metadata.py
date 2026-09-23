@@ -33,13 +33,18 @@ _DIVIDER_LINE = re.compile(r"[-—–_\s]{3,}")
 
 
 def clean_metadata(text: str) -> str:
-    """去掉正文顶部的元数据块、空行和分隔线，返回干净正文。"""
+    """去掉正文顶部的元数据块、空行和分隔线，返回干净正文。
+
+    只移除顶部元数据；正文其余部分逐字符保留——不 strip 行内容、不压缩空行、
+    不抹掉正文首行的前导缩进。
+    """
     lines = text.splitlines()
 
     while lines and not lines[0].strip():
         lines.pop(0)
 
     while lines:
+        # 检查用 stripped 版本，写入时保留原始行。
         line = lines[0].strip()
 
         if not line:
@@ -56,4 +61,5 @@ def clean_metadata(text: str) -> str:
 
         break
 
-    return "\n".join(lines).strip()
+    # 不再对整体 .strip()：避免抹掉正文首行缩进或末尾空行。
+    return "\n".join(lines)
