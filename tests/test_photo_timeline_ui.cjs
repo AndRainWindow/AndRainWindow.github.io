@@ -39,6 +39,7 @@ const server = http.createServer((req, res) => {
     const dates = await page.locator('.photo-item').evaluateAll(items => items.map(item => JSON.parse(item.dataset.photo).date));
     assert.deepEqual(dates, [...dates].sort().reverse(), 'photographs must descend by capture time');
     assert.ok(await page.locator('.photo-frame img').evaluateAll(images => images.every(image => Number(image.getAttribute('width')) > 0 && Number(image.getAttribute('height')) > 0)), 'lazy images need reserved geometry');
+    await page.locator('.photo-frame img').first().evaluate(image => image.decode());
     await page.screenshot({ path: path.join(artifacts, 'desktop.png') });
 
     for (const day of dayLinks) {
@@ -92,6 +93,7 @@ const server = http.createServer((req, res) => {
         assert.equal(await page.locator('[data-timeline]').isVisible(), true);
         assert.equal(await page.locator('.mobile-info').first().isVisible(), true);
       }
+      await page.locator('.photo-frame img').first().evaluate(image => image.decode());
       await page.screenshot({ path: path.join(artifacts, `width-${width}.png`) });
     }
     assert.deepEqual(errors, [], 'no page script errors');
