@@ -1,0 +1,41 @@
+---
+const { timeline = [] } = Astro.props;
+---
+
+<aside class="timeline-rings" aria-label="摄影时间轴">
+  <div class="ring ring-year">
+    <span>{timeline[0]?.year ?? '----'}</span>
+  </div>
+
+  <div class="ring ring-date">
+    <span>{timeline[0]?.months?.[0]?.days?.[0]?.day?.slice(5) ?? '-- --'}</span>
+  </div>
+
+  <div class="ring ring-time">
+    <span>{timeline[0]?.months?.[0]?.days?.[0]?.items?.[0]?.time ?? '--:--'}</span>
+  </div>
+</aside>
+
+<style>
+.timeline-rings {
+  position: sticky;
+  top: 90px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 14px;
+}
+
+.ring {
+  border: 1px solid rgba(255,255,255,.35);
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  color: rgba(255,255,255,.9);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+
+.ring-year { width: 96px; height: 96px; }
+.ring-date { width: 72px; height: 72px; }
+.ring-time { width: 56px; height: 56px; }
+</style>
