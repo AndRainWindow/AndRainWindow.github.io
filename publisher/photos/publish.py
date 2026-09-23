@@ -7,6 +7,7 @@ import shutil
 import subprocess
 import sys
 import time
+import threading
 import uuid
 from pathlib import Path
 
@@ -92,22 +93,26 @@ def preview(catalog):
     session = catalog.local / 'preview-session'
     session.write_text(token)
     ready = catalog.local / f'preview-{token}.json'
-    command = [sys.executable, '-m', 'publisher.photos.preview_server', '--root', str(catalog.root / 'dist'),
+    command = [sys.executable, str(Path(__file__).with_name('preview_server.py')), '--root', str(catalog.root / 'dist'),
                '--session', str(session), '--token', token, '--ready', str(ready)]
-    child = subprocess.Popen(command, cwd=catalog.root, stdin=subprocess.DEVNULL,
-                             stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL,
-                             creationflags=subprocess.CREATE_NO_WINDOW if os.name == 'nt' else 0)
-    for _ in range(100):
+    log_path = catalog.local / 'preview-server.log'
+    with log_path.open('wb') as log:
+        child = subprocess.Popen(command, cwd=catalog.root, stdin=subprocess.DEVNULL,
+                                 stdout=log, stderr=log,
+                                 creationflags=subprocess.CREATE_NO_WINDOW if os.name == 'nt' else 0)
+    for _ in range(600):
         if ready.exists():
             break
         if child.poll() is not None:
-            raise ValueError('本地预览服务器启动失败。')
+            raise ValueError('本地预览服务器启动失败：' + log_path.read_text(encoding='utf-8', errors='replace')[-2000:])
         time.sleep(.05)
     if not ready.exists():
         child.terminate()
+        child.wait(timeout=5)
         raise ValueError('本地预览服务器启动超时。')
     info = read_json(ready, {})
     ready.unlink(missing_ok=True)
+    threading.Thread(target=child.wait, daemon=True).start()
     url = f"http://127.0.0.1:{info['port']}/photos/"
     previous = read_json(catalog.local / 'review.json', {})
     review = {'fingerprint': before, 'head': head, 'branch': branch, 'url': url}

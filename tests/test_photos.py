@@ -49,7 +49,7 @@ class PhotoTests(unittest.TestCase):
         row = self.import_one()
         self.assertEqual(row['title'], '')
         self.assertEqual(row['groupNote'], '散步')
-        public = json.loads(self.catalog.path.read_text())
+        public = json.loads(self.catalog.path.read_text(encoding='utf-8'))
         self.assertNotIn('gps', public[0]); self.assertNotIn('source', public[0])
         output = self.root / 'public' / row['image'].lstrip('/')
         with Image.open(output) as image:
@@ -161,13 +161,22 @@ class GitPublishTests(unittest.TestCase):
         output.mkdir(parents=True)
         (output / 'index.html').write_text('preview works')
         package_root = str(Path(__file__).resolve().parents[1])
-        with patch.dict(os.environ, {'PYTHONPATH': package_root}), patch.object(publishing, 'build'):
+        original_popen = subprocess.Popen
+        children = []
+        def tracked_popen(args, *extra, **kwargs):
+            child = original_popen(args, *extra, **kwargs)
+            if len(args) > 1 and str(args[1]).endswith('preview_server.py'):
+                children.append(child)
+            return child
+        with patch.dict(os.environ, {'PYTHONPATH': package_root}), patch.object(publishing, 'build'), patch.object(subprocess, 'Popen', side_effect=tracked_popen):
             try:
                 result = publishing.preview(self.catalog)
                 with urllib.request.urlopen(result['url'], timeout=5) as response:
                     self.assertEqual(response.read(), b'preview works')
             finally:
                 (self.catalog.local / 'preview-session').unlink(missing_ok=True)
+                for child in children:
+                    child.wait(timeout=5)
 
 
 if __name__ == '__main__': unittest.main()
