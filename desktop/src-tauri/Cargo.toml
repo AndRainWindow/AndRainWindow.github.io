@@ -1,6 +1,6 @@
 [package]
 name = "andrainwindow-publisher"
-version = "0.1.0"
+version = "0.2.0"
 description = "Desktop frontend for AndRainWindow Publisher"
 authors = ["AndRainWindow"]
 edition = "2021"

@@ -22,6 +22,7 @@ class PublisherConfig:
     cover_output: Path
     cover_override: dict[str, str] = field(default_factory=dict)
     webp: dict[str, Any] = field(default_factory=lambda: {"enabled": True})
+    vault_configured: bool = True
 
     @classmethod
     def from_dict(cls, data: dict[str, Any], project_root: Path) -> "PublisherConfig":
@@ -49,6 +50,7 @@ class PublisherConfig:
             image_output=resolve("image_output", "public/images/blog"),
             cover_output=resolve("cover_output", "public/images/covers"),
             webp=data.get("webp", {"enabled": True}),
+            vault_configured=bool(str(data.get("vault", "")).strip()),
         )
 
     def ensure_dirs(self) -> None:
@@ -57,7 +59,9 @@ class PublisherConfig:
 
     def validate(self) -> list[str]:
         problems: list[str] = []
-        if not self.vault.exists():
+        if not self.vault_configured:
+            problems.append("博客发布需要先配置 Obsidian Vault。")
+        elif not self.vault.is_dir():
             problems.append(f"Obsidian Vault 不存在：{self.vault}")
         return problems
 

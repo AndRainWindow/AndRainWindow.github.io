@@ -3,10 +3,9 @@ import BaseHead from '../../components/BaseHead.astro';
 import SiteNav from '../../components/SiteNav.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
 import photosData from '../../data/photos.json';
+import { displayPhotos } from '../../data/photo-view.mjs';
 
-const photos = [...photosData].sort(
-	(a, b) => new Date(b.date).getTime() - new Date(a.date).getTime()
-);
+const photos = displayPhotos(photosData);
 
 const years = [...new Set(
 	photos.map((photo) => photo.date.slice(0, 4))
@@ -319,7 +318,7 @@ const years = [...new Set(
 								href={`#${photo.id}`}
 								data-photo-id={photo.id}
 							>
-								{photo.date.slice(5).replace('-', '.')}
+								{photo.date.slice(5, 10).replace('-', '.')}
 							</a>
 						))
 					}
@@ -340,21 +339,22 @@ const years = [...new Set(
 					<div class="photo-frame">
 						<img
 							src={photo.image}
-							alt={photo.title}
+							alt={photo.alt}
 							loading="lazy"
 						/>
 					</div>
 
 					<div class="mobile-info">
-						<h2>{photo.title}</h2>
+						{photo.title && <h2>{photo.title}</h2>}
 
 						<div class="mobile-meta">
-							{photo.date} · {photo.location}
+							{[photo.time, photo.location].filter(Boolean).join(' · ')}
+							{photo.cameraDetails && <div>{photo.cameraDetails}</div>}
 						</div>
 
-						<p class="mobile-note">
+						{photo.note && <p class="mobile-note">
 							{photo.note}
-						</p>
+						</p>}
 					</div>
 
 				</article>
@@ -365,9 +365,9 @@ const years = [...new Set(
 
 		<aside class="photo-info">
 			<h2 id="info-title">{photos[0]?.title}</h2>
-			<div class="photo-date" id="info-date">{photos[0]?.date}</div>
+			<div class="photo-date" id="info-date">{photos[0]?.time}</div>
 			<div class="photo-location" id="info-location">{photos[0]?.location}</div>
-			<div class="photo-camera" id="info-camera">{photos[0]?.camera}</div>
+			<div class="photo-camera" id="info-camera">{photos[0]?.cameraDetails}</div>
 			<p class="photo-note" id="info-note">{photos[0]?.note}</p>
 		</aside>
 
@@ -377,6 +377,7 @@ const years = [...new Set(
 
 <footer class="footer">
 	© 2026 AndRainWindow
+	{photos.some(photo => photo.locationSource === 'geoapify') && <span> · 地点数据：<a href="https://www.geoapify.com/">Geoapify</a> / <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a></span>}
 </footer>
 
 <script>
@@ -397,11 +398,11 @@ const years = [...new Set(
 
 		const photo = JSON.parse(raw);
 
-		if (title) title.textContent = photo.title ?? '';
-		if (date) date.textContent = photo.date ?? '';
+		if (title) { title.textContent = photo.title ?? ''; title.toggleAttribute('hidden', !photo.title); }
+		if (date) date.textContent = photo.time ?? '';
 		if (location) location.textContent = photo.location ?? '';
-		if (camera) camera.textContent = photo.camera ?? '';
-		if (note) note.textContent = photo.note ?? '';
+		if (camera) camera.textContent = photo.cameraDetails ?? '';
+		if (note) { note.textContent = photo.note ?? ''; note.toggleAttribute('hidden', !photo.note); }
 
 		timelineLinks.forEach((link) => {
 			link.classList.toggle(

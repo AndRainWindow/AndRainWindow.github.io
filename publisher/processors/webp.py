@@ -203,7 +203,8 @@ class WebPProcessor:
             fd, tmp_path = tempfile.mkstemp(suffix=".webp", dir=str(target.parent))
             os.close(fd)
             try:
-                img.save(tmp_path, "WEBP", quality=params["quality"], method=params["method"])
+                img.save(tmp_path, "WEBP", quality=params["quality"], method=params["method"],
+                         icc_profile=img.info.get("icc_profile", b""))
                 os.replace(tmp_path, target)
             finally:
                 if os.path.exists(tmp_path):

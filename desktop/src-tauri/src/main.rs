@@ -3,7 +3,7 @@ use serde_json::{json, Value};
 use std::{
     env,
     fs,
-    io::{BufRead, BufReader},
+    io::{BufRead, BufReader, Write},
     path::{Path, PathBuf},
     process::{Command, Stdio},
     sync::{Arc, Mutex},
@@ -262,7 +262,7 @@ fn validate_paths(vault: String, project: String) -> Vec<String> {
     let vault_path = PathBuf::from(&vault);
     let project_path = PathBuf::from(&project);
 
-    if vault.trim().is_empty() || !vault_path.is_dir() {
+    if !vault.trim().is_empty() && !vault_path.is_dir() {
         problems.push(format!("Obsidian Vault 不存在：{vault}"));
     }
     if project.trim().is_empty() || !project_path.is_dir() {
@@ -372,19 +372,79 @@ fn emit_line(app: &AppHandle, line: String) {
 }
 
 #[tauri::command]
+async fn photo_request(state: State<'_, TaskState>, payload: Value) -> Result<Value, String> {
+    let slot = state.pid.clone();
+    tauri::async_runtime::spawn_blocking(move || {
+        let mut guard = slot.lock().map_err(|_| "任务状态锁已损坏".to_string())?;
+        if guard.is_some() {
+            return Err("已有任务正在运行".to_string());
+        }
+        let root = project_root()?;
+        let mut command = Command::new(find_python()?);
+        command.current_dir(&root)
+            .env("PYTHONUTF8", "1")
+            .args(["-m", "publisher.cli", "photos", "--project"])
+            .arg(&root)
+            .stdin(Stdio::piped()).stdout(Stdio::piped()).stderr(Stdio::piped());
+        #[cfg(target_os = "windows")]
+        {
+            use std::os::windows::process::CommandExt;
+            command.creation_flags(0x08000000);
+        }
+        let mut child = command.spawn().map_err(|e| format!("启动照片任务失败：{e}"))?;
+        *guard = Some(child.id());
+        drop(guard);
+        let input = serde_json::to_vec(&payload).map_err(|e| e.to_string())?;
+        let write_result = child.stdin.take().ok_or("无法打开任务输入".to_string())
+            .and_then(|mut stream| stream.write_all(&input).map_err(|e| e.to_string()));
+        if let Err(error) = write_result {
+            let _ = child.kill();
+            let _ = child.wait();
+            if let Ok(mut guard) = slot.lock() { *guard = None; }
+            return Err(error);
+        }
+        let output = child.wait_with_output();
+        if let Ok(mut guard) = slot.lock() { *guard = None; }
+        let output = output.map_err(|e| e.to_string())?;
+        let response: Value = serde_json::from_slice(&output.stdout)
+            .map_err(|_| format!("照片后端没有返回有效结果：{}", String::from_utf8_lossy(&output.stderr)))?;
+        if !output.status.success() || response["type"] == "error" {
+            return Err(response["message"].as_str().unwrap_or("照片操作失败").to_string());
+        }
+        Ok(response["result"].clone())
+    }).await.map_err(|e| e.to_string())?
+}
+
+#[tauri::command]
+fn open_preview(url: String) -> Result<(), String> {
+    let port = url.strip_prefix("http://127.0.0.1:")
+        .and_then(|s| s.strip_suffix("/photos/"))
+        .and_then(|s| s.parse::<u16>().ok())
+        .filter(|port| *port > 0)
+        .ok_or_else(|| "仅允许打开本机摄影预览".to_string())?;
+    let target = format!("http://127.0.0.1:{port}/photos/");
+    #[cfg(target_os = "windows")]
+    let mut command = { let mut c = Command::new("rundll32"); c.arg("url.dll,FileProtocolHandler"); c };
+    #[cfg(target_os = "macos")]
+    let mut command = Command::new("open");
+    #[cfg(all(unix, not(target_os = "macos")))]
+    let mut command = Command::new("xdg-open");
+    command.arg(target).spawn().map_err(|e| e.to_string())?;
+    Ok(())
+}
+
+#[tauri::command]
 fn start_task(app: AppHandle, state: State<TaskState>, task: String) -> Result<(), String> {
     if !["publish", "migrate-webp", "cleanup-webp", "validate"].contains(&task.as_str()) {
         return Err(format!("不支持的任务：{task}"));
     }
 
     let slot = state.pid.clone();
-    {
-        let guard = slot
+    let mut guard = slot
             .lock()
             .map_err(|_| "任务状态锁已损坏".to_string())?;
-        if guard.is_some() {
-            return Err("已有任务正在运行".into());
-        }
+    if guard.is_some() {
+        return Err("已有任务正在运行".into());
     }
 
     let python = find_python()?;
@@ -406,9 +466,8 @@ fn start_task(app: AppHandle, state: State<TaskState>, task: String) -> Result<(
         .spawn()
         .map_err(|e| format!("启动 Publisher 失败：{e}"))?;
     let pid = child.id();
-    *slot
-        .lock()
-        .map_err(|_| "任务状态锁已损坏".to_string())? = Some(pid);
+    *guard = Some(pid);
+    drop(guard);
 
     let stdout = child.stdout.take();
     let stderr = child.stderr.take();
@@ -500,6 +559,13 @@ fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
         .manage(TaskState::default())
+        .on_window_event(|_, event| {
+            if matches!(event, tauri::WindowEvent::Destroyed) {
+                if let Some(root) = configured_project() {
+                    let _ = fs::remove_file(root.join(".publisher-local/preview-session"));
+                }
+            }
+        })
         .invoke_handler(tauri::generate_handler![
             get_config,
             save_config,
@@ -507,6 +573,8 @@ fn main() {
             get_python_info,
             start_task,
             cancel_task,
+            photo_request,
+            open_preview,
             open_folder
         ])
         .run(tauri::generate_context!())

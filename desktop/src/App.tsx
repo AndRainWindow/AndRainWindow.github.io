@@ -2,6 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from 'react';
 import { invoke } from '@tauri-apps/api/core';
 import { listen } from '@tauri-apps/api/event';
 import { open } from '@tauri-apps/plugin-dialog';
+import PhotosPage from './PhotosPage';
 import {
   Activity,
   AlertTriangle,
@@ -20,7 +21,7 @@ import {
   type LucideIcon,
 } from 'lucide-react';
 
-type Page = 'overview' | 'publish' | 'images' | 'logs' | 'settings';
+type Page = 'overview' | 'publish' | 'photos' | 'images' | 'logs' | 'settings';
 type TaskName = 'publish' | 'migrate-webp' | 'cleanup-webp' | 'validate';
 type RunState = 'idle' | 'running' | 'success' | 'error';
 
@@ -64,6 +65,7 @@ interface NavItem {
 const navItems: NavItem[] = [
   { key: 'overview', label: 'Overview', icon: Home },
   { key: 'publish', label: 'Publish', icon: Send },
+  { key: 'photos', label: '摄影管理', icon: ImageIcon },
   { key: 'images', label: 'Images', icon: ImageIcon },
   { key: 'logs', label: 'Logs', icon: ScrollText },
   { key: 'settings', label: 'Settings', icon: Settings },
@@ -80,6 +82,7 @@ function App() {
   const [logs, setLogs] = useState<string[]>([]);
   const [runState, setRunState] = useState<RunState>('idle');
   const [busy, setBusy] = useState(false);
+  const [photoBusy, setPhotoBusy] = useState(false);
   const [currentFile, setCurrentFile] = useState('');
   const [progress, setProgress] = useState({ current: 0, total: 0 });
   const [resultText, setResultText] = useState('尚未运行任务');
@@ -202,7 +205,7 @@ function App() {
         : 'Python not found';
 
   async function startTask(task: TaskName) {
-    if (busy) return;
+    if (busy || photoBusy) return;
     if (!backendReady) {
       setResultText('Python / Publisher 环境尚未就绪');
       setPage('settings');
@@ -225,6 +228,7 @@ function App() {
   }
 
   async function cancelTask() {
+    if (photoBusy) return;
     try {
       await invoke('cancel_task');
       appendLog('已请求取消当前任务');
@@ -241,6 +245,7 @@ function App() {
   }
 
   async function saveSettings() {
+    if (busy || photoBusy) return;
     try {
       await invoke('save_config', { config: draft });
       setConfig(draft);
@@ -303,7 +308,7 @@ function App() {
               title="发布全部公开笔记"
               description="复用现有 Python Publisher；图片转换、封面、统计和正文处理逻辑都不会在 GUI 中重写。"
               busy={busy}
-              disabled={!backendReady}
+              disabled={!backendReady || photoBusy}
               actionLabel="开始发布"
               onRun={() => startTask('publish')}
               onCancel={cancelTask}
@@ -327,7 +332,7 @@ function App() {
                 title="迁移 public/images"
                 description="扫描站点图片、生成 WebP，并更新本地引用。原图不会在这个步骤删除。"
                 busy={busy}
-                disabled={!backendReady}
+                disabled={!backendReady || photoBusy}
                 actionLabel="迁移到 WebP"
                 onRun={() => startTask('migrate-webp')}
                 onCancel={cancelTask}
@@ -336,7 +341,7 @@ function App() {
                 title="清理旧原图"
                 description="只应在站点 build 验证通过后执行。此操作会删除已被 WebP 替代的原图。"
                 busy={busy}
-                disabled={!backendReady}
+                disabled={!backendReady || photoBusy}
                 danger
                 actionLabel="清理旧原图"
                 onRun={() => {
@@ -401,7 +406,7 @@ function App() {
               {validationStatus !== 'idle' && (
                 <div className={`validation-box ${validationStatus}`} role="status" aria-live="polite">
                   {validationStatus === 'checking' && '正在验证路径…'}
-                  {validationStatus === 'success' && '路径验证通过。若修改了目录，请点击“保存配置”。'}
+                  {validationStatus === 'success' && `路径验证通过。若修改了目录，请点击“保存配置”。${draft.vault.trim() ? '' : 'Vault 未配置，仅可进行摄影管理。'}`}
                   {validationStatus === 'error' && validation.map((problem) => <div key={problem}>{problem}</div>)}
                 </div>
               )}
@@ -410,7 +415,7 @@ function App() {
                   <RefreshCw size={16} className={validationStatus === 'checking' ? 'spin' : ''} />
                   {validationStatus === 'checking' ? '验证中…' : '验证路径'}
                 </button>
-                <button className="button primary" onClick={saveSettings}>
+                <button className="button primary" disabled={busy || photoBusy} onClick={saveSettings}>
                   <Save size={16} /> 保存配置
                 </button>
               </div>
@@ -446,7 +451,7 @@ function App() {
                 <h3>Quick publish</h3>
                 <p>直接执行一次完整发布，并在界面中显示当前文件、进度和日志。</p>
               </div>
-              <button className="button primary" disabled={busy || !backendReady} onClick={() => startTask('publish')}>
+              <button className="button primary" disabled={busy || photoBusy || !backendReady} onClick={() => startTask('publish')}>
                 {busy ? <LoaderCircle size={17} className="spin" /> : <Play size={17} />}
                 {busy ? '运行中' : '开始发布'}
               </button>
@@ -492,7 +497,10 @@ function App() {
         </div>
       </aside>
       <main className="content-area">
-        {renderPage()}
+        <div hidden={page !== 'photos'}>
+          <PhotosPage active={page === 'photos'} project={config.project} disabled={busy || !backendReady} onBusy={setPhotoBusy} onLog={appendLog}/>
+        </div>
+        {page !== 'photos' && renderPage()}
       </main>
     </div>
   );

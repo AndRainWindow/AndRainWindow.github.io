@@ -1,13 +1,8 @@
 ---
 import photosData from '../data/photos.json';
+import { displayPhotos } from '../data/photo-view.mjs';
 
-const recentPhotos = [...photosData]
-	.sort(
-		(a, b) =>
-			new Date(b.date).getTime() -
-			new Date(a.date).getTime()
-	)
-	.slice(0, 5);
+const recentPhotos = displayPhotos(photosData).slice(0, 5);
 ---
 
 <section class="recent-photos">
@@ -31,22 +26,22 @@ const recentPhotos = [...photosData]
 				<a
 					class="photo-slide"
 					href="/photos/"
-					aria-label={`查看作品：${photo.title}`}
+					aria-label={`查看作品：${photo.alt}`}
 				>
 
 					<img
 						src={photo.image}
-						alt={photo.title}
+						alt={photo.alt}
 						loading={index === 0 ? 'eager' : 'lazy'}
 					/>
 
 					<div class="photo-overlay">
 
 						<div>
-							<h3>{photo.title}</h3>
+							{photo.title && <h3>{photo.title}</h3>}
 
 							<p>
-								{photo.date}
+								{photo.date.slice(0, 10)}
 								{photo.location && ` · ${photo.location}`}
 							</p>
 						</div>

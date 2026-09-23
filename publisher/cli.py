@@ -139,7 +139,21 @@ def build_parser() -> argparse.ArgumentParser:
     sub.add_parser("publish")
     sub.add_parser("migrate-webp")
     sub.add_parser("cleanup-webp")
+    photos = sub.add_parser("photos")
+    photos.add_argument("--project", required=True)
     return parser
+
+
+def command_photos(args: argparse.Namespace) -> int:
+    try:
+        from .photos.service import dispatch
+        payload = json.load(sys.stdin)
+        result = dispatch(Path(args.project), payload)
+        emit("photo_result", result=result)
+        return 0
+    except Exception as exc:
+        emit("error", message=str(exc))
+        return 1
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -156,6 +170,7 @@ def main(argv: list[str] | None = None) -> int:
         "publish": command_publish,
         "migrate-webp": command_migrate,
         "cleanup-webp": command_cleanup,
+        "photos": command_photos,
     }
     return handlers[args.command](args)
 

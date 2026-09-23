@@ -40,6 +40,8 @@ npm run tauri dev
 
 ## Current pages
 
+- **摄影管理** — batch JPG import, EXIF, group/per-photo captions, optional GPS county lookup, hide/trash/restore, local preview and photo-only Git publishing. See the v0.2.0 section in the user guide.
+
 - **Overview** — paths, WebP status, Python/Publisher readiness, quick publish
 - **Publish** — publish all public notes with live progress
 - **Images** — migrate to WebP / cleanup old originals

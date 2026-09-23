@@ -22,6 +22,33 @@
 html, body, #root { width: 100%; height: 100%; margin: 0; }
 body { overflow: hidden; background: var(--bg); color: var(--text); }
 button, input { font: inherit; }
+textarea, select { font: inherit; }
+[hidden] { display: none !important; }
+.photo-status { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-radius: 10px; background: rgba(65,140,97,.08); white-space: pre-wrap; overflow-wrap: anywhere; }
+.photo-status.error { background: rgba(181,74,74,.1); color: #b14a4a; }
+.photo-publish-bar, .photo-selection { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; }
+.photo-preview-url { width: 100%; font-size: 12px; overflow-wrap: anywhere; }
+.photo-manager-grid { display: grid; grid-template-columns: minmax(220px, .8fr) minmax(320px, 1.3fr); gap: 18px; align-items: start; }
+.photo-fields { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: 14px; margin: 14px 0; }
+.photo-fields label, .photo-wide-label { display: flex; flex-direction: column; gap: 7px; font-size: 13px; min-width: 0; }
+.photo-wide-label { margin: 14px 0; }
+.photo-fields input, .photo-wide-label input, .photo-wide-label textarea, .photo-filter input, .photo-filter select { box-sizing: border-box; width: 100%; border: 1px solid var(--border); border-radius: 8px; padding: 10px; background: transparent; color: var(--text); }
+.photo-wide-label textarea { resize: vertical; }
+.photo-fields small, .photo-editor small { opacity: .7; }
+.photo-filter { display: flex; gap: 8px; margin: 12px 0; }
+.photo-filter select { width: 110px; }
+.photo-list { max-height: 620px; overflow-y: auto; }
+.photo-list-row { display: flex; gap: 8px; align-items: center; border-bottom: 1px solid var(--border); padding: 6px 0; }
+.photo-list-select { flex: 1; min-width: 0; text-align: left; border: 0; background: transparent; color: var(--text); padding: 10px; border-radius: 8px; cursor: pointer; }
+.photo-list-select.selected { background: rgba(65,140,97,.12); }
+.photo-list-select strong, .photo-list-select small { display: block; overflow-wrap: anywhere; }
+.photo-list-select small { margin-top: 6px; opacity: .7; }
+.photo-thumbnail { display: block; width: 100%; max-height: 300px; object-fit: contain; background: rgba(0,0,0,.05); border-radius: 10px; margin: 14px 0; }
+.photo-empty { text-align: center; padding: 80px 15px; opacity: .65; }
+.photo-editor .action-row { flex-wrap: wrap; }
+.photo-import p, .photo-geocoding p { font-size: 13px; line-height: 1.7; opacity: .8; }
+.photo-geocoding summary { cursor: pointer; }
+@media (max-width: 1000px) { .photo-manager-grid { grid-template-columns: 1fr; } .photo-list { max-height: 240px; } }
 button { user-select: none; }
 button:focus-visible, input:focus-visible { outline: 2px solid rgba(74, 99, 124, .45); outline-offset: 2px; }
 
