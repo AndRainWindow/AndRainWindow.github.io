@@ -48,6 +48,48 @@ textarea, select { font: inherit; }
 .photo-editor .action-row { flex-wrap: wrap; }
 .photo-import p, .photo-geocoding p { font-size: 13px; line-height: 1.7; opacity: .8; }
 .photo-geocoding summary { cursor: pointer; }
+
+/* 组→照片 两级库列表 */
+.photo-group-row { border-bottom: 1px solid var(--border); }
+.photo-group-head { display: flex; gap: 4px; align-items: center; padding: 4px 0; }
+.photo-group-toggle { border: 0; background: transparent; color: var(--text); cursor: pointer; padding: 6px; display: flex; align-items: center; }
+.photo-group-toggle:disabled { opacity: .5; cursor: default; }
+.photo-child-list { display: flex; flex-direction: column; gap: 2px; padding: 0 0 8px 26px; }
+.photo-child-row { display: flex; gap: 8px; align-items: center; border: 0; background: transparent; color: var(--text); text-align: left; padding: 6px; border-radius: 8px; cursor: pointer; }
+.photo-child-row:disabled { opacity: .6; cursor: default; }
+.photo-child-row.selected { background: rgba(61,129,86,.12); }
+.photo-child-thumb { width: 64px; height: 42px; object-fit: cover; border-radius: 6px; background: var(--accent-soft); flex: none; }
+.photo-child-thumb-missing { display: inline-block; }
+.photo-child-meta { min-width: 0; }
+.photo-child-meta strong, .photo-child-meta small { display: block; overflow-wrap: anywhere; }
+.photo-child-meta small { margin-top: 2px; opacity: .7; }
+
+/* 本次导入：缩略图条与进度 */
+.photo-thumb-strip { display: flex; flex-wrap: wrap; gap: 10px; margin: 14px 0; }
+.photo-thumb-item { display: flex; flex-direction: column; gap: 4px; border: 1px solid var(--border); border-radius: 10px; padding: 6px; }
+.photo-thumb-item.cover { border-color: rgba(61,129,86,.55); }
+.photo-thumb-item.selected { background: rgba(61,129,86,.10); }
+.photo-thumb-pick { border: 0; background: transparent; color: var(--text); cursor: pointer; padding: 0; width: 132px; text-align: left; }
+.photo-thumb-pick:disabled { opacity: .6; cursor: default; }
+.photo-thumb-pick img { width: 100%; height: 88px; object-fit: cover; border-radius: 8px; display: block; background: var(--accent-soft); }
+.photo-thumb-pick small { display: block; margin-top: 4px; font-size: 12px; overflow-wrap: anywhere; }
+.photo-thumb-tools { display: flex; gap: 4px; align-items: center; }
+.photo-thumb-tools em { font-style: normal; font-size: 12px; color: var(--success); }
+.photo-progress { margin: 14px 0; display: flex; flex-direction: column; gap: 6px; font-size: 13px; }
+.photo-progress-track { height: 6px; border-radius: 999px; background: var(--accent-soft); overflow: hidden; }
+.photo-progress-bar { height: 100%; background: var(--success); transition: width .3s ease; }
+
+/* 编辑器：EXIF 两行、日期+时间、组内排序列表 */
+.photo-exif-caption { font-size: 12px; opacity: .65; margin: 8px 0 0; }
+.photo-datetime { display: flex; gap: 6px; }
+.photo-datetime input { min-width: 0; }
+.photo-gps-state { font-size: 13px; opacity: .75; }
+.photo-order-list { display: flex; flex-direction: column; margin: 8px 0 14px; }
+.photo-order-row { display: flex; gap: 8px; align-items: center; border-bottom: 1px solid var(--border); padding: 6px 0; }
+.photo-order-index { width: 22px; text-align: center; opacity: .6; flex: none; }
+.photo-order-name { flex: 1; min-width: 0; overflow-wrap: anywhere; }
+.photo-order-name small { display: block; opacity: .7; }
+
 @media (max-width: 1000px) { .photo-manager-grid { grid-template-columns: 1fr; } .photo-list { max-height: 240px; } }
 button { user-select: none; }
 button:focus-visible, input:focus-visible { outline: 2px solid rgba(74, 99, 124, .45); outline-offset: 2px; }

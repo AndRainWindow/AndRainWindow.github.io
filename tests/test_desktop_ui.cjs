@@ -33,8 +33,15 @@ let photoRequests=[];
       photoRequests.push(args.payload.action);
       if(args.payload.action==='preview')return {url:'http://127.0.0.1:4321/photos/',message:'预览已生成'};
       if(args.payload.action==='publish')return {message:'照片修改已推送'};
-      const output=execFileSync('python',['-m','publisher.cli','photos','--project',fixture+'/site'],{cwd:project,input:JSON.stringify(args.payload),encoding:'utf8'});
-      const result=JSON.parse(output);if(result.type==='error')throw new Error(result.message);return result.result;
+      // Live python bridge: import must finish from the final result alone
+      // (no photo-event progress lines reach this stubbed harness).
+      // PYTHONUTF8=1 mirrors main.rs — without it Windows decodes stdin as GBK
+      // and every CJK title written through this stub turns into mojibake.
+      const output=execFileSync('python',['-m','publisher.cli','photos','--project',fixture+'/site'],{cwd:project,input:JSON.stringify(args.payload),encoding:'utf8',env:{...process.env,PYTHONUTF8:'1'}});
+      const lines=output.trim().split('\n').map(l=>JSON.parse(l));
+      const terminal=lines.filter(l=>l.type!=='photo_progress').pop();
+      if(!terminal)throw new Error('photo bridge returned no terminal line');
+      if(terminal.type==='error')throw new Error(terminal.message);return terminal.result;
     }
     if(cmd==='open_preview')return null;
     throw new Error('Unexpected command '+cmd);
@@ -54,18 +61,22 @@ let photoRequests=[];
   await page.getByText('GPS 地点识别').waitFor();
   await page.waitForFunction(()=>!document.querySelector('.photo-status .spin'));
   await page.getByRole('button',{name:'选择一组照片'}).click();
-  await page.getByText('新照片组 · 1 张').waitFor();
-  await page.getByLabel('整组标题',{exact:true}).fill('纽约散步');
-  await page.getByLabel('整组感受',{exact:true}).fill('傍晚的光。');
-  await page.getByRole('button',{name:'test.jpg',exact:true}).click();
+  await page.getByText('本次导入 · 1 张').waitFor();
+  // 单张导入：不出现组标题字段，直接保存。
+  if(await page.getByLabel('整组标题').count())throw new Error('single import must not ask for a group title');
+  await page.getByRole('button',{name:/test\.jpg/}).click();
   await page.getByAltText('选中照片预览').waitFor();
-  if(await page.getByLabel('拍摄日期与时间').inputValue()!=='2026-09-23T17:42')throw new Error('minute metadata lost');
-  await page.getByRole('button',{name:'保存整组到本地'}).click();
-  await page.getByText('照片库 · 1').waitFor();
-  await page.getByRole('button',{name:/纽约散步.*2026/}).click();
+  if(await page.getByLabel('拍摄日期').inputValue()!=='2026-09-23')throw new Error('date metadata lost');
+  if(await page.getByLabel('拍摄时间').inputValue()!=='17:42')throw new Error('minute metadata lost');
+  await page.getByLabel('单张标题（留空沿用组规则）').fill('码头傍晚');
+  await page.getByRole('button',{name:'保存到本地',exact:true}).click();
+  await page.getByText('照片库 · 1 组 · 1 张').waitFor();
+  // 组→照片两级导航：先展开组，再按 HH:mm 选中子照片（有标题的子行不显示“单张”徽标）。
+  await page.getByRole('button',{name:'展开 码头傍晚',exact:true}).click();
+  await page.getByRole('button',{name:/17:42/}).last().click();
   await page.getByLabel('单张标题（留空沿用组规则）').fill('单张标题');
   await page.getByRole('button',{name:'保存单张修改'}).click();
-  await page.getByRole('button',{name:/单张标题.*2026/}).waitFor();
+  await page.waitForFunction(()=>!document.querySelector('.photo-status .spin'));
   await page.getByRole('button',{name:'隐藏单张',exact:true}).click();
   await page.getByRole('button',{name:'取消单张隐藏',exact:true}).waitFor();
   await page.getByRole('button',{name:'取消单张隐藏',exact:true}).click();

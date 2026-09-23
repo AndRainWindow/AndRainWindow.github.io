@@ -81,6 +81,7 @@ def build(root):
 
 def preview(catalog):
     catalog.local.mkdir(parents=True, exist_ok=True)
+    catalog.sweep_orphans()
     validate_worktree(catalog)
     before = fingerprint(catalog)
     build(catalog.root)

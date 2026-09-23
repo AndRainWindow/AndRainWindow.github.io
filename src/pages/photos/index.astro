@@ -205,17 +205,16 @@ const years = [...new Set(
 			color: rgba(255,255,255,0.55);
 		}
 
-		.photo-location {
-			margin-top: 4px;
-			font-size: 0.92rem;
-			color: rgba(255,255,255,0.72);
-		}
-
 		.photo-camera {
 			margin-top: 18px;
 			font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
 			font-size: 0.82rem;
 			color: rgba(255,255,255,0.48);
+		}
+
+		/* Second EXIF line sits close under the first; typography unchanged. */
+		.photo-camera + .photo-camera {
+			margin-top: 4px;
 		}
 
 		.photo-note {
@@ -349,7 +348,8 @@ const years = [...new Set(
 
 						<div class="mobile-meta">
 							{[photo.time, photo.location].filter(Boolean).join(' · ')}
-							{photo.cameraDetails && <div>{photo.cameraDetails}</div>}
+							{photo.equip && <div>{photo.equip}</div>}
+							{photo.exposure && <div>{photo.exposure}</div>}
 						</div>
 
 						{photo.note && <p class="mobile-note">
@@ -365,9 +365,9 @@ const years = [...new Set(
 
 		<aside class="photo-info">
 			<h2 id="info-title">{photos[0]?.title}</h2>
-			<div class="photo-date" id="info-date">{photos[0]?.time}</div>
-			<div class="photo-location" id="info-location">{photos[0]?.location}</div>
-			<div class="photo-camera" id="info-camera">{photos[0]?.cameraDetails}</div>
+			<div class="photo-date" id="info-date">{[photos[0]?.time, photos[0]?.location].filter(Boolean).join(' · ')}</div>
+			<div class="photo-camera" id="info-equip">{photos[0]?.equip}</div>
+			<div class="photo-camera" id="info-exposure">{photos[0]?.exposure}</div>
 			<p class="photo-note" id="info-note">{photos[0]?.note}</p>
 		</aside>
 
@@ -378,6 +378,7 @@ const years = [...new Set(
 <footer class="footer">
 	© 2026 AndRainWindow
 	{photos.some(photo => photo.locationSource === 'geoapify') && <span> · 地点数据：<a href="https://www.geoapify.com/">Geoapify</a> / <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a></span>}
+	{photos.some(photo => photo.locationSource === 'amap') && <span> · 地点数据：<a href="https://www.amap.com/">高德地图</a></span>}
 </footer>
 
 <script>
@@ -386,8 +387,8 @@ const years = [...new Set(
 
 	const title = document.querySelector('#info-title');
 	const date = document.querySelector('#info-date');
-	const location = document.querySelector('#info-location');
-	const camera = document.querySelector('#info-camera');
+	const equip = document.querySelector('#info-equip');
+	const exposure = document.querySelector('#info-exposure');
 	const note = document.querySelector('#info-note');
 
 	function setActive(item) {
@@ -399,9 +400,9 @@ const years = [...new Set(
 		const photo = JSON.parse(raw);
 
 		if (title) { title.textContent = photo.title ?? ''; title.toggleAttribute('hidden', !photo.title); }
-		if (date) date.textContent = photo.time ?? '';
-		if (location) location.textContent = photo.location ?? '';
-		if (camera) camera.textContent = photo.cameraDetails ?? '';
+		if (date) date.textContent = [photo.time, photo.location].filter(Boolean).join(' · ');
+		if (equip) equip.textContent = photo.equip ?? '';
+		if (exposure) exposure.textContent = photo.exposure ?? '';
 		if (note) { note.textContent = photo.note ?? ''; note.toggleAttribute('hidden', !photo.note); }
 
 		timelineLinks.forEach((link) => {

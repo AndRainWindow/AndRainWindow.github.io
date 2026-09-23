@@ -81,8 +81,8 @@ def edits(changes: dict) -> dict:
             if not isinstance(changes[key], bool):
                 raise ValueError('照片状态必须为布尔值。')
             result[key] = changes[key]
-    if changes.get('locationSource') == 'geoapify':
-        result['locationSource'] = 'geoapify'
+    if changes.get('locationSource') in ('geoapify', 'amap'):
+        result['locationSource'] = changes['locationSource']
     return result
 
 
@@ -105,21 +105,47 @@ class PhotoCatalog:
         private = read_json(self.local / 'sources.json', {})
         return {'photos': [{**p, 'hasGps': bool(private.get(p['id'], {}).get('gps'))} for p in self.load()]}
 
-    def import_group(self, payload: dict) -> dict:
+    def sweep_orphans(self) -> None:
+        """Delete generated WebP files no row references (e.g. a killed import).
+
+        Only the generated `photo-<32 hex>.webp` naming pattern is eligible, so
+        manually placed files are never touched. Without this, an orphan wedges
+        preview/publish: it is dirty in git but outside the publish whitelist.
+        """
+        if not self.output.is_dir():
+            return
+        referenced = {Path(row['image']).name for row in self.load() if row.get('image')}
+        for path in self.output.iterdir():
+            name = path.name
+            if not path.is_file() or name in referenced:
+                continue
+            stem = name[len('photo-'):-len('.webp')]
+            if (name.startswith('photo-') and name.endswith('.webp') and len(stem) == 32
+                    and all(c in '0123456789abcdef' for c in stem)):
+                path.unlink(missing_ok=True)
+
+    def import_group(self, payload: dict, on_event=None) -> dict:
+        def emit(phase: str, current: int, total: int, filename: str = '') -> None:
+            if on_event:
+                on_event({'phase': phase, 'current': current, 'total': total,
+                          'filename': filename, 'taskId': payload.get('taskId', '')})
+
         items = payload.get('photos', [])
         if not items or len(items) > 200:
             raise ValueError('每次请选择 1–200 张照片。')
         group_title = str(payload.get('title', '')).strip()
         group_note = str(payload.get('note', '')).strip()
-        if not group_title:
-            raise ValueError('请填写整组标题。')
+        if not group_title and len(items) > 1:
+            raise ValueError('多张照片请填写整组标题；单张导入可留空。')
+        self.sweep_orphans()
         data = self.load()
         known = {p.get('sourceHash') for p in data}
         private = read_json(self.local / 'sources.json', {})
         group_id = uuid.uuid4().hex
-        imported, skipped, prepared = [], [], []
+        imported, skipped, prepared, errors = [], [], [], []
         # Validate the whole selection before writing. Missing dates must be supplied by the user.
-        for item in items:
+        for index, item in enumerate(items):
+            emit('inspect', index + 1, len(items), Path(item.get('source', '')).name)
             original = inspect_photo(item['source'])
             values = edits({**{key: item.get(key, original.get(key, '')) for key in FIELDS},
                             'locationSource': item.get('locationSource')})
@@ -134,7 +160,8 @@ class PhotoCatalog:
         self.output.mkdir(parents=True, exist_ok=True)
         created = []
         try:
-            for source, digest, original, values in prepared:
+            for index, (source, digest, original, values) in enumerate(prepared):
+                emit('convert', index + 1, len(prepared), source.name)
                 photo_id = f'photo-{uuid.uuid4().hex}'
                 target = self.output / f'{photo_id}.webp'
                 with tempfile.TemporaryDirectory() as tmp:
@@ -160,6 +187,11 @@ class PhotoCatalog:
                        'sourceHash': digest, 'hidden': False, 'deleted': False}
                 imported.append(row)
                 private[photo_id] = {'source': str(source), 'gps': original['gps']}
+            errors.extend(self._locate_batch(imported, private, emit))
+            # Import order = capture time ascending; cover is photos[0] on the site.
+            if len(imported) > 1:
+                for order, row in enumerate(sorted(imported, key=lambda row: row['date'] or '9999-99-99')):
+                    row['order'] = order
             # Private data is never published or copied into catalogue records.
             atomic_json(self.local / 'sources.json', private)
             atomic_json(self.path, data + imported)
@@ -167,7 +199,39 @@ class PhotoCatalog:
             for target in created:
                 target.unlink(missing_ok=True)
             raise
-        return {**self.listing(), 'message': f'已保存 {len(imported)} 张，跳过重复照片 {len(skipped)} 张。请先本地预览。'}
+        emit('finalize', 1, 1)
+        message = f'已保存 {len(imported)} 张，跳过重复照片 {len(skipped)} 张。请先本地预览。'
+        if errors:
+            message += f'（{len(errors)} 处地点识别失败，可稍后逐张重试。）'
+        return {**self.listing(), 'message': message, 'errors': errors}
+
+    def _locate_batch(self, rows: list[dict], private: dict, emit) -> list[str]:
+        """Reverse-geocode each distinct coordinate once; failures never abort the import."""
+        coords: dict[str, list[dict]] = {}
+        for row in rows:
+            gps = private.get(row['id'], {}).get('gps')
+            if gps:
+                coords.setdefault(f"{gps['lat']:.5f},{gps['lon']:.5f}", []).append(row)
+        if not coords:
+            return []
+        from .geocode import preferences
+        if not preferences(self, {}).get('configured'):
+            return []
+        from .geocode import lookup
+        errors = []
+        for index, (key, members) in enumerate(coords.items()):
+            lat, lon = key.split(',')
+            emit('geocode', index + 1, len(coords), f'{len(members)} 张照片')
+            try:
+                located = lookup(self, {'lat': float(lat), 'lon': float(lon)})
+            except ValueError as exc:
+                errors.append(f'{key}: {exc}')
+                continue
+            for row in members:
+                row.update({field: located[field] for field in
+                            ('location', 'locationSource', 'province', 'city', 'district')
+                            if located.get(field)})
+        return errors
 
     def update(self, photo_id: str, changes: dict) -> dict:
         data = self.load()
@@ -181,7 +245,8 @@ class PhotoCatalog:
         atomic_json(self.path, data)
         return self.listing()
 
-    def update_group(self, group_id: str, changes: dict) -> dict:
+    def update_group(self, group_id: str, changes: dict, order=None, cover=None,
+                     note_to_all: bool = False) -> dict:
         data = self.load()
         members = [p for p in data if p.get('groupId', p['id']) == group_id]
         if not members:
@@ -195,6 +260,26 @@ class PhotoCatalog:
                     if not isinstance(changes[key], bool):
                         raise ValueError('组状态必须为布尔值。')
                     row[key] = changes[key]
+        if note_to_all and 'groupNote' in changes:
+            # Explicit one-click action: the group note becomes every photo's own note.
+            note = str(changes['groupNote']).strip()
+            for row in members:
+                row['note'] = note
+        ids = {p['id'] for p in members}
+        if order is not None:
+            if (not isinstance(order, list) or len(order) != len(members)
+                    or {str(photo_id) for photo_id in order} != ids):
+                raise ValueError('照片顺序与组成员不一致，请刷新后重试。')
+            for index, photo_id in enumerate(order):
+                next(p for p in members if p['id'] == str(photo_id))['order'] = index
+        if cover is not None:
+            if cover not in ids:
+                raise ValueError('封面照片不在本组内。')
+            head = next(p for p in members if p['id'] == cover)
+            tail = sorted((p for p in members if p['id'] != cover),
+                          key=lambda p: (p.get('order', 1 << 30), p['date']))
+            for index, row in enumerate([head, *tail]):
+                row['order'] = index
         atomic_json(self.path, data)
         return self.listing()
 

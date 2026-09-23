@@ -148,7 +148,12 @@ def command_photos(args: argparse.Namespace) -> int:
     try:
         from .photos.service import dispatch
         payload = json.load(sys.stdin)
-        result = dispatch(Path(args.project), payload)
+
+        def emit_progress(event: dict) -> None:
+            # Contract: N progress lines, then exactly one terminal line.
+            emit("photo_progress", **event)
+
+        result = dispatch(Path(args.project), payload, emit_progress)
         emit("photo_result", result=result)
         return 0
     except Exception as exc:

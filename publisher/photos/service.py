@@ -1,10 +1,10 @@
 from pathlib import Path
 
 from .catalog import PhotoCatalog, project_lock
-from .metadata import inspect_photo
+from .metadata import inspect_photo, thumbnail
 
 
-def dispatch(root: Path, payload: dict) -> dict:
+def dispatch(root: Path, payload: dict, on_event=None) -> dict:
     catalog = PhotoCatalog(root)
     with project_lock(catalog.root):
         action = payload.get('action')
@@ -14,18 +14,13 @@ def dispatch(root: Path, payload: dict) -> dict:
             paths = payload.get('paths', [])
             if not paths or len(paths) > 200:
                 raise ValueError('每次请选择 1–200 张照片。')
+            # Location is resolved during import, not here: a batch of GPS-tagged
+            # photos would otherwise block this request on per-photo lookups.
             items, errors = [], []
             for source in paths:
                 try:
                     item = inspect_photo(source)
-                    if item.get('gps'):
-                        from .geocode import preferences, lookup
-                        if preferences(catalog, {}).get('configured'):
-                            try:
-                                located = lookup(catalog, {'source': source})
-                                item.update({key: located[key] for key in ('location', 'locationSource')})
-                            except ValueError as exc:
-                                errors.append(f'{Path(source).name}: {exc}')
+                    item['thumb'] = thumbnail(Path(item['source']), box=(320, 240))
                     items.append(item)
                 except Exception as exc:
                     errors.append(f'{Path(source).name}: {exc}')
@@ -33,11 +28,13 @@ def dispatch(root: Path, payload: dict) -> dict:
         if action == 'thumbnail':
             return catalog.thumbnail(payload)
         if action == 'import':
-            return catalog.import_group(payload)
+            return catalog.import_group(payload, on_event)
         if action == 'update':
             return catalog.update(payload['id'], payload['changes'])
         if action == 'update-group':
-            return catalog.update_group(payload['id'], payload['changes'])
+            return catalog.update_group(payload['id'], payload['changes'],
+                                        order=payload.get('order'), cover=payload.get('cover'),
+                                        note_to_all=bool(payload.get('noteToAll')))
         if action in ('geo-preferences', 'geocode'):
             from .geocode import preferences, lookup
             return (preferences if action == 'geo-preferences' else lookup)(catalog, payload)

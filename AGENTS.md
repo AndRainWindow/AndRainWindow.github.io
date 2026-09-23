@@ -515,6 +515,75 @@ Image references in `photos.json` should use:
 
 not filesystem paths.
 
+Each row is one photo; rows sharing a `groupId` form a photo group. A group has no separate record: the group title and note are stored on every member row, and the group date is the cover photo's date.
+
+Rows may carry these optional fields:
+
+```text
+order                  int, position within the group; 0 is the cover
+province/city/district persisted reverse-geocode results
+```
+
+`order` is written only for multi-photo groups. `location` stays the composed display string in the form `city · district`.
+
+Raw GPS coordinates are private. They live only in:
+
+```text
+.publisher-local/sources.json
+```
+
+Never write raw coordinates into `photos.json` or anywhere else in the public repository.
+
+`locationSource` may be:
+
+```text
+geoapify
+amap
+```
+
+Reverse geocoding supports both providers, selected in the desktop app settings. AMap receives GCJ02-converted coordinates (WGS84 → GCJ02 conversion for mainland China, no-op elsewhere), and the AMap key stays in `.publisher-local`, never in the frontend bundle. The public page credits the active provider (Geoapify / 高德地图) in its footer.
+
+Reverse geocoding runs during import and per photo on demand, never at public render time. Import batches one request per distinct rounded coordinate and caches results in:
+
+```text
+.publisher-local/geocode-cache.json
+```
+
+Cache keys are provider-prefixed:
+
+```text
+provider:lat,lon
+```
+
+Legacy cache keys without a prefix remain valid Geoapify entries.
+
+Import rules:
+
+- a single-photo import does not require a group title; 2 or more photos require one
+- photos are imported in capture time ascending order and the first photo is the cover
+- unreferenced generated `photo-<32 hex>.webp` files under `public/images/photos/` are swept at import start and at preview start
+
+The `photos` CLI command emits N `photo_progress` JSONL lines followed by exactly one terminal line (`photo_result` or `error`). This is the CLI contract.
+
+`update-group` supports:
+
+```text
+order      explicit member photo id list; rewrites every member's order
+cover      moves the chosen photo to position 0
+noteToAll  writes the group note into every member's own note field
+```
+
+`noteToAll` is an explicit one-click action, not an automatic copy. Member notes stay independently editable afterwards.
+
+The public gallery renders groups as contiguous blocks. Blocks are sorted by cover date descending. Within a block, members are ordered by `order` ascending when all members have `order`, and fall back to date descending otherwise.
+
+The group title and note show on the first visible member only. EXIF renders as two semantic rows:
+
+```text
+Camera · Lens
+Focal · Aperture · Shutter · ISO
+```
+
 The photography page currently follows this structure:
 
 ```text

@@ -2,6 +2,8 @@ import json
 import subprocess
 import tempfile
 import os
+import io
+import urllib.error
 import urllib.request
 import unittest
 from pathlib import Path
@@ -9,10 +11,23 @@ from unittest.mock import patch
 
 from PIL import Image, ImageCms
 from publisher.photos.catalog import PhotoCatalog, atomic_json, project_lock
+from publisher.photos.coord import out_of_china, wgs84_to_gcj02
 from publisher.photos.metadata import inspect_photo
 from publisher.photos.service import dispatch
 from publisher.photos import publish as publishing
 from publisher.photos import geocode
+
+
+def make_photo(path: Path, date: str = '2026:09:23 17:42:59',
+               gps: dict | None = None) -> dict:
+    exif = Image.Exif()
+    exif[271] = 'Sony'; exif[272] = 'ILCE-6700'
+    exif[0x8769] = {36867: date, 42036: '56mm F1.7', 34855: 400,
+                    33437: 1.7, 33434: .004, 37386: 56}
+    if gps:
+        exif[0x8825] = gps
+    Image.new('RGB', (600, 400), 'navy').save(path, exif=exif)
+    return inspect_photo(str(path))
 
 
 class PhotoTests(unittest.TestCase):
@@ -95,6 +110,198 @@ class PhotoTests(unittest.TestCase):
             self.assertEqual(result['location'], '纽约 · 纽约县')
             again = dispatch(self.root, {'action': 'geocode', 'source': str(self.source)})
             self.assertEqual(result, again); self.assertEqual(request.call_count, 1)
+
+
+class ImportPipelineTests(unittest.TestCase):
+    """Multi-photo import: progress, ordering, cover, note-to-all, orphan sweep."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.root = Path(self.tmp.name) / 'site'; self.root.mkdir()
+        (self.root / 'package.json').write_text('{}')
+        self.catalog = PhotoCatalog(self.root)
+        atomic_json(self.catalog.path, [])
+
+    def tearDown(self): self.tmp.cleanup()
+
+    def import_photos(self, dates, on_event=None, **payload):
+        photos = []
+        for index, date in enumerate(dates):
+            photos.append(make_photo(Path(self.tmp.name) / f'p{index}.jpg', date=date))
+        payload.setdefault('title', '整组')
+        payload['photos'] = photos
+        return dispatch(self.root, {'action': 'import', **payload}, on_event)
+
+    def test_single_photo_import_allows_empty_group_title(self):
+        result = self.import_photos(['2026:09:23 10:00:00'], title='')
+        row = result['photos'][0]
+        self.assertEqual(row['groupTitle'], '')
+        with self.assertRaisesRegex(ValueError, '整组标题'):
+            self.import_photos(['2026:09:23 10:00:00', '2026:09:23 10:01:00'], title='')
+
+    def test_import_emits_ordered_progress_events(self):
+        events = []
+        result = self.import_photos(['2026:09:23 10:00:00', '2026:09:23 10:01:00'],
+                                    taskId='task-1', on_event=events.append)
+        self.assertEqual([e['phase'] for e in events],
+                         ['inspect', 'inspect', 'convert', 'convert', 'finalize'])
+        self.assertTrue(all(e['taskId'] == 'task-1' for e in events))
+        for phase in ('inspect', 'convert'):
+            current = [e['current'] for e in events if e['phase'] == phase]
+            self.assertEqual(current, [1, 2])
+
+    def test_import_writes_capture_time_order_and_cover_is_first(self):
+        self.import_photos(['2026:09:23 10:02:00', '2026:09:23 10:00:00',
+                            '2026:09:23 10:01:00'])
+        saved = {p['date']: p for p in self.catalog.load()}
+        orders = sorted(p['order'] for p in saved.values())
+        self.assertEqual(orders, [0, 1, 2])
+        first = min(saved.values(), key=lambda p: p['order'])
+        self.assertEqual(first['date'], '2026-09-23T10:00')
+
+    def test_update_group_order_cover_and_note_to_all(self):
+        self.import_photos(['2026:09:23 10:00:00', '2026:09:23 10:01:00',
+                            '2026:09:23 10:02:00'])
+        rows = sorted(self.catalog.load(), key=lambda p: p['order'])
+        group_id = rows[0]['groupId']
+        new_order = [rows[2]['id'], rows[0]['id'], rows[1]['id']]
+        dispatch(self.root, {'action': 'update-group', 'id': group_id, 'order': new_order,
+                             'changes': {'groupTitle': '整组', 'groupNote': ''}})
+        saved = {p['id']: p for p in self.catalog.load()}
+        self.assertEqual([saved[pid]['order'] for pid in new_order], [0, 1, 2])
+        with self.assertRaisesRegex(ValueError, '组成员不一致'):
+            dispatch(self.root, {'action': 'update-group', 'id': group_id,
+                                 'order': ['bogus'], 'changes': {}})
+        dispatch(self.root, {'action': 'update-group', 'id': group_id, 'cover': rows[1]['id'],
+                             'changes': {'groupTitle': '整组', 'groupNote': ''}})
+        saved = {p['id']: p for p in self.catalog.load()}
+        self.assertEqual(saved[rows[1]['id']]['order'], 0)
+        dispatch(self.root, {'action': 'update-group', 'id': group_id,
+                             'changes': {'groupTitle': '整组', 'groupNote': '共享感受'},
+                             'noteToAll': True})
+        for row in self.catalog.load():
+            self.assertEqual(row['note'], '共享感受')
+            self.assertEqual(row['groupNote'], '共享感受')
+
+    def test_sweep_orphans_clears_dead_webp_and_keeps_referenced_and_manual(self):
+        self.catalog.output.mkdir(parents=True)
+        orphan = self.catalog.output / f'photo-{"a" * 32}.webp'; orphan.write_bytes(b'x')
+        manual = self.catalog.output / 'manual.webp'; manual.write_bytes(b'x')
+        self.import_photos(['2026:09:23 10:00:00'])
+        self.assertFalse(orphan.exists())
+        self.assertTrue(manual.exists())
+        kept = self.catalog.load()[0]['image']
+        self.assertTrue((self.root / 'public' / kept.lstrip('/')).exists())
+
+
+class GeocodeProviderTests(unittest.TestCase):
+    """Provider selection, AMap lookups, batch dedupe, and cache compatibility."""
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.root = Path(self.tmp.name) / 'site'; self.root.mkdir()
+        (self.root / 'package.json').write_text('{}')
+        self.catalog = PhotoCatalog(self.root)
+        atomic_json(self.catalog.path, [])
+        self.gps_ny = {1: 'N', 2: (40, 47, 0), 3: 'W', 4: (73, 58, 0)}
+        self.source = Path(self.tmp.name) / '原始照片.jpg'
+        make_photo(self.source, gps=self.gps_ny)
+
+    def tearDown(self): self.tmp.cleanup()
+
+    def test_wgs84_to_gcj02_known_shift_and_overseas_passthrough(self):
+        lat, lon = wgs84_to_gcj02(39.90733, 116.39123)
+        self.assertGreater(lon - 116.39123, 0.004)
+        self.assertLess(lon - 116.39123, 0.009)
+        self.assertGreater(lat - 39.90733, 0.0005)
+        self.assertLess(lat - 39.90733, 0.003)
+        self.assertEqual(wgs84_to_gcj02(40.78, -73.97), (40.78, -73.97))
+        self.assertTrue(out_of_china(40.78, -73.97))
+        self.assertFalse(out_of_china(39.90733, 116.39123))
+
+    def test_amap_lookup_success(self):
+        dispatch(self.root, {'action': 'geo-preferences', 'provider': 'amap', 'amapKey': 'amap-key'})
+        response = json.dumps({'status': '1',
+                               'regeocode': {'addressComponent': {
+                                   'province': '浙江省', 'city': '宁波市', 'district': '宁海县'}}}).encode()
+        with patch.object(geocode.urllib.request, 'urlopen', return_value=io.BytesIO(response)) as request:
+            result = dispatch(self.root, {'action': 'geocode', 'source': str(self.source)})
+        self.assertEqual(result['location'], '宁波市 · 宁海县')
+        self.assertEqual(result['locationSource'], 'amap')
+        self.assertEqual((result['province'], result['city'], result['district']),
+                         ('浙江省', '宁波市', '宁海县'))
+        requested = request.call_args[0][0].full_url
+        self.assertIn('restapi.amap.com/v3/geocode/regeo', requested)
+        # Overseas coordinates pass through unchanged (no GCJ02 shift applied).
+        self.assertIn('location=-73.966667', requested)
+
+    def test_amap_municipality_empty_city_falls_back_to_province(self):
+        dispatch(self.root, {'action': 'geo-preferences', 'provider': 'amap', 'amapKey': 'amap-key'})
+        response = json.dumps({'status': '1',
+                               'regeocode': {'addressComponent': {
+                                   'province': '北京市', 'city': [], 'district': '朝阳区'}}}).encode()
+        with patch.object(geocode.urllib.request, 'urlopen', return_value=io.BytesIO(response)):
+            result = dispatch(self.root, {'action': 'geocode', 'source': str(self.source)})
+        self.assertEqual(result['location'], '北京市 · 朝阳区')
+
+    def test_amap_missing_key_and_request_failure(self):
+        dispatch(self.root, {'action': 'geo-preferences', 'provider': 'amap'})
+        with self.assertRaisesRegex(ValueError, '高德'):
+            dispatch(self.root, {'action': 'geocode', 'source': str(self.source)})
+        dispatch(self.root, {'action': 'geo-preferences', 'amapKey': 'bad'})
+        with patch.object(geocode.urllib.request, 'urlopen',
+                          return_value=io.BytesIO(b'{"status":"0","info":"INVALID_USER_KEY"}')):
+            with self.assertRaisesRegex(ValueError, 'Key 无效'):
+                dispatch(self.root, {'action': 'geocode', 'source': str(self.source)})
+
+    def test_import_batch_geocode_dedupes_and_survives_failure(self):
+        dispatch(self.root, {'action': 'geo-preferences', 'provider': 'amap', 'amapKey': 'amap-key'})
+        same_a = make_photo(Path(self.tmp.name) / 'a.jpg', '2026:09:23 10:00:00',
+                            gps={1: 'N', 2: (40, 47, 0), 3: 'W', 4: (73, 58, 0)})
+        same_b = make_photo(Path(self.tmp.name) / 'b.jpg', '2026:09:23 10:01:00',
+                            gps={1: 'N', 2: (40, 47, 0), 3: 'W', 4: (73, 58, 0)})
+        other = make_photo(Path(self.tmp.name) / 'c.jpg', '2026:09:23 10:02:00',
+                           gps={1: 'N', 2: (41, 0, 0), 3: 'W', 4: (74, 0, 0)})
+        good = json.dumps({'status': '1', 'regeocode': {'addressComponent': {
+            'province': '纽约州', 'city': '纽约市', 'district': '曼哈顿'}}}).encode()
+        calls = []
+        def fake_urlopen(request, timeout=0):
+            calls.append(request.full_url)
+            if len(calls) == 1:
+                return io.BytesIO(good)
+            raise urllib.error.URLError('network down')
+        with patch.object(geocode.urllib.request, 'urlopen', side_effect=fake_urlopen):
+            result = dispatch(self.root, {'action': 'import', 'title': '整组',
+                                          'photos': [same_a, same_b, other]})
+        self.assertEqual(len(calls), 2)  # two distinct coords, one shared
+        located = [p for p in self.catalog.load() if p.get('location')]
+        self.assertEqual(len(located), 2)
+        for row in located:
+            self.assertEqual(row['location'], '纽约市 · 曼哈顿')
+            self.assertEqual(row['locationSource'], 'amap')
+            self.assertEqual(row['city'], '纽约市')
+        self.assertEqual(len(result['errors']), 1)
+        self.assertIn('地点识别失败', result['message'])
+
+    def test_cache_supports_legacy_geoapify_keys_and_isolates_providers(self):
+        gps = inspect_photo(str(self.source))['gps']
+        legacy_key = f"{gps['lat']:.5f},{gps['lon']:.5f}"
+        atomic_json(self.catalog.local / 'geocode-cache.json',
+                    {legacy_key: {'location': '缓存地点', 'locationSource': 'geoapify'}})
+        dispatch(self.root, {'action': 'geo-preferences', 'apiKey': 'g-key'})
+        def boom(*args, **kwargs):
+            raise AssertionError('cache must prevent HTTP calls')
+        with patch.object(geocode.urllib.request, 'urlopen', side_effect=boom):
+            result = dispatch(self.root, {'action': 'geocode', 'source': str(self.source)})
+        self.assertEqual(result['location'], '缓存地点')
+        # Same coordinates under the amap provider must NOT hit the geoapify entry.
+        dispatch(self.root, {'action': 'geo-preferences', 'provider': 'amap', 'amapKey': 'a-key'})
+        response = json.dumps({'status': '1', 'regeocode': {'addressComponent': {
+            'province': '纽约州', 'city': '纽约市', 'district': ''}}}).encode()
+        with patch.object(geocode.urllib.request, 'urlopen', return_value=io.BytesIO(response)) as request:
+            amap_result = dispatch(self.root, {'action': 'geocode', 'source': str(self.source)})
+        self.assertEqual(request.call_count, 1)
+        self.assertEqual(amap_result['location'], '纽约市')
 
 
 class GitPublishTests(unittest.TestCase):

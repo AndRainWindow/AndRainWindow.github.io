@@ -372,7 +372,7 @@ fn emit_line(app: &AppHandle, line: String) {
 }
 
 #[tauri::command]
-async fn photo_request(state: State<'_, TaskState>, payload: Value) -> Result<Value, String> {
+async fn photo_request(app: AppHandle, state: State<'_, TaskState>, payload: Value) -> Result<Value, String> {
     let slot = state.pid.clone();
     tauri::async_runtime::spawn_blocking(move || {
         let mut guard = slot.lock().map_err(|_| "任务状态锁已损坏".to_string())?;
@@ -403,16 +403,76 @@ async fn photo_request(state: State<'_, TaskState>, payload: Value) -> Result<Va
             if let Ok(mut guard) = slot.lock() { *guard = None; }
             return Err(error);
         }
-        let output = child.wait_with_output();
-        if let Ok(mut guard) = slot.lock() { *guard = None; }
-        let output = output.map_err(|e| e.to_string())?;
-        let response: Value = serde_json::from_slice(&output.stdout)
-            .map_err(|_| format!("照片后端没有返回有效结果：{}", String::from_utf8_lossy(&output.stderr)))?;
-        if !output.status.success() || response["type"] == "error" {
-            return Err(response["message"].as_str().unwrap_or("照片操作失败").to_string());
+        // The child reads all stdin before writing anything, so streaming stdout
+        // after the stdin write is safe. Progress lines stream to the UI as they
+        // arrive; the last non-progress line is the terminal result.
+        let stderr = child.stderr.take();
+        let stderr_tail = thread::spawn(move || {
+            let mut text = String::new();
+            if let Some(stderr) = stderr {
+                for line in BufReader::new(stderr).lines().map_while(Result::ok) {
+                    if !text.is_empty() { text.push('\n'); }
+                    text.push_str(&line);
+                }
+            }
+            text
+        });
+        let mut terminal: Option<Value> = None;
+        if let Some(stdout) = child.stdout.take() {
+            for line in BufReader::new(stdout).lines().map_while(Result::ok) {
+                let Ok(value) = serde_json::from_str::<Value>(&line) else { continue };
+                if value["type"] == "photo_progress" {
+                    let _ = app.emit("publisher://photo-event", value);
+                } else {
+                    terminal = Some(value);
+                }
+            }
         }
-        Ok(response["result"].clone())
+        let _ = child.wait();
+        if let Ok(mut guard) = slot.lock() { *guard = None; }
+        let stderr_text = stderr_tail.join().unwrap_or_default();
+        match terminal {
+            Some(response) if response["type"] == "photo_result" => Ok(response["result"].clone()),
+            Some(response) => Err(response["message"].as_str().unwrap_or("照片操作失败").to_string()),
+            None => Err(format!(
+                "照片后端没有返回有效结果：{}",
+                stderr_text.lines().last().unwrap_or("")
+            )),
+        }
     }).await.map_err(|e| e.to_string())?
+}
+
+/// Serve published WebP files to the webview without spawning Python per image.
+/// Only generated names (photo-<32 lowercase hex>.webp) inside
+/// public/images/photos are reachable; anything else is a 404.
+fn library_response(request: tauri::http::Request<Vec<u8>>) -> tauri::http::Response<Vec<u8>> {
+    let not_found = tauri::http::Response::builder()
+        .status(404)
+        .body(Vec::new())
+        .expect("static 404 response");
+    let path = request.uri().path().trim_start_matches('/');
+    let Some(stem) = path.strip_prefix("photo-").and_then(|s| s.strip_suffix(".webp")) else {
+        return not_found;
+    };
+    if stem.len() != 32 || !stem.bytes().all(|b| matches!(b, b'0'..=b'9' | b'a'..=b'f')) {
+        return not_found;
+    }
+    let Some(root) = configured_project() else { return not_found };
+    let base = root.join("public").join("images").join("photos");
+    let Ok(resolved) = base.join(path).canonicalize() else { return not_found };
+    let Ok(base_canonical) = base.canonicalize() else { return not_found };
+    if !resolved.starts_with(&base_canonical) {
+        return not_found;
+    }
+    match fs::read(&resolved) {
+        Ok(bytes) => tauri::http::Response::builder()
+            .status(200)
+            .header("Content-Type", "image/webp")
+            .header("Cache-Control", "max-age=3600")
+            .body(bytes)
+            .unwrap_or(not_found),
+        Err(_) => not_found,
+    }
 }
 
 #[tauri::command]
@@ -558,6 +618,9 @@ fn open_folder(path: String) -> Result<(), String> {
 fn main() {
     tauri::Builder::default()
         .plugin(tauri_plugin_dialog::init())
+        .register_asynchronous_uri_scheme_protocol("photolibrary", |_ctx, request, responder| {
+            responder.respond(library_response(request));
+        })
         .manage(TaskState::default())
         .on_window_event(|_, event| {
             if matches!(event, tauri::WindowEvent::Destroyed) {

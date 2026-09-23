@@ -76,10 +76,10 @@ def inspect_photo(source: str) -> dict:
         }
 
 
-def thumbnail(path: Path) -> str:
+def thumbnail(path: Path, box: tuple[int, int] = (640, 480)) -> str:
     with Image.open(path) as img:
         img = ImageOps.exif_transpose(img)
-        img.thumbnail((640, 480))
+        img.thumbnail(box)
         buffer = io.BytesIO()
         img.convert('RGB').save(buffer, 'JPEG', quality=80)
         return 'data:image/jpeg;base64,' + base64.b64encode(buffer.getvalue()).decode('ascii')

@@ -32,3 +32,7 @@ __pycache__/
 
 # Tauri / Rust
 desktop/src-tauri/target/
+desktop/src-tauri/gen/
+
+# local assistant session settings
+.claude/
