@@ -73,11 +73,11 @@ a:hover {
 p {
 	margin-bottom: 1em;
 }
+.prose {
+	white-space: pre-line;
+}
 .prose p {
 	margin-bottom: 2em;
-}
-.prose p:not(.img-caption) {
-	white-space: pre-line;
 }
 textarea {
 	width: 100%;
@@ -102,9 +102,11 @@ code {
 pre {
 	padding: 1.5em;
 	border-radius: 8px;
+	white-space: pre;
 }
 pre > code {
 	all: unset;
+	white-space: inherit;
 }
 blockquote {
 	border-left: 4px solid var(--accent);
