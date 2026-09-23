@@ -2,7 +2,26 @@
 import photosData from '../data/photos.json';
 import { displayPhotos } from '../data/photo-view.mjs';
 
-const recentPhotos = displayPhotos(photosData).slice(0, 5);
+// 每组照片只取封面（组内第一张）作为一个时间轴节点
+type DisplayPhoto = {
+	id: string;
+	groupId?: string;
+	day: string;
+	title?: string;
+	location?: string;
+	image: string;
+	alt: string;
+};
+
+const photos: DisplayPhoto[] = displayPhotos(photosData);
+const seen = new Set<string>();
+const groups = photos.filter((photo: DisplayPhoto) => {
+	const key = photo.groupId || photo.id;
+	if (seen.has(key)) return false;
+	seen.add(key);
+	return true;
+});
+const covers = groups.slice(0, 8);
 ---
 
 <section class="recent-photos">
@@ -10,69 +29,57 @@ const recentPhotos = displayPhotos(photosData).slice(0, 5);
 	<div class="section-heading">
 		<h2>Photography</h2>
 		<p>最近记录下的一些东西。</p>
+		<span class="scroll-hint">左右滑动来查看</span>
 	</div>
 
 	<div
-		class="photo-carousel"
-		data-photo-carousel
+		class="photo-timeline"
+		data-photo-timeline
 		tabindex="0"
-		aria-label="最近摄影作品"
+		aria-label="摄影作品时间轴"
 	>
 
-		<div class="photo-track" data-photo-track>
+		<div class="timeline-line" aria-hidden="true"></div>
 
-			{recentPhotos.map((photo, index) => (
+		<div class="timeline-track">
+
+			{covers.map((photo: DisplayPhoto, index: number) => (
 
 				<a
-					class="photo-slide"
+					class="timeline-item"
 					href="/photos/"
 					aria-label={`查看作品：${photo.alt}`}
 				>
 
-					<img
-						src={photo.image}
-						alt={photo.alt}
-						loading={index === 0 ? 'eager' : 'lazy'}
-					/>
+					<div class="timeline-date">
+						<span class="timeline-dot"></span>
+						<time datetime={photo.day}>
+							{photo.day.slice(0, 10)}
+						</time>
+					</div>
 
-					<div class="photo-overlay">
+					<div class="photo-card">
 
-						<div>
+						<img
+							src={photo.image}
+							alt={photo.alt}
+							loading={index === 0 ? 'eager' : 'lazy'}
+						/>
+
+						<div class="photo-gradient"></div>
+
+						<div class="photo-caption">
 							{photo.title && <h3>{photo.title}</h3>}
-
 							<p>
-								{photo.date.slice(0, 10)}
+								{photo.day.slice(0, 10)}
 								{photo.location && ` · ${photo.location}`}
 							</p>
-						</div>
-
-						<div class="photo-count">
-							<span data-photo-current>01</span>
-							<span>/</span>
-							<span>
-								{String(recentPhotos.length).padStart(2, '0')}
-							</span>
 						</div>
 
 					</div>
 
 				</a>
 
-			))}
-
-		</div>
-
-
-		<div class="photo-dots" aria-hidden="true">
-
-			{recentPhotos.map((_, index) => (
-				<span
-					class:list={[
-						'photo-dot',
-						{ active: index === 0 }
-					]}
-					data-photo-dot
-				></span>
 			))}
 
 		</div>
@@ -84,7 +91,7 @@ const recentPhotos = displayPhotos(photosData).slice(0, 5);
 		class="photo-more"
 		href="/photos/"
 	>
-		
+
 	</a>
 
 </section>
@@ -128,14 +135,192 @@ const recentPhotos = displayPhotos(photosData).slice(0, 5);
 	}
 
 
+	.scroll-hint {
+		display: block;
+
+		margin: -44px 0 44px;
+
+		text-align: center;
+
+		font-family:
+			-apple-system,
+			BlinkMacSystemFont,
+			"Segoe UI",
+			"PingFang SC",
+			sans-serif;
+
+		font-size: 0.8rem;
+
+		color:
+			rgba(255,255,255,0.45);
+	}
+
+
+
 	/* =========================
-	   Carousel
+	   时间轴
 	   ========================= */
 
-	.photo-carousel {
+	.photo-timeline {
 		position: relative;
 
-		width: 100%;
+		overflow-x: auto;
+		overflow-y: hidden;
+
+		padding:
+			0 4px 26px;
+
+		outline: none;
+
+		cursor: grab;
+
+		scrollbar-width: thin;
+		scrollbar-color:
+			rgba(255,255,255,0.30)
+			transparent;
+	}
+
+	.photo-timeline:active {
+		cursor: grabbing;
+	}
+
+
+	.photo-timeline::-webkit-scrollbar {
+		height: 5px;
+	}
+
+	.photo-timeline::-webkit-scrollbar-track {
+		background: transparent;
+	}
+
+	.photo-timeline::-webkit-scrollbar-thumb {
+		background:
+			rgba(255,255,255,0.30);
+
+		border-radius: 3px;
+	}
+
+
+	/* 贯穿所有节点的横线 */
+
+	.timeline-line {
+		position: absolute;
+
+		left: 4px;
+		right: 4px;
+		top: 34px;
+
+		height: 1px;
+
+		background:
+			linear-gradient(
+				to right,
+				transparent,
+				rgba(255,255,255,0.35) 6%,
+				rgba(255,255,255,0.35) 94%,
+				transparent
+			);
+
+		pointer-events: none;
+	}
+
+
+	.timeline-track {
+		display: flex;
+
+		gap: 34px;
+
+		width: max-content;
+
+		padding-right: 34px;
+	}
+
+
+
+	/* 单个时间节点 */
+
+	.timeline-item {
+		display: flex;
+		flex-direction: column;
+
+		width: 340px;
+
+		flex-shrink: 0;
+
+		text-decoration: none;
+
+		color: white;
+	}
+
+
+	.timeline-date {
+		position: relative;
+
+		z-index: 1;
+
+		display: flex;
+		align-items: center;
+
+		gap: 10px;
+
+		height: 68px;
+
+
+		font-family:
+			-apple-system,
+			BlinkMacSystemFont,
+			"Segoe UI",
+			"PingFang SC",
+			sans-serif;
+
+		font-size: 1rem;
+		font-weight: 600;
+
+		letter-spacing: 0.5px;
+
+		color:
+			rgba(255,255,255,0.92);
+
+		font-variant-numeric: tabular-nums;
+	}
+
+
+	.timeline-dot {
+		width: 9px;
+		height: 9px;
+
+		flex-shrink: 0;
+
+		border-radius: 50%;
+
+		background: white;
+
+		box-shadow:
+			0 0 0 4px
+			rgba(255,255,255,0.18);
+
+		transition:
+			box-shadow 0.25s ease;
+	}
+
+
+	.timeline-item:hover
+	.timeline-dot {
+		box-shadow:
+			0 0 0 6px
+			rgba(255,255,255,0.28);
+	}
+
+
+
+	/* =========================
+	   封面卡片
+	   ========================= */
+
+	.photo-card {
+		position: relative;
+
+		height: 420px;
 
 		overflow: hidden;
 
@@ -145,47 +330,24 @@ const recentPhotos = displayPhotos(photosData).slice(0, 5);
 			0 15px 50px
 				rgba(0,0,0,0.10);
 
-		outline: none;
-
-		cursor: ns-resize;
-	}
-
-
-	.photo-track {
-		display: flex;
-
-		width: 100%;
-
 		transition:
-			transform 0.65s
-			cubic-bezier(
-				0.22,
-				1,
-				0.36,
-				1
-			);
-
-		will-change: transform;
+			transform 0.3s ease,
+			box-shadow 0.3s ease;
 	}
 
 
-	.photo-slide {
-		position: relative;
+	.timeline-item:hover
+	.photo-card {
+		transform:
+			translateY(-5px);
 
-		flex:
-			0 0 100%;
-
-		width: 100%;
-		height: 600px;
-
-		overflow: hidden;
-
-		color: white;
-		text-decoration: none;
+		box-shadow:
+			0 22px 55px
+				rgba(0,0,0,0.18);
 	}
 
 
-	.photo-slide img {
+	.photo-card img {
 		display: block;
 
 		width: 100%;
@@ -198,18 +360,16 @@ const recentPhotos = displayPhotos(photosData).slice(0, 5);
 	}
 
 
-	.photo-slide:hover img {
+	.timeline-item:hover
+	.photo-card img {
 		transform:
-			scale(1.015);
+			scale(1.03);
 	}
-
 
 
 	/* 底部轻微渐变，只负责文字可读性 */
 
-	.photo-slide::after {
-		content: "";
-
+	.photo-gradient {
 		position: absolute;
 		inset: 0;
 
@@ -226,37 +386,32 @@ const recentPhotos = displayPhotos(photosData).slice(0, 5);
 
 
 	/* =========================
-	   Caption
+	   左下角：名称 + 日期地点
 	   ========================= */
 
-	.photo-overlay {
+	.photo-caption {
 		position: absolute;
 
-		left: 34px;
-		right: 34px;
-		bottom: 28px;
+		left: 26px;
+		right: 26px;
+		bottom: 24px;
 
 		z-index: 2;
-
-		display: flex;
-		align-items: end;
-		justify-content: space-between;
-
-		gap: 30px;
 	}
 
 
-	.photo-overlay h3 {
+	.photo-caption h3 {
 		margin: 0;
+
 		color: white;
-		font-size: 1.4rem;
+		font-size: 1.3rem;
 		font-weight: 400;
 
 		letter-spacing: 1px;
 	}
 
 
-	.photo-overlay p {
+	.photo-caption p {
 		margin:
 			7px 0 0;
 
@@ -271,67 +426,6 @@ const recentPhotos = displayPhotos(photosData).slice(0, 5);
 
 		color:
 			rgba(255,255,255,0.72);
-	}
-
-
-	.photo-count {
-		display: flex;
-
-		gap: 5px;
-
-		font-family:
-			-apple-system,
-			BlinkMacSystemFont,
-			"Segoe UI",
-			sans-serif;
-
-		font-size: 0.8rem;
-
-		color:
-			rgba(255,255,255,0.72);
-	}
-
-
-
-	/* =========================
-	   Dots
-	   ========================= */
-
-	.photo-dots {
-		position: absolute;
-
-		left: 50%;
-		bottom: 22px;
-
-		z-index: 3;
-
-		display: flex;
-
-		gap: 8px;
-
-		transform:
-			translateX(-50%);
-	}
-
-
-	.photo-dot {
-		width: 20px;
-		height: 2px;
-
-		background:
-			rgba(255,255,255,0.35);
-
-		transition:
-			width 0.25s ease,
-			background 0.25s ease;
-	}
-
-
-	.photo-dot.active {
-		width: 34px;
-
-		background:
-			rgba(255,255,255,0.95);
 	}
 
 
@@ -376,25 +470,30 @@ const recentPhotos = displayPhotos(photosData).slice(0, 5);
 		}
 
 
-		.photo-slide {
-			height: 420px;
+		.scroll-hint {
+			margin: -36px 0 36px;
 		}
 
 
-		.photo-overlay {
-			left: 22px;
-			right: 22px;
-			bottom: 24px;
+		.timeline-item {
+			width: 270px;
 		}
 
 
-		.photo-overlay h3 {
+		.photo-card {
+			height: 340px;
+		}
+
+
+		.photo-caption {
+			left: 20px;
+			right: 20px;
+			bottom: 20px;
+		}
+
+
+		.photo-caption h3 {
 			font-size: 1.15rem;
-		}
-
-
-		.photo-dots {
-			display: none;
 		}
 
 	}
@@ -404,103 +503,21 @@ const recentPhotos = displayPhotos(photosData).slice(0, 5);
 
 <script>
 
-	const carousels =
+	const timelines =
 		document.querySelectorAll(
-			'[data-photo-carousel]'
+			'[data-photo-timeline]'
 		);
 
 
-	carousels.forEach((carousel) => {
+	timelines.forEach((timeline) => {
 
-		if (!(carousel instanceof HTMLElement)) {
+		if (!(timeline instanceof HTMLElement)) {
 			return;
 		}
 
 
-		const track =
-			carousel.querySelector(
-				'[data-photo-track]'
-			);
-
-
-		const current =
-			carousel.querySelector(
-				'[data-photo-current]'
-			);
-
-
-		const dots = [
-			...carousel.querySelectorAll(
-				'[data-photo-dot]'
-			)
-		];
-
-
-		if (!(track instanceof HTMLElement)) {
-			return;
-		}
-
-
-		const count =
-			track.children.length;
-
-
-		if (count <= 1) {
-			return;
-		}
-
-
-		let index = 0;
-
-		let locked = false;
-
-
-
-		const render = () => {
-
-			track.style.transform =
-				`translateX(-${index * 100}%)`;
-
-
-			if (current) {
-				current.textContent =
-					String(index + 1)
-						.padStart(2, '0');
-			}
-
-
-			dots.forEach(
-				(dot, dotIndex) => {
-
-					dot.classList.toggle(
-						'active',
-						dotIndex === index
-					);
-
-				}
-			);
-
-		};
-
-
-
-		const move = (direction) => {
-
-			index =
-				(
-					index +
-					direction +
-					count
-				) % count;
-
-
-			render();
-
-		};
-
-
-
-		carousel.addEventListener(
+		// 滚轮：纵向滚动映射为横向滑动
+		timeline.addEventListener(
 			'wheel',
 			(event) => {
 
@@ -512,17 +529,6 @@ const recentPhotos = displayPhotos(photosData).slice(0, 5);
 				}
 
 
-				event.preventDefault();
-
-
-				if (locked) {
-					return;
-				}
-
-
-				locked = true;
-
-
 				const delta =
 					Math.abs(event.deltaY) >=
 					Math.abs(event.deltaX)
@@ -530,19 +536,36 @@ const recentPhotos = displayPhotos(photosData).slice(0, 5);
 						: event.deltaX;
 
 
-				move(
-					delta > 0
-						? 1
-						: -1
-				);
+				const maxScroll =
+					timeline.scrollWidth -
+					timeline.clientWidth;
 
 
-				window.setTimeout(
-					() => {
-						locked = false;
-					},
-					650
-				);
+				if (maxScroll <= 0) {
+					return;
+				}
+
+
+				const atStart =
+					timeline.scrollLeft <= 0;
+
+
+				const atEnd =
+					timeline.scrollLeft >= maxScroll - 1;
+
+
+				// 在边界时不拦截页面纵向滚动
+				if (
+					(delta < 0 && atStart) ||
+					(delta > 0 && atEnd)
+				) {
+					return;
+				}
+
+
+				event.preventDefault();
+
+				timeline.scrollLeft += delta;
 
 			},
 			{
@@ -551,7 +574,65 @@ const recentPhotos = displayPhotos(photosData).slice(0, 5);
 		);
 
 
-		render();
+		// 拖拽滑动
+		let dragging = false;
+
+		let startX = 0;
+
+		let startLeft = 0;
+
+
+		timeline.addEventListener('pointerdown', (event) => {
+
+			if (event.pointerType === 'touch') {
+				return;
+			}
+
+
+			dragging = true;
+
+			startX = event.clientX;
+
+			startLeft = timeline.scrollLeft;
+
+		});
+
+
+		timeline.addEventListener('pointermove', (event) => {
+
+			if (!dragging) {
+				return;
+			}
+
+
+			timeline.scrollLeft =
+				startLeft -
+				(event.clientX - startX);
+
+		});
+
+
+		const endDrag = () => {
+			dragging = false;
+		};
+
+
+		timeline.addEventListener('pointerup', endDrag);
+		timeline.addEventListener('pointerleave', endDrag);
+
+
+		// 拖拽时不要误触发链接跳转
+		timeline.addEventListener('click', (event) => {
+
+			if (
+				Math.abs(
+					(event as MouseEvent).clientX - startX
+				) > 6
+			) {
+				event.preventDefault();
+			}
+
+		});
 
 	});
 
