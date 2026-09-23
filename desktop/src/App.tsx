@@ -84,6 +84,12 @@ function App() {
   const [progress, setProgress] = useState({ current: 0, total: 0 });
   const [resultText, setResultText] = useState('尚未运行任务');
   const [validation, setValidation] = useState<string[]>([]);
+  const [validationStatus, setValidationStatus] = useState<'idle' | 'checking' | 'success' | 'error'>('idle');
+
+  useEffect(() => {
+    setValidationStatus('idle');
+    setValidation([]);
+  }, [draft.vault, draft.project]);
 
   const appendLog = useCallback((line: string) => {
     setLogs((prev) => [...prev.slice(-399), line]);
@@ -247,12 +253,21 @@ function App() {
   }
 
   async function validateSettings() {
-    const problems = await invoke<string[]>('validate_paths', {
-      vault: draft.vault,
-      project: draft.project,
-    });
-    setValidation(problems);
-    setResultText(problems.length ? `发现 ${problems.length} 个问题` : '路径验证通过');
+    setValidationStatus('checking');
+    setValidation([]);
+    try {
+      const problems = await invoke<string[]>('validate_paths', {
+        vault: draft.vault.trim(),
+        project: draft.project.trim(),
+      });
+      setValidation(problems);
+      setValidationStatus(problems.length ? 'error' : 'success');
+      appendLog(problems.length ? `路径验证失败：${problems.join('；')}` : '路径验证通过');
+    } catch (error) {
+      setValidationStatus('error');
+      setValidation([`验证失败：${String(error)}`]);
+      appendLog(`[ERROR] 路径验证失败：${String(error)}`);
+    }
   }
 
   async function reveal(path: string) {
@@ -383,14 +398,17 @@ function App() {
                   onChange={(event) => setDraft((prev) => ({ ...prev, webpEnabled: event.target.checked }))}
                 />
               </label>
-              {validation.length > 0 && (
-                <div className="validation-box">
-                  {validation.map((problem) => <div key={problem}>{problem}</div>)}
+              {validationStatus !== 'idle' && (
+                <div className={`validation-box ${validationStatus}`} role="status" aria-live="polite">
+                  {validationStatus === 'checking' && '正在验证路径…'}
+                  {validationStatus === 'success' && '路径验证通过。若修改了目录，请点击“保存配置”。'}
+                  {validationStatus === 'error' && validation.map((problem) => <div key={problem}>{problem}</div>)}
                 </div>
               )}
               <div className="action-row">
-                <button className="button secondary" onClick={validateSettings}>
-                  <RefreshCw size={16} /> 验证路径
+                <button className="button secondary" disabled={validationStatus === 'checking'} onClick={() => void validateSettings()}>
+                  <RefreshCw size={16} className={validationStatus === 'checking' ? 'spin' : ''} />
+                  {validationStatus === 'checking' ? '验证中…' : '验证路径'}
                 </button>
                 <button className="button primary" onClick={saveSettings}>
                   <Save size={16} /> 保存配置

@@ -202,6 +202,8 @@ button:focus-visible, input:focus-visible { outline: 2px solid rgba(74, 99, 124,
 .switch-row span { display: block; margin-top: 5px; color: var(--muted); font-size: .78rem; }
 .switch-row input { width: 42px; height: 22px; accent-color: var(--accent); }
 .validation-box { padding: 12px 14px; border: 1px solid rgba(181,74,74,.14); border-radius: 10px; background: rgba(181,74,74,.07); color: #8d4343; font-size: .78rem; line-height: 1.65; }
+.validation-box.success { border-color: rgba(65,140,97,.3); background: rgba(65,140,97,.1); color: #338053; }
+.validation-box.checking { border-color: var(--border); background: transparent; color: var(--text); }
 
 .environment-panel { display: grid; gap: 18px; }
 .environment-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 20px; }
