@@ -575,7 +575,9 @@ noteToAll  writes the group note into every member's own note field
 
 `noteToAll` is an explicit one-click action, not an automatic copy. Member notes stay independently editable afterwards.
 
-The public gallery renders groups as contiguous blocks. Blocks are sorted by cover date descending. Within a block, members are ordered by `order` ascending when all members have `order`, and fall back to date descending otherwise.
+The homepage/group view uses `displayPhotos()` and keeps groups as contiguous blocks, sorted by cover date descending; members use `order` ascending when all members have it. The `/photos/` timeline uses `buildPhotoTimeline()` and `displayPhotos(records, { sort: 'date' })`: globally sort by EXIF local capture time descending, then aggregate unique year/month/day sections. Do not re-sort already captioned rows, because the group title and note must follow the first visible member in the final display order. Date-only records sort after timed photos that day and never display a fabricated `00:00`; missing or invalid dates appear in an undated section. Never convert capture times through the browser/server timezone.
+
+`PhotoTimelineRings.astro` renders the year/month-day dial and one anchor per date. The page synchronizes it and the right-side metadata as photos scroll. Reserve local images' natural width/height at build time so lazy loading cannot move date targets. The website timeline does not rewrite publisher order or group metadata. Validate changes with `node --test tests/photo-view.test.mjs tests/photo-timeline.test.mjs`, `npm run build`, and `tests/test_photo_timeline_ui.cjs` (Playwright; optionally set `PHOTO_TEST_CHROME`).
 
 The group title and note show on the first visible member only. EXIF renders as two semantic rows:
 

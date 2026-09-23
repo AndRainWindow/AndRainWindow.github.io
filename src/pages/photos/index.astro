@@ -3,13 +3,22 @@ import BaseHead from '../../components/BaseHead.astro';
 import SiteNav from '../../components/SiteNav.astro';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
 import photosData from '../../data/photos.json';
-import { displayPhotos } from '../../data/photo-view.mjs';
+import { buildPhotoTimeline } from '../../data/photo-timeline.mjs';
+import PhotoTimelineRings from '../../components/PhotoTimelineRings.astro';
+import sharp from 'sharp';
+import { fileURLToPath } from 'node:url';
 
-const photos = displayPhotos(photosData);
-
-const years = [...new Set(
-	photos.map((photo) => photo.date.slice(0, 4))
-)];
+const timeline = buildPhotoTimeline(photosData);
+const days = timeline.flatMap(year => year.months.flatMap(month => month.days));
+const photos = days.flatMap(day => day.items);
+// Reserve each image's actual aspect ratio so lazy loading cannot move date
+// anchors or change the active photo after a jump down the stream.
+const dimensions = new Map(await Promise.all(photos.map(async photo => {
+	if (!photo.image.startsWith('/images/') || photo.image.includes('..')) return [photo.id, null] as const;
+	const file = fileURLToPath(new URL(`../../../public${photo.image}`, import.meta.url));
+	const { width, height } = await sharp(file).metadata();
+	return [photo.id, { width, height }] as const;
+})));
 ---
 
 <!doctype html>
@@ -94,73 +103,41 @@ const years = [...new Set(
 			margin: 0 auto;
 			padding: 0 35px 140px;
 			display: grid;
-			grid-template-columns: 150px minmax(0, 1fr) 310px;
-			gap: 55px;
+			grid-template-columns: 190px minmax(0, 1fr) 280px;
+			gap: 40px;
 			align-items: start;
 		}
+		.photo-layout.is-empty { display: block; }
+		.photo-layout.is-empty .photo-info { display: none; }
 
-		.timeline,
 		.photo-info {
 			position: sticky;
 			top: 90px;
 			height: fit-content;
 		}
 
-		.timeline {
-			color: rgba(255,255,255,0.72);
-		}
-
-		.timeline-year {
-			margin-bottom: 22px;
-		}
-
-		.timeline-year h2 {
-			margin: 0 0 12px;
-			font-size: 1.1rem;
-			font-weight: 500;
-			color: white;
-		}
-
-		.timeline-link {
-			position: relative;
-			display: block;
-			padding: 7px 0 7px 20px;
-			color: rgba(255,255,255,0.55);
-			text-decoration: none;
-			font-size: 0.9rem;
-			transition: color 0.2s ease;
-		}
-
-		.timeline-link::before {
-			content: "";
-			position: absolute;
-			left: 4px;
-			top: 50%;
-			width: 5px;
-			height: 5px;
-			border-radius: 50%;
-			background: rgba(255,255,255,0.35);
-			transform: translateY(-50%);
-			transition: all 0.2s ease;
-		}
-
-		.timeline-link:hover,
-		.timeline-link.active {
-			color: white;
-		}
-
-		.timeline-link.active::before {
-			width: 7px;
-			height: 7px;
-			left: 3px;
-			background: white;
-		}
-
-		.photo-stream {
+		.photo-stream,
+		.day-photos {
 			display: flex;
 			flex-direction: column;
 			gap: 120px;
 		}
+
+		.photo-day, .photo-item { scroll-margin-top: 70px; }
+		.day-heading {
+			display: flex;
+			align-items: center;
+			gap: 16px;
+			margin: 0 0 28px;
+			color: rgba(255,255,255,.68);
+			font: 12px/1.5 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+			font-weight: 400;
+			letter-spacing: 2px;
+		}
+		.day-heading::after { content: ""; height: 1px; flex: 1; background: rgba(255,255,255,.15); }
+		.day-heading span { color: rgba(255,255,255,.4); font-size: 10px; letter-spacing: 0; }
+		.empty-state { color: rgba(255,255,255,.7); }
+		.photo-info [hidden] { display: none; }
 
 		.photo-item {
 			scroll-margin-top: 70px;
@@ -236,8 +213,8 @@ const years = [...new Set(
 
 		@media (max-width: 1050px) {
 			.photo-layout {
-				grid-template-columns: 110px minmax(0, 1fr) 250px;
-				gap: 30px;
+				grid-template-columns: 150px minmax(0, 1fr) 210px;
+				gap: 24px;
 			}
 		}
 
@@ -252,12 +229,12 @@ const years = [...new Set(
 				padding: 0 20px 90px;
 			}
 
-			.timeline,
 			.photo-info {
 				display: none;
 			}
 
-			.photo-stream {
+			.photo-stream,
+			.day-photos {
 				gap: 75px;
 			}
 
@@ -283,8 +260,12 @@ const years = [...new Set(
 			.mobile-note {
 				margin-top: 18px;
 				line-height: 1.9;
+				white-space: pre-line;
 				color: rgba(255,255,255,0.76);
 			}
+		}
+		@media (prefers-reduced-motion: reduce) {
+			:global(html) { scroll-behavior: auto; }
 		}
 	</style>
 </head>
@@ -302,44 +283,38 @@ const years = [...new Set(
 		<p>Record what remains after the moment has passed.</p>
 	</header>
 
-	<div class="photo-layout">
+	<div class:list={['photo-layout', { 'is-empty': !photos.length }]}>
 
-		<aside class="timeline">
-			{years.map((year) => (
-				<div class="timeline-year">
-					<h2>{year}</h2>
+		{photos.length > 0 && <PhotoTimelineRings timeline={timeline} />}
 
-					{photos
-						.filter((photo) => photo.date.startsWith(year))
-						.map((photo) => (
-							<a
-								class="timeline-link"
-								href={`#${photo.id}`}
-								data-photo-id={photo.id}
-							>
-								{photo.date.slice(5, 10).replace('-', '.')}
-							</a>
-						))
-					}
-				</div>
-			))}
-		</aside>
+		<section class="photo-stream" aria-label="摄影作品">
+			{!photos.length && <p class="empty-state">还没有公开的摄影作品。</p>}
+			{days.map(day => (
+			<section class="photo-day" id={day.id} aria-labelledby={`${day.id}-heading`}>
+				<h2 class="day-heading" id={`${day.id}-heading`}>
+					{day.day ? <time datetime={day.day}>{day.day.replaceAll('-', '.')}</time> : '未记录日期'}
+					<span>{day.items.length} 张</span>
+				</h2>
+				<div class="day-photos">
 
-		<section class="photo-stream">
-
-			{photos.map((photo) => (
+			{day.items.map((photo, index) => (
 
 				<article
 					id={photo.id}
 					class="photo-item"
 					data-photo={JSON.stringify(photo)}
+					data-day={day.day || 'undated'}
+					data-day-position={index + 1}
 				>
 
 					<div class="photo-frame">
 						<img
 							src={photo.image}
 							alt={photo.alt}
-							loading="lazy"
+							width={dimensions.get(photo.id)?.width}
+							height={dimensions.get(photo.id)?.height}
+							loading={photo === photos[0] ? 'eager' : 'lazy'}
+							decoding="async"
 						/>
 					</div>
 
@@ -361,14 +336,17 @@ const years = [...new Set(
 
 			))}
 
+				</div>
+			</section>
+			))}
 		</section>
 
-		<aside class="photo-info">
-			<h2 id="info-title">{photos[0]?.title}</h2>
+		<aside class="photo-info" aria-label="当前照片信息">
+			<h2 id="info-title" hidden={!photos[0]?.title}>{photos[0]?.title}</h2>
 			<div class="photo-date" id="info-date">{[photos[0]?.time, photos[0]?.location].filter(Boolean).join(' · ')}</div>
 			<div class="photo-camera" id="info-equip">{photos[0]?.equip}</div>
 			<div class="photo-camera" id="info-exposure">{photos[0]?.exposure}</div>
-			<p class="photo-note" id="info-note">{photos[0]?.note}</p>
+			<p class="photo-note" id="info-note" hidden={!photos[0]?.note}>{photos[0]?.note}</p>
 		</aside>
 
 	</div>
@@ -382,57 +360,112 @@ const years = [...new Set(
 </footer>
 
 <script>
-	const items = [...document.querySelectorAll('.photo-item')];
-	const timelineLinks = [...document.querySelectorAll('.timeline-link')];
-
+	const items = [...document.querySelectorAll<HTMLElement>('.photo-item')];
+	const links = [...document.querySelectorAll<HTMLAnchorElement>('.timeline-link')];
+	const yearSelect = document.querySelector<HTMLSelectElement>('[data-timeline-year]');
+	const daySelect = document.querySelector<HTMLSelectElement>('[data-timeline-day]');
+	const dial = document.querySelector<HTMLElement>('.date-dial');
+	const position = document.querySelector('[data-timeline-position]');
+	const archive = document.querySelector<HTMLElement>('.archive-scroll');
+	const years = [...new Set(links.map(link => link.dataset.year))];
 	const title = document.querySelector('#info-title');
 	const date = document.querySelector('#info-date');
 	const equip = document.querySelector('#info-equip');
 	const exposure = document.querySelector('#info-exposure');
 	const note = document.querySelector('#info-note');
+	let active: HTMLElement | undefined;
+	let activeYear: string | undefined;
 
-	function setActive(item) {
-		if (!(item instanceof HTMLElement)) return;
-
-		const raw = item.dataset.photo;
-		if (!raw) return;
-
-		const photo = JSON.parse(raw);
-
-		if (title) { title.textContent = photo.title ?? ''; title.toggleAttribute('hidden', !photo.title); }
+	function setActive(item: HTMLElement) {
+		if (active === item) return;
+		active = item;
+		const photo = JSON.parse(item.dataset.photo || '{}');
+		if (title) { title.textContent = photo.title || ''; title.toggleAttribute('hidden', !photo.title); }
 		if (date) date.textContent = [photo.time, photo.location].filter(Boolean).join(' · ');
-		if (equip) equip.textContent = photo.equip ?? '';
-		if (exposure) exposure.textContent = photo.exposure ?? '';
-		if (note) { note.textContent = photo.note ?? ''; note.toggleAttribute('hidden', !photo.note); }
+		if (equip) equip.textContent = photo.equip || '';
+		if (exposure) exposure.textContent = photo.exposure || '';
+		if (note) { note.textContent = photo.note || ''; note.toggleAttribute('hidden', !photo.note); }
 
-		timelineLinks.forEach((link) => {
-			link.classList.toggle(
-				'active',
-				link.getAttribute('data-photo-id') === item.id
-			);
+		const day = item.dataset.day;
+		const link = links.find(link => link.dataset.day === day);
+		if (!link) return;
+		const year = link.dataset.year || 'undated';
+		const yearLinks = links.filter(link => link.dataset.year === year);
+		if (yearSelect) yearSelect.value = year;
+		if (daySelect) {
+			if (activeYear !== year) {
+				daySelect.replaceChildren(...yearLinks.map(link => new Option(
+					link.dataset.day === 'undated' ? '—' : link.dataset.day!.slice(5).replace('-', '.'), link.dataset.day
+				)));
+			}
+			daySelect.value = day || 'undated';
+		}
+		activeYear = year;
+		dial?.style.setProperty('--year-progress', String((years.indexOf(year) + 1) / years.length * 100));
+		dial?.style.setProperty('--day-progress', String((yearLinks.indexOf(link) + 1) / yearLinks.length * 100));
+		if (position) {
+			position.textContent = `${String(item.dataset.dayPosition).padStart(2, '0')} / ${String(link.dataset.count).padStart(2, '0')}`;
+			position.setAttribute('aria-label', `当日第 ${item.dataset.dayPosition} 张，共 ${link.dataset.count} 张`);
+		}
+		links.forEach(candidate => {
+			candidate.classList.toggle('active', candidate === link);
+			if (candidate === link) candidate.setAttribute('aria-current', 'date');
+			else candidate.removeAttribute('aria-current');
 		});
+		// Keep the highlighted date inside its own list without moving the page.
+		if (archive) {
+			const bounds = archive.getBoundingClientRect();
+			const current = link.getBoundingClientRect();
+			if (current.top < bounds.top) archive.scrollTop += current.top - bounds.top;
+			else if (current.bottom > bounds.bottom) archive.scrollTop += current.bottom - bounds.bottom;
+		}
 	}
 
-	if (items.length > 0) {
+	function selectHash() {
+		let target: HTMLElement | null = null;
+		try { target = document.getElementById(decodeURIComponent(location.hash.slice(1))); } catch { return; }
+		const item = target?.matches('.photo-item') ? target : target?.querySelector<HTMLElement>('.photo-item');
+		if (item) setActive(item);
+	}
+
+	function updateFromScroll() {
+		if (!items.length) return;
+		// Select by reading position, not intersection ratio (which fails on tall
+		// portraits and can leave stale metadata when several entries cross at once).
+		const anchor = Math.min(innerHeight * .34, 260);
+		let low = 0, high = items.length - 1;
+		while (low < high) {
+			const mid = Math.ceil((low + high) / 2);
+			if (items[mid].getBoundingClientRect().top <= anchor) low = mid;
+			else high = mid - 1;
+		}
+		const atEnd = scrollY > 0 && innerHeight + scrollY >= document.documentElement.scrollHeight - 2;
+		setActive(items[atEnd ? items.length - 1 : low]);
+	}
+	let scheduled = false;
+	function scheduleUpdate() {
+		if (scheduled) return;
+		scheduled = true;
+		requestAnimationFrame(() => { scheduled = false; updateFromScroll(); });
+	}
+
+	if (items.length) {
 		setActive(items[0]);
-
-		const observer = new IntersectionObserver(
-			(entries) => {
-				const visible = entries
-					.filter((entry) => entry.isIntersecting)
-					.sort((a, b) => b.intersectionRatio - a.intersectionRatio);
-
-				if (visible.length > 0) {
-					setActive(visible[0].target);
-				}
-			},
-			{
-				rootMargin: '-30% 0px -30% 0px',
-				threshold: [0.1, 0.3, 0.6]
-			}
-		);
-
-		items.forEach((item) => observer.observe(item));
+		selectHash();
+		if (yearSelect) {
+			yearSelect.disabled = false;
+			yearSelect.addEventListener('change', () => links.find(link => link.dataset.year === yearSelect.value)?.click());
+		}
+		if (daySelect) {
+			daySelect.disabled = false;
+			daySelect.addEventListener('change', () => links.find(link => link.dataset.day === daySelect.value)?.click());
+		}
+		window.addEventListener('scroll', scheduleUpdate, { passive: true });
+		window.addEventListener('resize', scheduleUpdate);
+		window.addEventListener('pageshow', scheduleUpdate);
+		window.addEventListener('hashchange', () => { selectHash(); scheduleUpdate(); });
+		items.forEach(item => item.querySelector('img')?.addEventListener('load', scheduleUpdate));
+		scheduleUpdate();
 	}
 </script>
 

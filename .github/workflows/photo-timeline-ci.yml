@@ -1,0 +1,54 @@
+name: Photography timeline checks
+
+on:
+  push:
+    paths:
+      - 'src/components/PhotoTimelineRings.astro'
+      - 'src/pages/photos/**'
+      - 'src/data/photo*.mjs'
+      - 'src/data/photos.json'
+      - 'tests/photo*.test.mjs'
+      - 'tests/test_photo_timeline_ui.cjs'
+      - '.github/workflows/photo-timeline-ci.yml'
+  pull_request:
+    paths:
+      - 'src/components/PhotoTimelineRings.astro'
+      - 'src/pages/photos/**'
+      - 'src/data/photo*.mjs'
+      - 'tests/photo*.test.mjs'
+      - 'tests/test_photo_timeline_ui.cjs'
+      - '.github/workflows/photo-timeline-ci.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  photography:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+      - name: Check photo ordering and captions
+        run: node --test tests/photo-view.test.mjs tests/photo-timeline.test.mjs
+      - name: Build website
+        run: |
+          npm ci
+          npm run build
+      - name: Check navigation and responsive layouts
+        env:
+          PHOTO_TEST_CHROME: /usr/bin/google-chrome
+          PHOTO_UI_ARTIFACTS: ${{ runner.temp }}/photo-timeline-ui
+        run: |
+          npm install --prefix "$RUNNER_TEMP/photo-ui-tools" --no-save playwright
+          export NODE_PATH="$RUNNER_TEMP/photo-ui-tools/node_modules"
+          node tests/test_photo_timeline_ui.cjs
+      - name: Save browser screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: photography-timeline-screenshots
+          path: ${{ runner.temp }}/photo-timeline-ui
