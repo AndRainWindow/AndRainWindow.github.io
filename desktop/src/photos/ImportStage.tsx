@@ -52,7 +52,6 @@ export default function ImportStage({ pending, selectedSource, blocked, progress
       <div className="action-row">
         <button className="button ghost" disabled={blocked || !groupNote.trim()} onClick={onNoteToAll}>
           将组感受写入每张照片</button>
-        <small>写入后每张仍可单独修改。</small>
       </div>
     </>}
     <div className="photo-thumb-strip">

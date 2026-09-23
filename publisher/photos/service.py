@@ -31,6 +31,8 @@ def dispatch(root: Path, payload: dict, on_event=None) -> dict:
             return catalog.import_group(payload, on_event)
         if action == 'update':
             return catalog.update(payload['id'], payload['changes'])
+        if action == 'geocode-group':
+            return catalog.geocode_group(payload['id'])
         if action == 'update-group':
             return catalog.update_group(payload['id'], payload['changes'],
                                         order=payload.get('order'), cover=payload.get('cover'),

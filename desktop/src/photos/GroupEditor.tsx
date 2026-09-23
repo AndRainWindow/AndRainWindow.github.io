@@ -19,6 +19,7 @@ interface Props {
   onDirty: () => void;
   onSaveFields: (title: string, note: string) => void;
   onNoteToAll: (title: string, note: string) => void;
+  onGeocodeGroup: () => void;
   onCoverDate: (date: string) => void;
   onCover: (photoId: string) => void;
   onReorder: (orderIds: string[]) => void;
@@ -27,7 +28,7 @@ interface Props {
 }
 
 export default function GroupEditor({ group, blocked, onDirty, onSaveFields, onNoteToAll,
-  onCoverDate, onCover, onReorder, onToggleGroupHidden, onToggleGroupDeleted }: Props) {
+  onGeocodeGroup, onCoverDate, onCover, onReorder, onToggleGroupHidden, onToggleGroupDeleted }: Props) {
   const [title, setTitle] = useState(group.title);
   const [note, setNote] = useState(group.note);
   const [orderIds, setOrderIds] = useState<string[]>(() => group.photos.map(p => p.id!));
@@ -66,7 +67,8 @@ export default function GroupEditor({ group, blocked, onDirty, onSaveFields, onN
         保存整组修改</button>
       <button className="button ghost" disabled={blocked || !note.trim()}
         onClick={() => onNoteToAll(title, note)}>将组感受写入整组</button>
-      <small>写入后每张照片的感受仍可单独修改。</small>
+      <button className="button secondary" disabled={blocked}
+        onClick={onGeocodeGroup}>一键识别区县</button>
     </div>
     <div className="photo-fields">
       <label>组日期（即封面照片的拍摄日期）

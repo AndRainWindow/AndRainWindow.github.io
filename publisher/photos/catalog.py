@@ -205,6 +205,28 @@ class PhotoCatalog:
             message += f'（{len(errors)} 处地点识别失败，可稍后逐张重试。）'
         return {**self.listing(), 'message': message, 'errors': errors}
 
+    def geocode_group(self, group_id: str) -> dict:
+        """One-click district lookup for every located-but-unplaced photo in a group.
+
+        Photos that already have a location (manual edits included) are never
+        touched; photos without GPS are skipped silently.
+        """
+        data = self.load()
+        members = [p for p in data if p.get('groupId', p['id']) == group_id]
+        if not members:
+            raise ValueError('照片组不存在。')
+        private = read_json(self.local / 'sources.json', {})
+        targets = [p for p in members
+                   if not p.get('location') and private.get(p['id'], {}).get('gps')]
+        if not targets:
+            return {**self.listing(), 'message': '组内没有需要识别的照片（已有地点或无 GPS）。', 'errors': []}
+        errors = self._locate_batch(targets, private, lambda *args, **kwargs: None)
+        atomic_json(self.path, data)
+        message = f'已为 {len(targets) - len(errors)} 张照片识别地点。'
+        if errors:
+            message += f'{len(errors)} 处失败，可稍后重试。'
+        return {**self.listing(), 'message': message, 'errors': errors}
+
     def _locate_batch(self, rows: list[dict], private: dict, emit) -> list[str]:
         """Reverse-geocode each distinct coordinate once; failures never abort the import."""
         coords: dict[str, list[dict]] = {}

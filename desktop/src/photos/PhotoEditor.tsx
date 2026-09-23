@@ -98,7 +98,7 @@ export default function PhotoEditor({ photo, mode, blocked, previewSrc, geoReady
     <label className="photo-wide-label">单张感受（留空沿用组规则）<textarea value={value.note || ''}
       disabled={blocked} rows={4} onChange={e => setField('note', e.target.value)} /></label>
     <div className="action-row">
-      <span className="photo-gps-state">{hasGps ? '已记录 GPS 坐标（仅保存在本机）' : '无 GPS，地点可手动填写'}</span>
+      {!hasGps && <small>无 GPS，地点可手动填写</small>}
       <button className="button secondary" disabled={blocked || !hasGps || !geoReady}
         onClick={() => onGeocode?.()}>GPS 识别区县</button>
       {mode === 'pending' && onSetSharedLocation && value.location &&

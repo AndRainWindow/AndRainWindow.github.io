@@ -183,6 +183,32 @@ class ImportPipelineTests(unittest.TestCase):
             self.assertEqual(row['note'], '共享感受')
             self.assertEqual(row['groupNote'], '共享感受')
 
+    def test_geocode_group_fills_unplaced_only_and_keeps_manual(self):
+        # 导入时不配置 key：GPS 照片导入后仍无地点，正好留给一键识别。
+        with_gps = make_photo(Path(self.tmp.name) / 'g.jpg', '2026:09:23 10:00:00',
+                              gps={1: 'N', 2: (40, 47, 0), 3: 'W', 4: (73, 58, 0)})
+        no_gps = make_photo(Path(self.tmp.name) / 'n.jpg', '2026:09:23 10:01:00')
+        dispatch(self.root, {'action': 'import', 'title': '整组', 'photos': [with_gps, no_gps]})
+        group_id = self.catalog.load()[0]['groupId']
+        # 手动地点不被覆盖：给无 GPS 的那张先填地点，再跑批量识别。
+        manual_row = next(p for p in self.catalog.load() if p['date'] == '2026-09-23T10:01')
+        dispatch(self.root, {'action': 'update', 'id': manual_row['id'],
+                             'changes': {'location': '手动填的地点'}})
+        dispatch(self.root, {'action': 'geo-preferences', 'provider': 'amap', 'amapKey': 'amap-key'})
+        good = json.dumps({'status': '1', 'regeocode': {'addressComponent': {
+            'province': '纽约州', 'city': '纽约市', 'district': '曼哈顿'}}}).encode()
+        with patch.object(geocode.urllib.request, 'urlopen',
+                          side_effect=lambda request, timeout=0: io.BytesIO(good)):
+            result = dispatch(self.root, {'action': 'geocode-group', 'id': group_id})
+        saved = {p['date']: p for p in self.catalog.load()}
+        self.assertEqual(saved['2026-09-23T10:00']['location'], '纽约市 · 曼哈顿')
+        self.assertEqual(saved['2026-09-23T10:01']['location'], '手动填的地点')
+        self.assertIn('识别地点', result['message'])
+        # 再跑一次：没有需要识别的照片，不发起任何请求。
+        with patch.object(geocode.urllib.request, 'urlopen', side_effect=AssertionError('must not call')):
+            again = dispatch(self.root, {'action': 'geocode-group', 'id': group_id})
+        self.assertIn('没有需要识别', again['message'])
+
     def test_sweep_orphans_clears_dead_webp_and_keeps_referenced_and_manual(self):
         self.catalog.output.mkdir(parents=True)
         orphan = self.catalog.output / f'photo-{"a" * 32}.webp'; orphan.write_bytes(b'x')

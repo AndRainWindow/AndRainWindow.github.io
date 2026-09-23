@@ -304,6 +304,8 @@ export default function PhotosPage({ active, project, disabled, onBusy, onLog }:
                 onSaveFields={(title, note) => void updateGroup(selectedGroup.id, { groupTitle: title, groupNote: note })}
                 onNoteToAll={(title, note) => void updateGroup(selectedGroup.id,
                   { groupTitle: title, groupNote: note }, { noteToAll: true })}
+                onGeocodeGroup={() => void request({ action: 'geocode-group', id: selectedGroup.id },
+                  '正在批量识别区县…')}
                 onCoverDate={date => void updatePhoto(selectedGroup.cover, { date })}
                 onCover={photoId => void updateGroup(selectedGroup.id, {}, { cover: photoId })}
                 onReorder={orderIds => void updateGroup(selectedGroup.id, {}, { order: orderIds })}
@@ -319,29 +321,28 @@ export default function PhotosPage({ active, project, disabled, onBusy, onLog }:
 
       <details className="panel photo-geocoding">
         <summary>GPS 地点识别 · {geo.configured ? `已配置（${geo.provider === 'amap' ? '高德' : 'Geoapify'}）` : '可选配置'}</summary>
-        <p>读取 GPS 在本地完成。查询区县时仅向所选服务发送坐标；不上传 JPG。原始坐标和密钥仅保存在本机。
-          高德会自动把 WGS84 坐标转换为 GCJ02（仅限中国大陆）。</p>
         <div className="photo-fields">
           <label>服务<select value={geo.provider} disabled={blocked}
             onChange={e => void request({ action: 'geo-preferences', provider: e.target.value }, '正在保存地点识别设置…')}>
             <option value="geoapify">Geoapify（国际）</option>
             <option value="amap">高德 AMap（国内）</option>
           </select></label>
-          <label>Geoapify API Key<input type="password" autoComplete="off" value={geoKey} disabled={blocked}
-            onChange={e => setGeoKey(e.target.value)} placeholder="仅保存到本地" /></label>
-          <label>高德 Web 服务 Key<input type="password" autoComplete="off" value={amapKey} disabled={blocked}
-            onChange={e => setAmapKey(e.target.value)} placeholder="仅保存到本地" /></label>
+          {geo.provider === 'amap'
+            ? <label>高德 Web 服务 Key<input type="password" autoComplete="off" value={amapKey} disabled={blocked}
+              onChange={e => setAmapKey(e.target.value)} placeholder="仅保存到本地" /></label>
+            : <label>Geoapify API Key<input type="password" autoComplete="off" value={geoKey} disabled={blocked}
+              onChange={e => setGeoKey(e.target.value)} placeholder="仅保存到本地" /></label>}
         </div>
         <div className="action-row">
-          <button className="button secondary" disabled={blocked || !geoKey.trim()}
-            onClick={async () => { const r = await request({ action: 'geo-preferences', apiKey: geoKey }, '正在保存地点识别设置…'); if (r) setGeoKey(''); }}>
-            保存 Geoapify Key</button>
-          <button className="button secondary" disabled={blocked || !amapKey.trim()}
-            onClick={async () => { const r = await request({ action: 'geo-preferences', amapKey, provider: 'amap' }, '正在保存地点识别设置…'); if (r) setAmapKey(''); }}>
-            保存高德 Key</button>
+          <button className="button secondary"
+            disabled={blocked || !(geo.provider === 'amap' ? amapKey : geoKey).trim()}
+            onClick={async () => {
+              const payload = geo.provider === 'amap' ? { amapKey } : { apiKey: geoKey };
+              const r = await request({ action: 'geo-preferences', provider: geo.provider, ...payload }, '正在保存地点识别设置…');
+              if (r) { setGeoKey(''); setAmapKey(''); }
+            }}>保存 Key</button>
         </div>
-        <p>服务与地点数据：Geoapify / OpenStreetMap，或高德地图。识别结果可手动校正；没有 GPS 的照片直接填写地点即可。</p>
-        <small>照片“隐藏”仅控制网页展示。公开仓库里的 WebP 仍可能通过直接链接访问。</small>
+        <small>密钥仅保存在本机，识别时只发送坐标。高德自动转换 GCJ02（仅限中国大陆）；没有 GPS 的照片直接填写地点即可。</small>
       </details>
     </div>
   </div>;
