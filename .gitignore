@@ -27,3 +27,8 @@ dist/
 .astro/
 
 config.json
+migration_report.json
+
+# python
+__pycache__/
+*.pyc
