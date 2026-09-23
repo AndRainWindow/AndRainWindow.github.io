@@ -12,6 +12,7 @@
   "app": {
     "windows": [
       {
+        "label": "main",
         "title": "AndRainWindow Publisher",
         "width": 1100,
         "height": 720,
@@ -26,6 +27,9 @@
     }
   },
   "bundle": {
-    "active": false
+    "active": true,
+    "targets": ["nsis"],
+    "icon": ["icons/icon.ico"],
+    "shortDescription": "Desktop controller for AndRainWindow Publisher"
   }
 }
