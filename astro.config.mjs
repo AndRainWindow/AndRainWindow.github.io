@@ -6,7 +6,7 @@ import { defineConfig, fontProviders } from 'astro/config';
 
 // https://astro.build/config
 export default defineConfig({
-	site: 'https://AndRainWindow.github.io',
+	site: 'https://www.andrainwindow.xyz',
 	integrations: [mdx(), sitemap()],
 	fonts: [
 		{
