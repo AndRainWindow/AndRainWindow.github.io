@@ -1,6 +1,7 @@
 ---
 import type { CollectionEntry } from 'astro:content';
 import BaseHead from '../components/BaseHead.astro';
+import ThemeToggle from '../components/ThemeToggle.astro';
 import { SITE_DESCRIPTION } from '../consts';
 
 type Props = CollectionEntry<'blog'>['data'];
@@ -37,7 +38,7 @@ const {
 	<style>
 
 		:global(html) {
-			background: #111;
+			background: var(--page-bg);
 		}
 
 		:global(body) {
@@ -61,9 +62,7 @@ const {
 			background-size: cover;
 			background-position: center;
 
-			filter:
-				blur(8px)
-				brightness(0.82);
+			filter: var(--bg-filter);
 
 			transform: scale(1.03);
 
@@ -78,7 +77,7 @@ const {
 			inset: 0;
 
 			background:
-				rgba(15, 20, 25, 0.12);
+				var(--bg-overlay);
 
 			pointer-events: none;
 		}
@@ -250,7 +249,7 @@ const {
 
 		.article-card {
 			background:
-				rgba(255,255,255,0.88);
+				var(--card-bg);
 
 			backdrop-filter:
 				blur(10px)
@@ -262,7 +261,7 @@ const {
 
 			border:
 				1px solid
-				rgba(255,255,255,0.35);
+				var(--card-border);
 
 			border-radius: 18px;
 
@@ -315,7 +314,7 @@ const {
 
 			letter-spacing: 2px;
 
-			color: #1e1e1e;
+			color: var(--card-title);
 		}
 
 
@@ -342,7 +341,7 @@ const {
 
 			font-size: 0.9rem;
 
-			color: #737b84;
+			color: var(--card-muted);
 		}
 
 
@@ -375,7 +374,7 @@ const {
 
 			border:
 				1px solid
-				rgba(80, 90, 100, 0.20);
+				var(--prose-rule);
 
 			border-radius: 999px;
 
@@ -388,10 +387,10 @@ const {
 
 			font-size: 0.84rem;
 
-			color: #66707a;
+			color: var(--card-muted);
 
 			background:
-				rgba(255,255,255,0.35);
+				var(--topic-bg);
 		}
 
 
@@ -403,7 +402,7 @@ const {
 
 			border-top:
 				1px solid
-				rgba(100,110,120,0.18);
+				var(--prose-rule);
 		}
 
 
@@ -426,7 +425,7 @@ const {
 
 			line-height: 1.9;
 
-			color: #292d32;
+			color: var(--prose-text);
 		}
 
 
@@ -444,7 +443,7 @@ const {
 				"Noto Serif SC",
 				serif;
 
-			color: #202328;
+			color: var(--prose-heading);
 
 			line-height: 1.45;
 		}
@@ -460,7 +459,7 @@ const {
 
 			border-bottom:
 				1px solid
-					rgba(100,110,120,0.16);
+					var(--prose-rule);
 		}
 
 
@@ -495,7 +494,7 @@ const {
 
 			line-height: 1.65;
 
-			color: #8a8f95;
+			color: var(--prose-muted);
 
 			font-family:
 				-apple-system,
@@ -518,9 +517,9 @@ const {
 				3px solid #8a949e;
 
 			background:
-				rgba(0,0,0,0.035);
+				var(--prose-quote-bg);
 
-			color: #555e67;
+			color: var(--prose-quote-text);
 		}
 
 
@@ -552,20 +551,20 @@ const {
 			border-radius: 5px;
 
 			background:
-				rgba(0,0,0,0.06);
+				var(--prose-code-bg);
 
-			color: #444;
+			color: var(--prose-code-text);
 		}
 
 
 		:global(.prose a) {
-			color: #356b84;
+			color: var(--prose-link);
 
 			text-decoration:
 				underline;
 
 			text-decoration-color:
-				rgba(53,107,132,0.35);
+				color-mix(in srgb, var(--prose-link) 40%, transparent);
 
 			text-underline-offset:
 				3px;
@@ -580,7 +579,7 @@ const {
 
 			border-top:
 				1px solid
-					rgba(100,110,120,0.2);
+					var(--prose-rule);
 		}
 
 
@@ -702,6 +701,9 @@ const {
 			>
 				博客
 			</a>
+
+
+			<ThemeToggle />
 
 		</div>
 

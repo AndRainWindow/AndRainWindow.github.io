@@ -1,0 +1,184 @@
+---
+---
+
+<button
+	class="theme-toggle"
+	data-theme-toggle
+	type="button"
+	aria-label="切换深浅色模式"
+	title="切换深浅色模式"
+>
+
+	{/* 默认（浅色）显示太阳，深色显示月亮；由 html[data-theme] 驱动，无闪烁 */}
+
+	<svg
+		class="theme-icon icon-sun"
+		viewBox="0 0 24 24"
+		fill="none"
+		stroke="currentColor"
+		stroke-width="2"
+		stroke-linecap="round"
+		aria-hidden="true"
+	>
+
+		<circle cx="12" cy="12" r="4"></circle>
+
+		<line x1="12" y1="2" x2="12" y2="4.5"></line>
+		<line x1="12" y1="19.5" x2="12" y2="22"></line>
+		<line x1="2" y1="12" x2="4.5" y2="12"></line>
+		<line x1="19.5" y1="12" x2="22" y2="12"></line>
+		<line x1="4.9" y1="4.9" x2="6.7" y2="6.7"></line>
+		<line x1="17.3" y1="17.3" x2="19.1" y2="19.1"></line>
+		<line x1="4.9" y1="19.1" x2="6.7" y2="17.3"></line>
+		<line x1="17.3" y1="6.7" x2="19.1" y2="4.9"></line>
+
+	</svg>
+
+
+	<svg
+		class="theme-icon icon-moon"
+		viewBox="0 0 24 24"
+		fill="none"
+		stroke="currentColor"
+		stroke-width="2"
+		stroke-linecap="round"
+		stroke-linejoin="round"
+		aria-hidden="true"
+	>
+
+		<path d="M21 12.8A9 9 0 1 1 11.2 3 7 7 0 0 0 21 12.8z"></path>
+
+	</svg>
+
+</button>
+
+
+<style>
+
+	.theme-toggle {
+		align-self: center;
+
+		width: 38px;
+		height: 38px;
+
+		flex-shrink: 0;
+
+		display: grid;
+		place-items: center;
+
+		padding: 0;
+
+		border: none;
+		border-radius: 50%;
+
+		background: white;
+		color: #f59e0b;
+
+		box-shadow:
+			0 2px 10px rgba(0, 0, 0, 0.18);
+
+		cursor: pointer;
+
+		transition:
+			transform 0.2s ease,
+			box-shadow 0.2s ease,
+			background 0.2s ease,
+			color 0.2s ease;
+	}
+
+
+	.theme-toggle:hover {
+		transform: scale(1.08);
+
+		box-shadow:
+			0 4px 14px rgba(0, 0, 0, 0.24);
+	}
+
+
+	.theme-icon {
+		width: 18px;
+		height: 18px;
+
+		grid-area: 1 / 1;
+	}
+
+
+	.icon-sun {
+		display: block;
+	}
+
+
+	.icon-moon {
+		display: none;
+
+		color: #64748b;
+	}
+
+
+	:global(html[data-theme='dark']) .theme-toggle {
+		background: #212735;
+		color: #c7d2fe;
+	}
+
+
+	:global(html[data-theme='dark']) .icon-sun {
+		display: none;
+	}
+
+
+	:global(html[data-theme='dark']) .icon-moon {
+		display: block;
+	}
+
+</style>
+
+
+<script>
+
+	const applyTheme = (theme: 'light' | 'dark') => {
+
+		document.documentElement.setAttribute(
+			'data-theme',
+			theme
+		);
+
+	};
+
+
+	document
+		.querySelectorAll(
+			'[data-theme-toggle]'
+		)
+		.forEach((button) => {
+
+			button.addEventListener('click', () => {
+
+				const current =
+					document.documentElement.getAttribute(
+						'data-theme'
+					);
+
+
+				const next =
+					current === 'dark'
+						? 'light'
+						: 'dark';
+
+
+				applyTheme(next);
+
+
+				try {
+					localStorage.setItem(
+						'theme',
+						next
+					);
+				} catch {
+					// 存储不可用时仅本次生效
+				}
+
+			});
+
+		});
+
+</script>

@@ -5,6 +5,8 @@
  */
 
 :root {
+	color-scheme: light;
+
 	--accent: #2337ff;
 	--accent-dark: #000d8a;
 	--black: 15, 18, 25;
@@ -15,6 +17,86 @@
 	--box-shadow:
 		0 2px 6px rgba(var(--gray), 25%), 0 8px 24px rgba(var(--gray), 33%),
 		0 16px 32px rgba(var(--gray), 33%);
+
+	/* ---- 浅色模式（默认，保持现有外观） ---- */
+	--page-bg: #ffffff;
+
+	/* 固定背景图的滤镜与遮罩（博客列表、文章页） */
+	--bg-filter: blur(8px) brightness(0.82);
+	--bg-overlay: rgba(15, 20, 25, 0.12);
+
+	/* 玻璃卡片（首页 Blog 卡片、博客列表、文章正文） */
+	--card-bg: rgba(255, 255, 255, 0.86);
+	--card-bg-hover: rgba(255, 255, 255, 0.94);
+	--card-border: rgba(255, 255, 255, 0.38);
+	--card-title: #1f2328;
+	--card-body: #4a5158;
+	--card-muted: #7d848c;
+	--card-shadow: 0 10px 35px rgba(0, 0, 0, 0.09);
+	--card-shadow-hover: 0 18px 48px rgba(0, 0, 0, 0.14);
+
+	/* 文章正文 */
+	--prose-text: #292d32;
+	--prose-heading: #202328;
+	--prose-muted: #8a8f95;
+	--prose-quote-bg: rgba(0, 0, 0, 0.035);
+	--prose-quote-text: #555e67;
+	--prose-code-bg: rgba(0, 0, 0, 0.06);
+	--prose-code-text: #444444;
+	--prose-rule: rgba(100, 110, 120, 0.18);
+	--prose-link: #356b84;
+	--topic-bg: rgba(255, 255, 255, 0.35);
+}
+
+:root[data-theme='dark'] {
+	color-scheme: dark;
+
+	--page-bg: #111318;
+	--gray-gradient: rgba(var(--gray-light), 6%), #111318;
+
+	--bg-filter: blur(8px) brightness(0.5);
+	--bg-overlay: rgba(6, 8, 12, 0.4);
+
+	--card-bg: rgba(26, 30, 37, 0.88);
+	--card-bg-hover: rgba(32, 37, 45, 0.94);
+	--card-border: rgba(255, 255, 255, 0.1);
+	--card-title: #eceef1;
+	--card-body: #b4bac2;
+	--card-muted: #8b929a;
+	--card-shadow: 0 10px 35px rgba(0, 0, 0, 0.4);
+	--card-shadow-hover: 0 18px 48px rgba(0, 0, 0, 0.55);
+
+	--prose-text: #c3c9d1;
+	--prose-heading: #eef0f3;
+	--prose-muted: #959ca4;
+	--prose-quote-bg: rgba(255, 255, 255, 0.06);
+	--prose-quote-text: #a9b0b8;
+	--prose-code-bg: rgba(255, 255, 255, 0.1);
+	--prose-code-text: #d6dbe1;
+	--prose-rule: rgba(255, 255, 255, 0.14);
+	--prose-link: #82c5e0;
+	--topic-bg: rgba(255, 255, 255, 0.06);
+}
+
+:root[data-theme='dark'] body {
+	color: rgb(200, 206, 214);
+}
+
+:root[data-theme='dark'] h1,
+:root[data-theme='dark'] h2,
+:root[data-theme='dark'] h3,
+:root[data-theme='dark'] h4,
+:root[data-theme='dark'] h5,
+:root[data-theme='dark'] h6 {
+	color: #eef0f3;
+}
+
+:root[data-theme='dark'] code {
+	background-color: rgba(255, 255, 255, 0.12);
+}
+
+:root[data-theme='dark'] hr {
+	border-top-color: rgba(255, 255, 255, 0.14);
 }
 body {
 	font-family: var(--font-atkinson);

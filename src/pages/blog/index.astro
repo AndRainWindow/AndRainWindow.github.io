@@ -44,7 +44,7 @@ function getExcerpt(body = '') {
 	<style>
 
 		:global(html) {
-			background: #111;
+			background: var(--page-bg);
 		}
 
 		:global(body) {
@@ -78,9 +78,7 @@ function getExcerpt(body = '') {
 			background-size: cover;
 			background-position: center;
 
-			filter:
-				blur(8px)
-				brightness(0.82);
+			filter: var(--bg-filter);
 
 			transform: scale(1.03);
 
@@ -95,7 +93,7 @@ function getExcerpt(body = '') {
 			inset: 0;
 
 			background:
-				rgba(15, 20, 25, 0.12);
+				var(--bg-overlay);
 		}
 
 
@@ -187,10 +185,10 @@ function getExcerpt(body = '') {
 
 			text-decoration: none;
 
-			color: #171717;
+			color: var(--card-title);
 
 			background:
-				rgba(255,255,255,0.80);
+				var(--card-bg);
 
 			backdrop-filter:
 				blur(14px)
@@ -202,7 +200,7 @@ function getExcerpt(body = '') {
 
 			border:
 				1px solid
-				rgba(255,255,255,0.35);
+				var(--card-border);
 
 			border-radius: 14px;
 
@@ -222,7 +220,7 @@ function getExcerpt(body = '') {
 				translateY(-4px);
 
 			background:
-				rgba(255,255,255,0.88);
+				var(--card-bg-hover);
 
 			box-shadow:
 				0 18px 50px
@@ -285,7 +283,7 @@ function getExcerpt(body = '') {
 
 			font-size: 0.88rem;
 
-			color: #707070;
+			color: var(--card-muted);
 		}
 
 
@@ -305,7 +303,7 @@ function getExcerpt(body = '') {
 
 			line-height: 1.8;
 
-			color: #444;
+			color: var(--card-body);
 
 			display: -webkit-box;
 
@@ -322,7 +320,7 @@ function getExcerpt(body = '') {
 
 			font-size: 0.9rem;
 
-			color: #555;
+			color: var(--card-body);
 		}
 
 

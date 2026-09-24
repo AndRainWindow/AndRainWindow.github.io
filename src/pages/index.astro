@@ -53,7 +53,7 @@ function getPostUrl(id: string) {
 	<style>
 
 		:global(html) {
-			background: #fff;
+			background: var(--page-bg);
 		}
 
 
@@ -125,6 +125,12 @@ function getPostUrl(id: string) {
 				rgba(0, 0, 0, 0.10);
 
 			pointer-events: none;
+		}
+
+
+		:global(html[data-theme='dark']) .background::after {
+			background:
+				rgba(0, 0, 0, 0.32);
 		}
 
 
@@ -270,6 +276,24 @@ function getPostUrl(id: string) {
 		}
 
 
+		:global(html[data-theme='dark']) .content {
+			background:
+				linear-gradient(
+					to bottom,
+
+					rgba(17,19,24,0.00) 0px,
+
+					rgba(17,19,24,0.40) 250px,
+
+					rgba(17,19,24,0.62) 600px,
+
+					rgba(17,19,24,0.80) 1100px,
+
+					rgba(17,19,24,0.94) 100%
+				);
+		}
+
+
 
 		/* =========================
 		   Photography
@@ -407,12 +431,12 @@ function getPostUrl(id: string) {
 
 			overflow: hidden;
 
-			color: #1f2328;
+			color: var(--card-title);
 
 			text-decoration: none;
 
 			background:
-				rgba(255,255,255,0.84);
+				var(--card-bg);
 
 			backdrop-filter:
 				blur(12px)
@@ -424,13 +448,12 @@ function getPostUrl(id: string) {
 
 			border:
 				1px solid
-				rgba(255,255,255,0.38);
+				var(--card-border);
 
 			border-radius: 14px;
 
 			box-shadow:
-				0 10px 35px
-					rgba(0,0,0,0.09);
+				var(--card-shadow);
 
 			transition:
 				transform 0.25s ease,
@@ -444,11 +467,10 @@ function getPostUrl(id: string) {
 				translateY(-5px);
 
 			background:
-				rgba(255,255,255,0.92);
+				var(--card-bg-hover);
 
 			box-shadow:
-				0 18px 48px
-					rgba(0,0,0,0.14);
+				var(--card-shadow-hover);
 		}
 
 
@@ -508,7 +530,7 @@ function getPostUrl(id: string) {
 
 			line-height: 1.45;
 
-			color: #202225;
+			color: var(--card-title);
 		}
 
 
@@ -529,7 +551,7 @@ function getPostUrl(id: string) {
 
 			line-height: 1.7;
 
-			color: #50565d;
+			color: var(--card-body);
 
 			display: -webkit-box;
 
@@ -562,7 +584,7 @@ function getPostUrl(id: string) {
 
 			font-size: 0.78rem;
 
-			color: #858b92;
+			color: var(--card-muted);
 		}
 
 

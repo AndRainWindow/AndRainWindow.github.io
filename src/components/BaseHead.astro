@@ -21,6 +21,39 @@ const { title, description, image = FallbackImage } = Astro.props;
 <!-- Global Metadata -->
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+<!-- 主题：默认跟随系统，用户手动切换后记住选择；在首屏渲染前执行避免闪烁 -->
+<script is:inline>
+	(function () {
+		var theme = null;
+		try {
+			theme = localStorage.getItem('theme');
+		} catch (error) {}
+
+		if (theme !== 'light' && theme !== 'dark') {
+			theme = window.matchMedia('(prefers-color-scheme: dark)').matches
+				? 'dark'
+				: 'light';
+		}
+
+		document.documentElement.setAttribute('data-theme', theme);
+
+		// 未手动选择时，跟随系统实时切换
+		try {
+			if (!localStorage.getItem('theme')) {
+				window
+					.matchMedia('(prefers-color-scheme: dark)')
+					.addEventListener('change', function (event) {
+						if (localStorage.getItem('theme')) return;
+						document.documentElement.setAttribute(
+							'data-theme',
+							event.matches ? 'dark' : 'light'
+						);
+					});
+			}
+		} catch (error) {}
+	})();
+</script>
 <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
 <link rel="icon" href="/favicon.ico" />
 <link rel="sitemap" href="/sitemap-index.xml" />
