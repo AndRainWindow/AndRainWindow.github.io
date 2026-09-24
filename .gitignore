@@ -22,17 +22,5 @@ pnpm-debug.log*
 # jetbrains setting folder
 .idea/
 
-config.json
-migration_report.json
-.publisher-local/
-
-# python
-__pycache__/
-*.pyc
-
-# Tauri / Rust
-desktop/src-tauri/target/
-desktop/src-tauri/gen/
-
 # local assistant session settings
 .claude/
