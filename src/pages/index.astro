@@ -144,7 +144,7 @@ function getPostUrl(id: string) {
 		.hero {
 			position: relative;
 
-			height: 100vh;
+			height: auto;
 			min-height: 100svh;
 
 			display: flex;
@@ -179,8 +179,7 @@ function getPostUrl(id: string) {
 
 			text-align: center;
 
-			transform:
-				translateY(-160px);
+			transform:translateY(-5vh);
 		}
 
 
@@ -685,14 +684,13 @@ function getPostUrl(id: string) {
 
 			.hero-content {
 				transform:
-					translateY(-100px);
+					translateY(-5vh);
 			}
 
 
 			.hero h1 {
-				font-size: 2.8rem;
-
-				letter-spacing: 5px;
+				font-size: clamp(2.8rem, 4vw, 4.5rem);
+				letter-spacing: clamp(3px,0.5vw,10px);
 			}
 
 
