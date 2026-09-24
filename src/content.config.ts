@@ -19,6 +19,10 @@ const blog = defineCollection({
 
 		wordCount: z.number().optional(),
 		readingTime: z.number().optional(),
+
+		// 博客管理设置的可见性标志（发布工具写入）。
+		hidden: z.boolean().optional(),
+		deleted: z.boolean().optional(),
 	}),
 });
 

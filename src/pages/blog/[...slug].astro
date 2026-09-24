@@ -3,7 +3,10 @@ import { type CollectionEntry, getCollection, render } from 'astro:content';
 import BlogPost from '../../layouts/BlogPost.astro';
 
 export async function getStaticPaths() {
-	const posts = await getCollection('blog');
+	// hidden / deleted 的文章不生成页面（直接访问 404，sitemap 也不再收录）。
+	const posts = (await getCollection('blog')).filter(
+		(post) => !post.data.hidden && !post.data.deleted
+	);
 	return posts.map((post) => ({
 		params: { slug: post.id },
 		props: post,

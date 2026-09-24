@@ -4,11 +4,14 @@ import SiteNav from '../../components/SiteNav.astro';
 import { getCollection } from 'astro:content';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../../consts';
 
-const posts = (await getCollection('blog')).sort(
-	(a, b) =>
-		(b.data.date?.valueOf() ?? 0) -
-		(a.data.date?.valueOf() ?? 0)
-);
+// hidden / deleted 的文章由发布工具的博客管理标记，不对外展示。
+const posts = (await getCollection('blog'))
+	.filter((post) => !post.data.hidden && !post.data.deleted)
+	.sort(
+		(a, b) =>
+			(b.data.date?.valueOf() ?? 0) -
+			(a.data.date?.valueOf() ?? 0)
+	);
 
 function getExcerpt(body = '') {
 	return body

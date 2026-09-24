@@ -6,6 +6,7 @@ topics: "Android, ADB"
 heroImage: "/images/covers/test.webp"
 wordCount: 12
 readingTime: 1
+hidden: true
 ---
 
 1.查看包名

@@ -6,7 +6,9 @@ import { getCollection } from 'astro:content';
 import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
 import RecentPhotos from '../components/RecentPhotos.astro';
 
+// hidden / deleted 的文章由发布工具的博客管理标记，不对外展示。
 const recentPosts = (await getCollection('blog'))
+	.filter((post) => !post.data.hidden && !post.data.deleted)
 	.sort(
 		(a, b) =>
 			(b.data.date?.valueOf() ?? 0) -
@@ -752,7 +754,7 @@ function getPostUrl(id: string) {
 			</h1>
 
 			<p>
-				Record what I see, explore what I don't know.
+				Always believe that something wonderful is about to happen.
 			</p>
 
 		</div>
