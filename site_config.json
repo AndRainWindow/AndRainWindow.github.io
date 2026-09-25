@@ -1,6 +1,7 @@
 {
-    "cover_override": {
-        "Adb相关命令": "/images/covers/test.webp",
-        "荣耀7X折腾日记":"/images/covers/honor7x.webp"
-    }
+  "cover_override": {
+    "Adb相关命令": "/images/covers/test.webp",
+    "荣耀7X折腾日记": "/images/covers/honor7x.webp",
+    "《人类群星闪耀时》阅读笔记": "/images/covers/d7f08547-8188-4c9d-b565-cd0202839b05.webp"
+  }
 }
