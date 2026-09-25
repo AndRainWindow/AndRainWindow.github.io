@@ -3,7 +3,7 @@ title: "OPPO A58x折腾日记"
 date: 2026-09-14
 updated: "2026-09-25 11:53:53"
 topics: "Android刷机，OPPO刷机"
-heroImage: "/images/covers/1789565320507.webp"
+heroImage: "/images/covers/ChatGPT_图像_2026年9月25日_22_35_10.webp"
 wordCount: 1758
 readingTime: 6
 ---
