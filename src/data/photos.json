@@ -101,7 +101,7 @@
     "shutter": "1/60",
     "focalLength": "35",
     "utcOffset": "+08:00",
-    "locationSource": "amap",
+    "order": 0,
     "id": "photo-9885c0640c90411cacd085dfb78b6587",
     "image": "/images/photos/photo-9885c0640c90411cacd085dfb78b6587.webp",
     "groupId": "19464e122d9b4edd838f222e5b0b44c8",
@@ -109,11 +109,10 @@
     "groupNote": "",
     "sourceHash": "975f56e9d41cd5194b46645305ac50b7988353cef15ae3773745a57e963684be",
     "hidden": false,
-    "deleted": false,
+    "deleted": true,
     "province": "福建省",
     "city": "福州市",
-    "district": "平潭县",
-    "order": 0
+    "district": "平潭县"
   },
   {
     "title": "",
@@ -127,7 +126,7 @@
     "shutter": "1/50",
     "focalLength": "29",
     "utcOffset": "+08:00",
-    "locationSource": "amap",
+    "order": 2,
     "id": "photo-65f5b193d7b64f749e174d305646d0e5",
     "image": "/images/photos/photo-65f5b193d7b64f749e174d305646d0e5.webp",
     "groupId": "19464e122d9b4edd838f222e5b0b44c8",
@@ -135,11 +134,10 @@
     "groupNote": "",
     "sourceHash": "f27ae10602ea1960195674a0291f05b51ded1729667a2097b0cb0889b7cc0a43",
     "hidden": false,
-    "deleted": false,
+    "deleted": true,
     "province": "福建省",
     "city": "福州市",
-    "district": "平潭县",
-    "order": 1
+    "district": "平潭县"
   },
   {
     "title": "",
@@ -160,8 +158,8 @@
     "groupNote": "",
     "sourceHash": "9c9835c6a462215a21b8465c8710c8d982a69fc4664a5e9640da16ad7749ef1d",
     "hidden": false,
-    "deleted": false,
-    "order": 2
+    "deleted": true,
+    "order": 3
   },
   {
     "title": "",
@@ -182,12 +180,11 @@
     "groupNote": "",
     "sourceHash": "bdf76eeb5668caf435d755f109394c27c4a5486cbd1b3e0d60b48ac7071c628a",
     "hidden": false,
-    "deleted": false,
-    "locationSource": "amap",
+    "deleted": true,
+    "order": 4,
     "province": "福建省",
     "city": "福州市",
-    "district": "平潭县",
-    "order": 3
+    "district": "平潭县"
   },
   {
     "title": "",
@@ -208,8 +205,8 @@
     "groupNote": "",
     "sourceHash": "e618730ff37fa30a21f7fc3f20b470cd9750a6a9df291fc6ae996db97a9a386a",
     "hidden": false,
-    "deleted": false,
-    "order": 4
+    "deleted": true,
+    "order": 5
   },
   {
     "title": "",
@@ -230,8 +227,8 @@
     "groupNote": "",
     "sourceHash": "cd461fe4d6b13d82f06b20bee93e51ef934945329e41c13c8f16b967b23b9808",
     "hidden": false,
-    "deleted": false,
-    "order": 5
+    "deleted": true,
+    "order": 6
   },
   {
     "title": "",
@@ -252,8 +249,8 @@
     "groupNote": "",
     "sourceHash": "724706bd0b872dad8cd0e9955e3f8037d71c2190adc2b453cd9591225b4ca207",
     "hidden": false,
-    "deleted": false,
-    "order": 6
+    "deleted": true,
+    "order": 7
   },
   {
     "title": "",
@@ -274,8 +271,8 @@
     "groupNote": "",
     "sourceHash": "cb135dbe44139051e6a991ee1e0cbcafa96a448633c671ff074af7705bb0e70a",
     "hidden": false,
-    "deleted": false,
-    "order": 7
+    "deleted": true,
+    "order": 8
   },
   {
     "title": "",
@@ -296,8 +293,8 @@
     "groupNote": "",
     "sourceHash": "02c9101ef0f98dda5f486d19d999269095df5e5c428886c5bf68dae9fa033951",
     "hidden": false,
-    "deleted": false,
-    "order": 8
+    "deleted": true,
+    "order": 9
   },
   {
     "title": "",
@@ -318,8 +315,8 @@
     "groupNote": "",
     "sourceHash": "6561c9a61f0e3d216cfe98c62be71d65218f1a980bc446d9d7aa24dfff6195be",
     "hidden": false,
-    "deleted": false,
-    "order": 9
+    "deleted": true,
+    "order": 10
   },
   {
     "title": "",
@@ -340,8 +337,8 @@
     "groupNote": "",
     "sourceHash": "d1121eec068a2b9a7cfc5447495efa3b0241bc4298ac76b7923d6e4854ef8469",
     "hidden": false,
-    "deleted": false,
-    "order": 10
+    "deleted": true,
+    "order": 11
   },
   {
     "title": "",
@@ -362,8 +359,8 @@
     "groupNote": "",
     "sourceHash": "4a5379632044955f729888cfe2df79d0e34b828543dc2cb15a3ecb8078ce7487",
     "hidden": false,
-    "deleted": false,
-    "order": 11
+    "deleted": true,
+    "order": 12
   },
   {
     "title": "",
@@ -384,8 +381,8 @@
     "groupNote": "",
     "sourceHash": "10c0dd012d7d2d3b0c3a2c4c810f85d9043a4ef2af754bf92603a94fc87fb225",
     "hidden": false,
-    "deleted": false,
-    "order": 12
+    "deleted": true,
+    "order": 13
   },
   {
     "title": "",
@@ -406,7 +403,7 @@
     "groupNote": "",
     "sourceHash": "8cb0c2c029358efaf63cf9e2213374679d8fa2679b92c2392f9827a31bfedcb9",
     "hidden": false,
-    "deleted": false,
-    "order": 13
+    "deleted": true,
+    "order": 1
   }
 ]
