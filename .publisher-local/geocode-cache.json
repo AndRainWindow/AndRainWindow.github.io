@@ -1,0 +1,34 @@
+{
+  "amap:26.04649,119.31228": {
+    "location": "福州市 · 仓山区",
+    "locationSource": "amap",
+    "province": "福建省",
+    "city": "福州市",
+    "district": "仓山区",
+    "message": "已识别到区县，请核对。"
+  },
+  "amap:26.04586,119.30697": {
+    "location": "福州市 · 仓山区",
+    "locationSource": "amap",
+    "province": "福建省",
+    "city": "福州市",
+    "district": "仓山区",
+    "message": "已识别到区县，请核对。"
+  },
+  "amap:26.04589,119.30432": {
+    "location": "福州市 · 仓山区",
+    "locationSource": "amap",
+    "province": "福建省",
+    "city": "福州市",
+    "district": "仓山区",
+    "message": "已识别到区县，请核对。"
+  },
+  "amap:26.05664,119.30070": {
+    "location": "福州市 · 台江区",
+    "locationSource": "amap",
+    "province": "福建省",
+    "city": "福州市",
+    "district": "台江区",
+    "message": "已识别到区县，请核对。"
+  }
+}

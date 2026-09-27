@@ -150,5 +150,45 @@
   "photo-e2fe79605d6741d4ba9f196f1827fbc5": {
     "source": "/Volumes/Photos/Pixcall/2026/20260627平潭/后期/20260627-DSC06882-已增强-降噪.jpg",
     "gps": null
+  },
+  "photo-eeca12d649eb4482a907532b9dd5f495": {
+    "source": "/Volumes/Photos/Pixcall/2026/20260626福州/后期/DSC06320.jpg",
+    "gps": null
+  },
+  "photo-ad4270b07c584c018a0875df9a0437d7": {
+    "source": "/Volumes/Photos/Pixcall/2026/20260626福州/后期/DSC06404.jpg",
+    "gps": {
+      "lat": 26.046485,
+      "lon": 119.31228
+    }
+  },
+  "photo-fad8fddf042b4e039cb0d44dfeb3ba49": {
+    "source": "/Volumes/Photos/Pixcall/2026/20260626福州/后期/DSC06424.jpg",
+    "gps": {
+      "lat": 26.045858055,
+      "lon": 119.30697166666668
+    }
+  },
+  "photo-e9d0615d55d1436cb1e7be16a7da94b2": {
+    "source": "/Volumes/Photos/Pixcall/2026/20260626福州/后期/DSC06445.jpg",
+    "gps": {
+      "lat": 26.045886945,
+      "lon": 119.30431888833331
+    }
+  },
+  "photo-f5fd09ce8f184da298c9ba1150a722d3": {
+    "source": "/Volumes/Photos/Pixcall/2026/20260626福州/后期/DSC06476.jpg",
+    "gps": {
+      "lat": 26.056636666666662,
+      "lon": 119.30070166666668
+    }
+  },
+  "photo-1b3aad3f18d44a7d899a03aedd499615": {
+    "source": "/Volumes/Photos/Pixcall/2026/20260626福州/后期/DSC06482.jpg",
+    "gps": null
+  },
+  "photo-ecc2edfa01a24e70ba45ed7afe122c71": {
+    "source": "/Users/rainwindow/Downloads/1790520628045.jpg",
+    "gps": null
   }
 }
