@@ -126,7 +126,7 @@
     "shutter": "1/50",
     "focalLength": "29",
     "utcOffset": "+08:00",
-    "order": 2,
+    "order": 1,
     "id": "photo-65f5b193d7b64f749e174d305646d0e5",
     "image": "/images/photos/photo-65f5b193d7b64f749e174d305646d0e5.webp",
     "groupId": "19464e122d9b4edd838f222e5b0b44c8",
@@ -159,7 +159,7 @@
     "sourceHash": "9c9835c6a462215a21b8465c8710c8d982a69fc4664a5e9640da16ad7749ef1d",
     "hidden": false,
     "deleted": true,
-    "order": 3
+    "order": 2
   },
   {
     "title": "",
@@ -181,7 +181,7 @@
     "sourceHash": "bdf76eeb5668caf435d755f109394c27c4a5486cbd1b3e0d60b48ac7071c628a",
     "hidden": false,
     "deleted": true,
-    "order": 4,
+    "order": 3,
     "province": "福建省",
     "city": "福州市",
     "district": "平潭县"
@@ -206,7 +206,7 @@
     "sourceHash": "e618730ff37fa30a21f7fc3f20b470cd9750a6a9df291fc6ae996db97a9a386a",
     "hidden": false,
     "deleted": true,
-    "order": 5
+    "order": 4
   },
   {
     "title": "",
@@ -228,7 +228,7 @@
     "sourceHash": "cd461fe4d6b13d82f06b20bee93e51ef934945329e41c13c8f16b967b23b9808",
     "hidden": false,
     "deleted": true,
-    "order": 6
+    "order": 5
   },
   {
     "title": "",
@@ -250,7 +250,7 @@
     "sourceHash": "724706bd0b872dad8cd0e9955e3f8037d71c2190adc2b453cd9591225b4ca207",
     "hidden": false,
     "deleted": true,
-    "order": 7
+    "order": 6
   },
   {
     "title": "",
@@ -272,7 +272,7 @@
     "sourceHash": "cb135dbe44139051e6a991ee1e0cbcafa96a448633c671ff074af7705bb0e70a",
     "hidden": false,
     "deleted": true,
-    "order": 8
+    "order": 7
   },
   {
     "title": "",
@@ -294,7 +294,7 @@
     "sourceHash": "02c9101ef0f98dda5f486d19d999269095df5e5c428886c5bf68dae9fa033951",
     "hidden": false,
     "deleted": true,
-    "order": 9
+    "order": 8
   },
   {
     "title": "",
@@ -316,7 +316,7 @@
     "sourceHash": "6561c9a61f0e3d216cfe98c62be71d65218f1a980bc446d9d7aa24dfff6195be",
     "hidden": false,
     "deleted": true,
-    "order": 10
+    "order": 9
   },
   {
     "title": "",
@@ -338,7 +338,7 @@
     "sourceHash": "d1121eec068a2b9a7cfc5447495efa3b0241bc4298ac76b7923d6e4854ef8469",
     "hidden": false,
     "deleted": true,
-    "order": 11
+    "order": 10
   },
   {
     "title": "",
@@ -360,7 +360,7 @@
     "sourceHash": "4a5379632044955f729888cfe2df79d0e34b828543dc2cb15a3ecb8078ce7487",
     "hidden": false,
     "deleted": true,
-    "order": 12
+    "order": 11
   },
   {
     "title": "",
@@ -382,7 +382,7 @@
     "sourceHash": "10c0dd012d7d2d3b0c3a2c4c810f85d9043a4ef2af754bf92603a94fc87fb225",
     "hidden": false,
     "deleted": true,
-    "order": 13
+    "order": 12
   },
   {
     "title": "",
@@ -404,7 +404,7 @@
     "sourceHash": "8cb0c2c029358efaf63cf9e2213374679d8fa2679b92c2392f9827a31bfedcb9",
     "hidden": false,
     "deleted": true,
-    "order": 1
+    "order": 13
   },
   {
     "title": "",
@@ -1219,5 +1219,27 @@
     "hidden": false,
     "deleted": false,
     "order": 36
+  },
+  {
+    "title": "",
+    "note": "很喜欢这张图，茫茫的夜色笼罩在海平面上，若隐若现的风机加以点缀，此刻，我只想寻一抹暖色的光。",
+    "date": "2026-06-27T18:42",
+    "location": "",
+    "camera": "SONY ZV-E10",
+    "lens": "E PZ 16-50mm F3.5-5.6 OSS",
+    "iso": "8000",
+    "aperture": "5.6",
+    "shutter": "1/200",
+    "focalLength": "43",
+    "utcOffset": "+08:00",
+    "id": "photo-e2fe79605d6741d4ba9f196f1827fbc5",
+    "image": "/images/photos/photo-e2fe79605d6741d4ba9f196f1827fbc5.webp",
+    "groupId": "79d9284d8d2a48619ddcedb1375acb4d",
+    "groupTitle": "阴雨天的平潭",
+    "groupNote": "",
+    "sourceHash": "85abfed382f13600751e5d044998a35f607cfb49801dc0805d6822d21d4a44ab",
+    "hidden": false,
+    "deleted": false,
+    "order": 37
   }
 ]
