@@ -4,10 +4,10 @@
 
 This repository contains the AndRainWindow personal website.
 
-The publishing tool (Python Publisher + Tauri desktop GUI) lives in the separate repository:
+The publishing tool (Rust/Tauri desktop GUI) lives in the separate repository:
 
 ```text
-E:/Documents/D_Dev/Active/PersonPublisher
+/Users/rainwindow/P_Projects/RainWindow_Publisher
 ```
 
 Main stack:
@@ -282,12 +282,13 @@ Each row is one photo; rows sharing a `groupId` form a photo group. A group has 
 Rows may carry these optional fields:
 
 ```text
-order                  int, publisher-side position within the group; 0 is the cover
+order                  int, publisher-side position within a manually ordered group;
+                       0 is the cover (only ever written together with manualOrder)
 manualOrder            true once the publisher saved a manual order or cover for the group
 province/city/district persisted reverse-geocode results
 ```
 
-`order` and `manualOrder` are written only for multi-photo groups. The website reads them to stay in step with the publisher: a group carrying `manualOrder` displays in its saved `order`, so `order: 0` is its cover; every other group displays earliest-capture-first, with its earliest visible member as the cover. `location` stays the composed display string in the form `city · district`.
+`order` and `manualOrder` appear only together: plain publisher imports never write them, so only an explicitly arranged group carries them (the publisher also strips stale `order` from non-manual groups when its list action runs). The website reads them to stay in step with the publisher: a group carrying `manualOrder` displays in its saved `order`, so `order: 0` is its cover; every other group displays earliest-capture-first, with its earliest visible member as the cover. `location` stays the composed display string in the form `city · district`.
 
 Raw GPS coordinates are private. They live only in the publishing tool's local state (`.publisher-local/` in the PersonPublisher repository).
 
