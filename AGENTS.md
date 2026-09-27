@@ -282,17 +282,18 @@ Each row is one photo; rows sharing a `groupId` form a photo group. A group has 
 Rows may carry these optional fields:
 
 ```text
-order                  int, position within the group; 0 is the cover
+order                  int, publisher-side position within the group; 0 is the cover
+manualOrder            true once the publisher saved a manual order or cover for the group
 province/city/district persisted reverse-geocode results
 ```
 
-`order` is written only for multi-photo groups. `location` stays the composed display string in the form `city · district`.
+`order` and `manualOrder` are written only for multi-photo groups. The website reads them to stay in step with the publisher: a group carrying `manualOrder` displays in its saved `order`, so `order: 0` is its cover; every other group displays earliest-capture-first, with its earliest visible member as the cover. `location` stays the composed display string in the form `city · district`.
 
 Raw GPS coordinates are private. They live only in the publishing tool's local state (`.publisher-local/` in the PersonPublisher repository).
 
 Never write raw coordinates into `photos.json` or anywhere else in the public repository.
 
-The homepage/group view uses `displayPhotos()` and keeps groups as contiguous blocks, sorted by cover date descending; members use `order` ascending when all members have it. The `/photos/` timeline uses `buildPhotoTimeline()` and `displayPhotos(records, { sort: 'date' })`: globally sort by EXIF local capture time descending, then aggregate unique year/month/day sections. Do not re-sort already captioned rows, because the group title and note must follow the first visible member in the final display order. Date-only records sort after timed photos that day and never display a fabricated `00:00`; missing or invalid dates appear in an undated section. Never convert capture times through the browser/server timezone.
+The homepage/group view uses `displayPhotos()` and keeps groups as contiguous blocks, sorted by cover date descending; within a block members run earliest-capture-first, or in the saved `order` when the group carries `manualOrder`. The block's first photo is its cover, and it is the one carrying the group title and note. The `/photos/` timeline uses `buildPhotoTimeline()` and `displayPhotos(records, { sort: 'date' })`: aggregate unique year/month/day sections, newest day first and earliest capture first inside each day, so a day section reads chronologically while the days themselves run newest-first. A multi-day group is therefore split across day sections. Do not re-sort already captioned rows, because the group title and note must follow the first visible member in the final display order. Date-only records sort after timed photos that day and never display a fabricated `00:00`; missing or invalid dates appear in an undated section. Never convert capture times through the browser/server timezone.
 
 `PhotoTimelineRings.astro` renders the year/month-day dial and one anchor per date. The page synchronizes it and the right-side metadata as photos scroll. Reserve local images' natural width/height at build time so lazy loading cannot move date targets. The website timeline does not rewrite publisher order or group metadata. Validate changes with `node --test tests/photo-view.test.mjs tests/photo-timeline.test.mjs`, `npm run build`, and `tests/test_photo_timeline_ui.cjs` (Playwright; optionally set `PHOTO_TEST_CHROME`).
 

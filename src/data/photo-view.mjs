@@ -13,20 +13,57 @@ export function photoDateParts(value) {
   return { day: date, time, sortKey: time ? `${date}T${time}:${second}.${fraction.padEnd(9, '0')}` : date };
 }
 
-// Homepage/group views keep their manual ordering. The photography timeline
-// opts into date ordering BEFORE applying the first-visible-member captions.
+// Group members run earliest-capture-first. Compare the validated day, then the
+// time: a date-only record has no time, so it trails the timed photos of its own
+// day (matching the timeline), and a row with no usable date goes last rather
+// than quietly sorting as midnight. Plain code-unit comparison, because
+// localeCompare orders punctuation before digits.
+function byEarliestCapture(a, b) {
+  const left = photoDateParts(a.date);
+  const right = photoDateParts(b.date);
+  if (!left.sortKey || !right.sortKey) {
+    return left.sortKey === right.sortKey ? 0 : (left.sortKey ? -1 : 1);
+  }
+  if (left.day !== right.day) return left.day < right.day ? -1 : 1;
+  if (!left.time || !right.time) {
+    return left.time === right.time ? 0 : (left.time ? -1 : 1);
+  }
+  return left.sortKey === right.sortKey ? 0 : (left.sortKey < right.sortKey ? -1 : 1);
+}
+
+// Timeline order: newest capture day first, earliest capture first within each
+// day, so a day section still reads chronologically. A row with no usable date
+// keeps company with the other undated rows at the end.
+function byDayThenEarliestCapture(a, b) {
+  const left = photoDateParts(a.date);
+  const right = photoDateParts(b.date);
+  if (left.day === right.day) return byEarliestCapture(a, b);
+  return right.day < left.day ? -1 : 1;
+}
+
+// A group the publisher arranged by hand carries `manualOrder` on its members
+// and displays in that saved sequence, so `order: 0` leads it and the chosen
+// cover comes first. Every other group runs earliest-capture-first. This mirrors
+// the publisher's own orderedMembers(); a member whose order is missing trails.
+function orderedGroupMembers(members) {
+  if (members.some(photo => photo.manualOrder === true)) {
+    const saved = photo => (Number.isInteger(photo.order) ? photo.order : Number.MAX_SAFE_INTEGER);
+    return [...members].sort((a, b) => saved(a) - saved(b));
+  }
+  return [...members].sort(byEarliestCapture);
+}
+
+// Homepage/group views order members as above. The photography timeline opts
+// into date ordering BEFORE applying the first-visible-member captions.
 export function displayPhotos(records, { sort = 'group' } = {}) {
   const visible = records.filter(p => !p.hidden && !p.deleted && !p.groupHidden && !p.groupDeleted);
   let photos;
   if (sort === 'date') {
-    photos = visible
-      .map(photo => ({ photo, key: photoDateParts(photo.date).sortKey }))
-      .sort((a, b) => b.key.localeCompare(a.key))
-      .map(({ photo }) => photo);
+    photos = [...visible].sort(byDayThenEarliestCapture);
   } else {
     // Group-contiguous blocks (key = groupId || id, insertion order preserved):
-    // within a block, every member carrying an integer order -> order asc;
-    // otherwise the legacy date-desc behaviour. Blocks interleave never.
+    // a block's first photo is its cover, which dates the block. Blocks
+    // interleave never.
     const blocks = new Map();
     for (const photo of visible) {
       const key = photo.groupId || photo.id;
@@ -35,9 +72,7 @@ export function displayPhotos(records, { sort = 'group' } = {}) {
     }
     const ordered = [...blocks.values()]
       .map(members => {
-        const block = members.every(p => Number.isInteger(p.order))
-          ? [...members].sort((a, b) => a.order - b.order)
-          : [...members].sort((a, b) => String(b.date).localeCompare(String(a.date)));
+        const block = orderedGroupMembers(members);
         // Block position = the cover (first photo of the block) date.
         return { block, coverDate: String(block[0].date) };
       })
