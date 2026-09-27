@@ -1,7 +1,7 @@
 ---
 title: "华硕ChromeBookcz1折腾日记（上）"
 date: 2026-09-20
-updated: "2026-09-25 11:53:54"
+updated: "2026-09-27 16:08:37"
 topics: "Chromebook"
 heroImage: "/images/covers/ChatGPT_图像_2026年9月25日_22_42_15.webp"
 wordCount: 5024
