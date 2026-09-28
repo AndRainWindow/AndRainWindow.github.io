@@ -25,12 +25,7 @@ const dimensions = new Map(await Promise.all(photos.map(async photo => {
 <html lang="zh-CN">
 
 <head>
-	<link rel="preconnect" href="https://fonts.googleapis.com">
-	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-	<link
-		href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500;600&display=swap"
-		rel="stylesheet"
-	>
+	<link rel="stylesheet" href="/fonts/noto-serif-sc.css">
 
 	<BaseHead
 		title={`摄影 | ${SITE_TITLE}`}
@@ -59,6 +54,18 @@ const dimensions = new Map(await Promise.all(photos.map(async photo => {
 			transform: scale(1.03);
 			z-index: 0;
 		}
+
+		.page-title .epigraph {
+		margin: 0.5em 0 0;
+		}
+
+		.epigraph-text {
+		font-family: Georgia, "Noto Serif SC", serif;
+		font-style: italic;
+		font-size: 1.05em;
+		color: white;
+		}
+
 
 		.background::after {
 			content: "";
@@ -279,8 +286,10 @@ const dimensions = new Map(await Promise.all(photos.map(async photo => {
 	<SiteNav active="photos" />
 
 	<header class="page-title">
-		<h1>摄影</h1>
-		<p>Record what remains after the moment has passed.</p>
+	<h1>摄影</h1>
+	<p class="epigraph">
+		<span class="epigraph-text">Because it is there.</span>
+	</p>
 	</header>
 
 	<div class:list={['photo-layout', { 'is-empty': !photos.length }]}>
