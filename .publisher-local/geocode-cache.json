@@ -30,5 +30,101 @@
     "city": "福州市",
     "district": "台江区",
     "message": "已识别到区县，请核对。"
+  },
+  "amap:28.85201,121.10679": {
+    "location": "台州市 · 临海市",
+    "locationSource": "amap",
+    "province": "浙江省",
+    "city": "台州市",
+    "district": "临海市",
+    "message": "已识别到区县，请核对。"
+  },
+  "amap:28.84892,121.11141": {
+    "location": "台州市 · 临海市",
+    "locationSource": "amap",
+    "province": "浙江省",
+    "city": "台州市",
+    "district": "临海市",
+    "message": "已识别到区县，请核对。"
+  },
+  "amap:28.84869,121.10782": {
+    "location": "台州市 · 临海市",
+    "locationSource": "amap",
+    "province": "浙江省",
+    "city": "台州市",
+    "district": "临海市",
+    "message": "已识别到区县，请核对。"
+  },
+  "amap:28.85040,121.10680": {
+    "location": "台州市 · 临海市",
+    "locationSource": "amap",
+    "province": "浙江省",
+    "city": "台州市",
+    "district": "临海市",
+    "message": "已识别到区县，请核对。"
+  },
+  "amap:28.85420,121.10888": {
+    "location": "台州市 · 临海市",
+    "locationSource": "amap",
+    "province": "浙江省",
+    "city": "台州市",
+    "district": "临海市",
+    "message": "已识别到区县，请核对。"
+  },
+  "amap:28.85037,121.12170": {
+    "location": "台州市 · 临海市",
+    "locationSource": "amap",
+    "province": "浙江省",
+    "city": "台州市",
+    "district": "临海市",
+    "message": "已识别到区县，请核对。"
+  },
+  "amap:28.85062,121.11974": {
+    "location": "台州市 · 临海市",
+    "locationSource": "amap",
+    "province": "浙江省",
+    "city": "台州市",
+    "district": "临海市",
+    "message": "已识别到区县，请核对。"
+  },
+  "amap:28.85057,121.11975": {
+    "location": "台州市 · 临海市",
+    "locationSource": "amap",
+    "province": "浙江省",
+    "city": "台州市",
+    "district": "临海市",
+    "message": "已识别到区县，请核对。"
+  },
+  "amap:28.85105,121.11973": {
+    "location": "台州市 · 临海市",
+    "locationSource": "amap",
+    "province": "浙江省",
+    "city": "台州市",
+    "district": "临海市",
+    "message": "已识别到区县，请核对。"
+  },
+  "amap:28.85011,121.12014": {
+    "location": "台州市 · 临海市",
+    "locationSource": "amap",
+    "province": "浙江省",
+    "city": "台州市",
+    "district": "临海市",
+    "message": "已识别到区县，请核对。"
+  },
+  "amap:28.84939,121.12059": {
+    "location": "台州市 · 临海市",
+    "locationSource": "amap",
+    "province": "浙江省",
+    "city": "台州市",
+    "district": "临海市",
+    "message": "已识别到区县，请核对。"
+  },
+  "amap:28.85101,121.24106": {
+    "location": "台州市 · 临海市",
+    "locationSource": "amap",
+    "province": "浙江省",
+    "city": "台州市",
+    "district": "临海市",
+    "message": "已识别到区县，请核对。"
   }
 }

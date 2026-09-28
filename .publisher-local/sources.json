@@ -190,5 +190,101 @@
   "photo-ecc2edfa01a24e70ba45ed7afe122c71": {
     "source": "/Users/rainwindow/Downloads/1790520628045.jpg",
     "gps": null
+  },
+  "photo-cdce1b0d372b4205a58ad51f7d46b5f2": {
+    "source": "/Volumes/Photos/Pixcall/2026/20260624临海台州府城/后期/DSC06096.jpg",
+    "gps": {
+      "lat": 28.85201,
+      "lon": 121.10679166666667
+    }
+  },
+  "photo-b5888f686a7143d78bf5a35a36528e9f": {
+    "source": "/Volumes/Photos/Pixcall/2026/20260624临海台州府城/后期/DSC06067.jpg",
+    "gps": null
+  },
+  "photo-79a19e1573c946379e7de255abf3103f": {
+    "source": "/Volumes/Photos/Pixcall/2026/20260624临海台州府城/后期/DSC06068.jpg",
+    "gps": null
+  },
+  "photo-735afc08d30c4e9c98534da1a5fd9f69": {
+    "source": "/Volumes/Photos/Pixcall/2026/20260624临海台州府城/后期/DSC06083.jpg",
+    "gps": {
+      "lat": 28.848916666666668,
+      "lon": 121.11141166666667
+    }
+  },
+  "photo-ab94469a201247bea22520069ee09a79": {
+    "source": "/Volumes/Photos/Pixcall/2026/20260624临海台州府城/后期/DSC06086.jpg",
+    "gps": {
+      "lat": 28.848686945,
+      "lon": 121.107816945
+    }
+  },
+  "photo-4a8f065647fb4c77b63207a2f21acca8": {
+    "source": "/Volumes/Photos/Pixcall/2026/20260624临海台州府城/后期/DSC06089.jpg",
+    "gps": null
+  },
+  "photo-baa5a43e07104846a3d16bd0ccf22cd2": {
+    "source": "/Volumes/Photos/Pixcall/2026/20260624临海台州府城/后期/DSC06095.jpg",
+    "gps": {
+      "lat": 28.8504,
+      "lon": 121.106805
+    }
+  },
+  "photo-3c29575452734eb994bff296bc4b65bb": {
+    "source": "/Volumes/Photos/Pixcall/2026/20260624临海台州府城/后期/DSC06101.jpg",
+    "gps": {
+      "lat": 28.854195,
+      "lon": 121.108878055
+    }
+  },
+  "photo-f2f1616c3b6842cd9335c38361188a6e": {
+    "source": "/Volumes/Photos/Pixcall/2026/20260624临海台州府城/后期/DSC06106.jpg",
+    "gps": {
+      "lat": 28.850373888333333,
+      "lon": 121.121701945
+    }
+  },
+  "photo-7a5c414b321d4e77bcae7659b0d90fa2": {
+    "source": "/Volumes/Photos/Pixcall/2026/20260624临海台州府城/后期/20260624-DSC06115.jpg",
+    "gps": {
+      "lat": 28.850618054999998,
+      "lon": 121.11974166666667
+    }
+  },
+  "photo-1c5a452b100b427ab9c9268d5d3733c1": {
+    "source": "/Volumes/Photos/Pixcall/2026/20260624临海台州府城/后期/20260624-DSC06116.jpg",
+    "gps": {
+      "lat": 28.850575,
+      "lon": 121.11975166666667
+    }
+  },
+  "photo-b68afecbcba84c309d1560226f1708d9": {
+    "source": "/Volumes/Photos/Pixcall/2026/20260624临海台州府城/后期/DSC06114.jpg",
+    "gps": {
+      "lat": 28.851051945000002,
+      "lon": 121.119726945
+    }
+  },
+  "photo-dbae445060b04da9ba93363c799ad411": {
+    "source": "/Volumes/Photos/Pixcall/2026/20260624临海台州府城/后期/20260624-DSC06119.jpg",
+    "gps": {
+      "lat": 28.850115,
+      "lon": 121.120145
+    }
+  },
+  "photo-1215d8d8cd954b87ad12caee44cbb020": {
+    "source": "/Volumes/Photos/Pixcall/2026/20260624临海台州府城/后期/DSC06126.jpg",
+    "gps": {
+      "lat": 28.849388888333333,
+      "lon": 121.120586945
+    }
+  },
+  "photo-a3bbda13a5f74c99b2a343c9a400ad37": {
+    "source": "/Volumes/Photos/Pixcall/2026/20260624临海台州府城/后期/DSC06138-DxO_DeepPRIME 3.jpg",
+    "gps": {
+      "lat": 28.851005833333332,
+      "lon": 121.24106277833333
+    }
   }
 }
