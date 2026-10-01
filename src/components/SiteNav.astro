@@ -15,7 +15,12 @@ const {
 <nav class:list={['site-nav', { overlay }]}>
 
 	<a class="brand" href="/">
-		AndRainWindow
+		<img class="brand-mark" src="/logo.webp" alt="" width="46" height="46" />
+
+		<span class="brand-name">
+			<span>And</span>
+			<span>RainWindow</span>
+		</span>
 	</a>
 
 	<div class="menu">
@@ -77,14 +82,32 @@ const {
 
 
 	.brand {
+		display: flex;
+		align-items: center;
+		gap: 13px;
+
 		color: white;
 		text-decoration: none;
 
-		font-size: 1.3rem;
-		font-weight: 400;
-		letter-spacing: 2px;
-
 		transition: opacity 0.2s ease;
+	}
+
+
+	.brand-mark {
+		display: block;
+		width: 46px;
+		height: 46px;
+	}
+
+
+	.brand-name {
+		display: flex;
+		flex-direction: column;
+
+		font-size: 1.1rem;
+		font-weight: 600;
+		line-height: 1.22;
+		letter-spacing: 1.5px;
 	}
 
 
@@ -151,7 +174,18 @@ const {
 
 
 		.brand {
-			font-size: 1rem;
+			gap: 10px;
+		}
+
+
+		.brand-mark {
+			width: 38px;
+			height: 38px;
+		}
+
+
+		.brand-name {
+			font-size: 0.92rem;
 			letter-spacing: 1px;
 		}
 

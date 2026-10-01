@@ -18,11 +18,14 @@ test('timeline merges dates across groups and ignores manual order, without chan
   const original = structuredClone(input);
   const days = flattenDays(buildPhotoTimeline(input));
   assert.deepEqual(days.map(d => d.day), ['2027-01-01', '2026-09-23', '2026-09-22']);
-  assert.deepEqual(days[1].items.map(p => p.id), ['evening', 'other', 'morning']);
+  // Days run newest-first; the photos inside one day run earliest-first, and the
+  // captions follow that final order.
+  assert.deepEqual(days[1].items.map(p => p.id), ['morning', 'other', 'evening']);
   assert.equal(days[1].items[0].title, '旅行');
   assert.equal(days[1].items[2].title, '');
   assert.equal(days[2].items[0].note, '');
-  assert.deepEqual(displayPhotos(input).map(p => p.id), ['next-year', 'other', 'morning', 'evening', 'yesterday']);
+  // Group view: blocks contiguous, each block earliest-capture-first.
+  assert.deepEqual(displayPhotos(input).map(p => p.id), ['next-year', 'other', 'yesterday', 'morning', 'evening']);
   assert.deepEqual(input, original);
 });
 
@@ -37,7 +40,7 @@ test('captions follow the first visible chronological member; per-photo override
     { id: 'group-deleted', date: '2026-09-27', groupDeleted: true },
   ];
   assert.deepEqual(rows(input).map(p => [p.id, p.title, p.note]), [
-    ['late', '旅行', '整组感受'], ['custom', '单张标题', '单张感受'], ['early', '', ''],
+    ['early', '旅行', '整组感受'], ['custom', '单张标题', '单张感受'], ['late', '', ''],
   ]);
   input[1].hidden = true;
   input[2].deleted = true;
@@ -54,7 +57,7 @@ test('wall-clock sorting keeps seconds, ignores timezone conversion, and never i
     { id: 'space', date: '2026-09-23 18:35:30.01' },
   ];
   assert.deepEqual(rows(input).map(p => [p.id, p.time]), [
-    ['space', '18:35'], ['local', '18:35'], ['utc', '18:35'], ['offset', '18:00'], ['midnight', '00:00'], ['legacy', ''],
+    ['midnight', '00:00'], ['offset', '18:00'], ['utc', '18:35'], ['local', '18:35'], ['space', '18:35'], ['legacy', ''],
   ]);
 });
 

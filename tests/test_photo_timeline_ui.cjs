@@ -36,8 +36,16 @@ const server = http.createServer((req, res) => {
     assert.equal(await page.locator('.photo-day').count(), dayLinks.length);
     const ids = await page.locator('.photo-item').evaluateAll(items => items.map(item => item.id));
     assert.equal(new Set(ids).size, ids.length, 'photo anchors must be unique');
-    const dates = await page.locator('.photo-item').evaluateAll(items => items.map(item => JSON.parse(item.dataset.photo).date));
-    assert.deepEqual(dates, [...dates].sort().reverse(), 'photographs must descend by capture time');
+    const rows = await page.locator('.photo-item').evaluateAll(items => items.map(item => {
+      const photo = JSON.parse(item.dataset.photo);
+      return { day: photo.day, time: photo.time };
+    }));
+    const sections = [...new Set(rows.map(row => row.day))];
+    assert.deepEqual(sections, [...sections].sort().reverse(), 'date sections must descend');
+    for (const day of sections) {
+      const times = rows.filter(row => row.day === day && row.time).map(row => row.time);
+      assert.deepEqual(times, [...times].sort(), `photographs must ascend inside ${day || 'the undated section'}`);
+    }
     assert.ok(await page.locator('.photo-frame img').evaluateAll(images => images.every(image => Number(image.getAttribute('width')) > 0 && Number(image.getAttribute('height')) > 0)), 'lazy images need reserved geometry');
     await page.locator('.photo-frame img').first().evaluate(image => image.decode());
     await page.screenshot({ path: path.join(artifacts, 'desktop.png') });
