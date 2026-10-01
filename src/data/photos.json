@@ -64,8 +64,7 @@
     "groupNote": "漫步在小镇街头，在日落时分的记录。",
     "sourceHash": "f65ad38344f9ac72fc79e81cd291b00b85714e9c0a3252119176e1e748cf3f13",
     "hidden": false,
-    "deleted": false,
-    "order": 0
+    "deleted": false
   },
   {
     "title": "",
@@ -86,8 +85,7 @@
     "groupNote": "漫步在小镇街头，在日落时分的记录。",
     "sourceHash": "7cb83df1dd2d09d7125d1f68b62f5f7df4875aac86aa63fff03fb6cd0ffdaea5",
     "hidden": false,
-    "deleted": false,
-    "order": 1
+    "deleted": false
   },
   {
     "title": "",
@@ -101,7 +99,7 @@
     "shutter": "1/60",
     "focalLength": "35",
     "utcOffset": "+08:00",
-    "order": 0,
+    "district": "平潭县",
     "id": "photo-9885c0640c90411cacd085dfb78b6587",
     "image": "/images/photos/photo-9885c0640c90411cacd085dfb78b6587.webp",
     "groupId": "19464e122d9b4edd838f222e5b0b44c8",
@@ -111,8 +109,7 @@
     "hidden": false,
     "deleted": true,
     "province": "福建省",
-    "city": "福州市",
-    "district": "平潭县"
+    "city": "福州市"
   },
   {
     "title": "",
@@ -126,7 +123,7 @@
     "shutter": "1/50",
     "focalLength": "29",
     "utcOffset": "+08:00",
-    "order": 2,
+    "district": "平潭县",
     "id": "photo-65f5b193d7b64f749e174d305646d0e5",
     "image": "/images/photos/photo-65f5b193d7b64f749e174d305646d0e5.webp",
     "groupId": "19464e122d9b4edd838f222e5b0b44c8",
@@ -136,8 +133,7 @@
     "hidden": false,
     "deleted": true,
     "province": "福建省",
-    "city": "福州市",
-    "district": "平潭县"
+    "city": "福州市"
   },
   {
     "title": "",
@@ -158,8 +154,7 @@
     "groupNote": "",
     "sourceHash": "9c9835c6a462215a21b8465c8710c8d982a69fc4664a5e9640da16ad7749ef1d",
     "hidden": false,
-    "deleted": true,
-    "order": 3
+    "deleted": true
   },
   {
     "title": "",
@@ -181,10 +176,9 @@
     "sourceHash": "bdf76eeb5668caf435d755f109394c27c4a5486cbd1b3e0d60b48ac7071c628a",
     "hidden": false,
     "deleted": true,
-    "order": 4,
+    "district": "平潭县",
     "province": "福建省",
-    "city": "福州市",
-    "district": "平潭县"
+    "city": "福州市"
   },
   {
     "title": "",
@@ -205,8 +199,7 @@
     "groupNote": "",
     "sourceHash": "e618730ff37fa30a21f7fc3f20b470cd9750a6a9df291fc6ae996db97a9a386a",
     "hidden": false,
-    "deleted": true,
-    "order": 5
+    "deleted": true
   },
   {
     "title": "",
@@ -227,8 +220,7 @@
     "groupNote": "",
     "sourceHash": "cd461fe4d6b13d82f06b20bee93e51ef934945329e41c13c8f16b967b23b9808",
     "hidden": false,
-    "deleted": true,
-    "order": 6
+    "deleted": true
   },
   {
     "title": "",
@@ -249,8 +241,7 @@
     "groupNote": "",
     "sourceHash": "724706bd0b872dad8cd0e9955e3f8037d71c2190adc2b453cd9591225b4ca207",
     "hidden": false,
-    "deleted": true,
-    "order": 7
+    "deleted": true
   },
   {
     "title": "",
@@ -271,8 +262,7 @@
     "groupNote": "",
     "sourceHash": "cb135dbe44139051e6a991ee1e0cbcafa96a448633c671ff074af7705bb0e70a",
     "hidden": false,
-    "deleted": true,
-    "order": 8
+    "deleted": true
   },
   {
     "title": "",
@@ -293,8 +283,7 @@
     "groupNote": "",
     "sourceHash": "02c9101ef0f98dda5f486d19d999269095df5e5c428886c5bf68dae9fa033951",
     "hidden": false,
-    "deleted": true,
-    "order": 9
+    "deleted": true
   },
   {
     "title": "",
@@ -315,8 +304,7 @@
     "groupNote": "",
     "sourceHash": "6561c9a61f0e3d216cfe98c62be71d65218f1a980bc446d9d7aa24dfff6195be",
     "hidden": false,
-    "deleted": true,
-    "order": 10
+    "deleted": true
   },
   {
     "title": "",
@@ -337,8 +325,7 @@
     "groupNote": "",
     "sourceHash": "d1121eec068a2b9a7cfc5447495efa3b0241bc4298ac76b7923d6e4854ef8469",
     "hidden": false,
-    "deleted": true,
-    "order": 11
+    "deleted": true
   },
   {
     "title": "",
@@ -359,8 +346,7 @@
     "groupNote": "",
     "sourceHash": "4a5379632044955f729888cfe2df79d0e34b828543dc2cb15a3ecb8078ce7487",
     "hidden": false,
-    "deleted": true,
-    "order": 12
+    "deleted": true
   },
   {
     "title": "",
@@ -381,8 +367,7 @@
     "groupNote": "",
     "sourceHash": "10c0dd012d7d2d3b0c3a2c4c810f85d9043a4ef2af754bf92603a94fc87fb225",
     "hidden": false,
-    "deleted": true,
-    "order": 13
+    "deleted": true
   },
   {
     "title": "",
@@ -403,8 +388,7 @@
     "groupNote": "",
     "sourceHash": "8cb0c2c029358efaf63cf9e2213374679d8fa2679b92c2392f9827a31bfedcb9",
     "hidden": false,
-    "deleted": true,
-    "order": 1
+    "deleted": true
   },
   {
     "title": "",
@@ -425,8 +409,7 @@
     "groupNote": "",
     "sourceHash": "2901c2e8ae4199ece5f53bba7cc7b0e831291833b1e402664087bb0143875c68",
     "hidden": false,
-    "deleted": false,
-    "order": 19
+    "deleted": false
   },
   {
     "title": "",
@@ -447,8 +430,7 @@
     "groupNote": "",
     "sourceHash": "a06e1cf53049a0c788822a2e11afaa32a52f8759eb48ae9883e2fce6e3341cdc",
     "hidden": false,
-    "deleted": false,
-    "order": 0
+    "deleted": false
   },
   {
     "title": "",
@@ -469,8 +451,7 @@
     "groupNote": "",
     "sourceHash": "2662818f6c705c3ee6eaf96db4c1c43e2380e72ec496e7e099615f2c09d7c264",
     "hidden": false,
-    "deleted": false,
-    "order": 1
+    "deleted": false
   },
   {
     "title": "",
@@ -491,8 +472,7 @@
     "groupNote": "",
     "sourceHash": "68cdfd4dd945cccf47eb746d3633ac33e18cb0864f420dad9d39899504f2f93f",
     "hidden": false,
-    "deleted": false,
-    "order": 2
+    "deleted": false
   },
   {
     "title": "",
@@ -513,8 +493,7 @@
     "groupNote": "",
     "sourceHash": "f2da2f18ca916f509401aa9526242c8c5e68cb8daac9b4a0b1d53828f40eb0e6",
     "hidden": false,
-    "deleted": false,
-    "order": 3
+    "deleted": false
   },
   {
     "title": "",
@@ -535,8 +514,7 @@
     "groupNote": "",
     "sourceHash": "550b07fccb06e548b48551668a7f604dc347503c436ae6abbd454928ce1a911e",
     "hidden": false,
-    "deleted": false,
-    "order": 4
+    "deleted": false
   },
   {
     "title": "",
@@ -557,8 +535,7 @@
     "groupNote": "",
     "sourceHash": "ceebde83d673ff1e4816a38165483aac547d1e881e4cf1e94c5aef284b754c3a",
     "hidden": false,
-    "deleted": false,
-    "order": 5
+    "deleted": false
   },
   {
     "title": "",
@@ -579,8 +556,7 @@
     "groupNote": "",
     "sourceHash": "ee0ce0a67f50d9afd2db0b080493dbf79cdba2a67fd9ff665ede63135bc5545b",
     "hidden": false,
-    "deleted": false,
-    "order": 6
+    "deleted": false
   },
   {
     "title": "",
@@ -601,8 +577,7 @@
     "groupNote": "",
     "sourceHash": "37744a66e87f67efdbfcfae3b9ac57cceceb07bb03ddd229d5a39ff0042e1792",
     "hidden": false,
-    "deleted": false,
-    "order": 7
+    "deleted": false
   },
   {
     "title": "",
@@ -623,8 +598,7 @@
     "groupNote": "",
     "sourceHash": "1a536176ec96819114e312ba6cfba53580b25c329972b1005854b36f2e0705cc",
     "hidden": false,
-    "deleted": false,
-    "order": 8
+    "deleted": false
   },
   {
     "title": "",
@@ -645,8 +619,7 @@
     "groupNote": "",
     "sourceHash": "96d976c08fc9b42e0949f68250e163b4ba8501fa3647b473973d4af2cac8a0b5",
     "hidden": false,
-    "deleted": false,
-    "order": 9
+    "deleted": false
   },
   {
     "title": "",
@@ -667,8 +640,7 @@
     "groupNote": "",
     "sourceHash": "29b7e55fca8023e3139dc460c3f34d3dfa9b6565524f0dc1a417c778ba2cb760",
     "hidden": false,
-    "deleted": false,
-    "order": 10
+    "deleted": false
   },
   {
     "title": "",
@@ -689,8 +661,7 @@
     "groupNote": "",
     "sourceHash": "08d60483c4fe61f9a475085fda2b566ed870da020be2bfed8be897f7faa18c5d",
     "hidden": false,
-    "deleted": false,
-    "order": 11
+    "deleted": false
   },
   {
     "title": "",
@@ -711,8 +682,7 @@
     "groupNote": "",
     "sourceHash": "d061f8e01bc48a8cfabf1ad5ff70d0d8b06d2377f5c84094a92613b10d89e71c",
     "hidden": false,
-    "deleted": false,
-    "order": 12
+    "deleted": false
   },
   {
     "title": "",
@@ -733,8 +703,7 @@
     "groupNote": "",
     "sourceHash": "7d30634e09a6980ca59d5e1ec836e8bd82e91f4cfd2b60a2c4b848c16e40537d",
     "hidden": false,
-    "deleted": false,
-    "order": 13
+    "deleted": false
   },
   {
     "title": "",
@@ -755,8 +724,7 @@
     "groupNote": "",
     "sourceHash": "00788454142c92d656a1d555d6a431e0586a036a74a88daf8e03b12ec49f552c",
     "hidden": false,
-    "deleted": false,
-    "order": 14
+    "deleted": false
   },
   {
     "title": "",
@@ -777,8 +745,7 @@
     "groupNote": "",
     "sourceHash": "369314a760b95a03061e596e7b20bc7451ace5bb9332913db40e5dd3723bf7ed",
     "hidden": false,
-    "deleted": false,
-    "order": 15
+    "deleted": false
   },
   {
     "title": "",
@@ -799,8 +766,7 @@
     "groupNote": "",
     "sourceHash": "50374b89678edc5cfc7c7e2743597372bad692d45995513bd0cc2e872b118a1d",
     "hidden": false,
-    "deleted": false,
-    "order": 16
+    "deleted": false
   },
   {
     "title": "",
@@ -821,8 +787,7 @@
     "groupNote": "",
     "sourceHash": "70ad6bccb82421aaba815641b7caa80c9d80e58d6d616c9c849c858bf36496fd",
     "hidden": false,
-    "deleted": false,
-    "order": 17
+    "deleted": false
   },
   {
     "title": "",
@@ -843,8 +808,7 @@
     "groupNote": "",
     "sourceHash": "c920da75230603ea377eea709d432491b49625e82c51de84d0e44f6309ed35ff",
     "hidden": false,
-    "deleted": false,
-    "order": 18
+    "deleted": false
   },
   {
     "title": "",
@@ -865,8 +829,7 @@
     "groupNote": "",
     "sourceHash": "cd59b7402ace854407157c8f68a6f1790599aafe83b6d9526b8937cfdb848641",
     "hidden": false,
-    "deleted": true,
-    "order": 20
+    "deleted": true
   },
   {
     "title": "",
@@ -887,8 +850,7 @@
     "groupNote": "",
     "sourceHash": "b2e3038b8b1f6a1d8c6c28b02f0850a8b0d687ab708e6a5e296e5b15cb5880db",
     "hidden": false,
-    "deleted": false,
-    "order": 21
+    "deleted": false
   },
   {
     "title": "",
@@ -909,8 +871,7 @@
     "groupNote": "",
     "sourceHash": "5d1fa8d4028c99c1fbbcb59d33c6ca3ca071f18eec2f794b4a9e9dabfba4082e",
     "hidden": false,
-    "deleted": false,
-    "order": 22
+    "deleted": false
   },
   {
     "title": "",
@@ -931,8 +892,7 @@
     "groupNote": "",
     "sourceHash": "413b167693f8a2559585bef8dc4c76fd883aa63c5978f9eeed761646595c54bb",
     "hidden": false,
-    "deleted": false,
-    "order": 23
+    "deleted": false
   },
   {
     "title": "",
@@ -953,8 +913,7 @@
     "groupNote": "",
     "sourceHash": "f9bfda9d19d86afec092440ceec44d0357f83e433855edcec4c489a751589c8f",
     "hidden": false,
-    "deleted": false,
-    "order": 24
+    "deleted": false
   },
   {
     "title": "",
@@ -975,8 +934,7 @@
     "groupNote": "",
     "sourceHash": "7d3bdfaf3fa6bb84dcd5901008326108579e5a61f3c1afb485ab237751e55d71",
     "hidden": false,
-    "deleted": false,
-    "order": 25
+    "deleted": false
   },
   {
     "title": "",
@@ -997,8 +955,7 @@
     "groupNote": "",
     "sourceHash": "08ae5aafd8bc23ab105aed69aae0d4c53193f37f91d53c16637692ca4c3ae592",
     "hidden": false,
-    "deleted": false,
-    "order": 26
+    "deleted": false
   },
   {
     "title": "",
@@ -1019,8 +976,7 @@
     "groupNote": "",
     "sourceHash": "35120d0f0422baf61c50e5be1fb585c09103cce8e177577d56139869be307d18",
     "hidden": false,
-    "deleted": false,
-    "order": 27
+    "deleted": false
   },
   {
     "title": "",
@@ -1041,8 +997,7 @@
     "groupNote": "",
     "sourceHash": "c2bafeb72cff27bcb698ae758c524d89820e4d04dd7ef5f1c8ff534948598d7f",
     "hidden": false,
-    "deleted": false,
-    "order": 28
+    "deleted": false
   },
   {
     "title": "",
@@ -1063,8 +1018,7 @@
     "groupNote": "",
     "sourceHash": "3776163425d016126f100446aeabc7cc372a09aa3df97f3094621fcb4353da9a",
     "hidden": false,
-    "deleted": false,
-    "order": 29
+    "deleted": false
   },
   {
     "title": "",
@@ -1085,8 +1039,7 @@
     "groupNote": "",
     "sourceHash": "10f00990780353d6dc7507b81c9142de5c7bfe4115a1f61846ef742d5700b353",
     "hidden": false,
-    "deleted": false,
-    "order": 30
+    "deleted": false
   },
   {
     "title": "",
@@ -1107,8 +1060,7 @@
     "groupNote": "",
     "sourceHash": "79d674a6cdc3cbacc815fedbef90e704a9bb8a7c81dbf0ca117d937ee9d4ce00",
     "hidden": false,
-    "deleted": false,
-    "order": 31
+    "deleted": false
   },
   {
     "title": "",
@@ -1129,8 +1081,7 @@
     "groupNote": "",
     "sourceHash": "fe2c045c23750c8959a7d62875a5c562c3b21ca2b32fb534e6be4747ad6adeeb",
     "hidden": false,
-    "deleted": false,
-    "order": 32
+    "deleted": false
   },
   {
     "title": "",
@@ -1151,8 +1102,7 @@
     "groupNote": "",
     "sourceHash": "3dcd051479ee3439765bcf7b9079c654c7b115fa07dbdf1f3455661755b39fb7",
     "hidden": false,
-    "deleted": false,
-    "order": 33
+    "deleted": false
   },
   {
     "title": "",
@@ -1173,8 +1123,7 @@
     "groupNote": "",
     "sourceHash": "90ad95401afd7ecd9136ef2bc758c13cf5fa00ad2c543efa14cfd749ec4af2ae",
     "hidden": false,
-    "deleted": false,
-    "order": 34
+    "deleted": false
   },
   {
     "title": "",
@@ -1195,8 +1144,7 @@
     "groupNote": "",
     "sourceHash": "0f866eac004530e202258687c34abc4bc77f790010ee3b02c944fdd5af374b65",
     "hidden": false,
-    "deleted": false,
-    "order": 35
+    "deleted": false
   },
   {
     "title": "",
@@ -1217,7 +1165,6 @@
     "groupNote": "",
     "sourceHash": "99bfaaf412d2d3e269c88f3e03b2b910565dd77e284169a0a2cef791683f0e09",
     "hidden": false,
-    "deleted": false,
-    "order": 36
+    "deleted": false
   }
 ]
