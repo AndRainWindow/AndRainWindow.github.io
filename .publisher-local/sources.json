@@ -195,7 +195,7 @@
     "source": "/Volumes/Photos/Pixcall/2026/20260624临海台州府城/后期/DSC06096.jpg",
     "gps": {
       "lat": 28.85201,
-      "lon": 121.10679166666667
+      "lon": 121.10679166666668
     }
   },
   "photo-b5888f686a7143d78bf5a35a36528e9f": {
@@ -210,7 +210,7 @@
     "source": "/Volumes/Photos/Pixcall/2026/20260624临海台州府城/后期/DSC06083.jpg",
     "gps": {
       "lat": 28.848916666666668,
-      "lon": 121.11141166666667
+      "lon": 121.11141166666668
     }
   },
   "photo-ab94469a201247bea22520069ee09a79": {
@@ -248,8 +248,8 @@
   "photo-7a5c414b321d4e77bcae7659b0d90fa2": {
     "source": "/Volumes/Photos/Pixcall/2026/20260624临海台州府城/后期/20260624-DSC06115.jpg",
     "gps": {
-      "lat": 28.850618054999998,
-      "lon": 121.11974166666667
+      "lat": 28.850618055,
+      "lon": 121.11974166666668
     }
   },
   "photo-1c5a452b100b427ab9c9268d5d3733c1": {
@@ -262,7 +262,7 @@
   "photo-b68afecbcba84c309d1560226f1708d9": {
     "source": "/Volumes/Photos/Pixcall/2026/20260624临海台州府城/后期/DSC06114.jpg",
     "gps": {
-      "lat": 28.851051945000002,
+      "lat": 28.851051945,
       "lon": 121.119726945
     }
   },
@@ -284,7 +284,109 @@
     "source": "/Volumes/Photos/Pixcall/2026/20260624临海台州府城/后期/DSC06138-DxO_DeepPRIME 3.jpg",
     "gps": {
       "lat": 28.851005833333332,
-      "lon": 121.24106277833333
+      "lon": 121.24106277833332
+    }
+  },
+  "photo-106d93c6a1694d9b86f2694bd96b549c": {
+    "source": "/Volumes/Photos/Pixcall/2026/20260625雁荡山/后期/20260625-DSC06155.jpg",
+    "gps": {
+      "lat": 28.356698055,
+      "lon": 121.04415166666666
+    }
+  },
+  "photo-52a3134d102240c1957fa09a25a9bd69": {
+    "source": "/Volumes/Photos/Pixcall/2026/20260625雁荡山/后期/DSC06169-DxO_DeepPRIME 3.jpg",
+    "gps": {
+      "lat": 28.357515833333334,
+      "lon": 121.043541945
+    }
+  },
+  "photo-c2ac5aac2cc140158afefb1b3953506a": {
+    "source": "/Volumes/Photos/Pixcall/2026/20260625雁荡山/后期/DSC06170.jpg",
+    "gps": {
+      "lat": 28.357515833333334,
+      "lon": 121.043541945
+    }
+  },
+  "photo-1b23601ba6034801a19b6a7309ee3936": {
+    "source": "/Volumes/Photos/Pixcall/2026/20260625雁荡山/后期/DSC06206.jpg",
+    "gps": {
+      "lat": 28.357623888333332,
+      "lon": 121.04332277833333
+    }
+  },
+  "photo-aae1ef7282de41549748bddb95107526": {
+    "source": "/Volumes/Photos/Pixcall/2026/20260625雁荡山/后期/DSC06215.jpg",
+    "gps": {
+      "lat": 28.356550833333333,
+      "lon": 121.044376945
+    }
+  },
+  "photo-3ce24ee6902c4fcbafee989bc267422b": {
+    "source": "/Volumes/Photos/Pixcall/2026/20260625雁荡山/后期/DSC06221.jpg",
+    "gps": {
+      "lat": 28.354741666666666,
+      "lon": 121.04734166666667
+    }
+  },
+  "photo-5fdf6bb8a18e4c3dbd91478e0177c720": {
+    "source": "/Volumes/Photos/Pixcall/2026/20260625雁荡山/后期/DSC06226.jpg",
+    "gps": {
+      "lat": 28.360743055,
+      "lon": 121.07722
+    }
+  },
+  "photo-587593925373420dbf311c55ba8949f2": {
+    "source": "/Volumes/Photos/Pixcall/2026/20260625雁荡山/后期/DSC06247.jpg",
+    "gps": null
+  },
+  "photo-9926d2d481664f749929b14a7f16a373": {
+    "source": "/Volumes/Photos/Pixcall/2026/20260625雁荡山/后期/DSC06255.jpg",
+    "gps": {
+      "lat": 28.363401666666668,
+      "lon": 121.07694
+    }
+  },
+  "photo-3441912de6ae4de5bc6473644f3b0428": {
+    "source": "/Volumes/Photos/Pixcall/2026/20260625雁荡山/后期/DSC06261.jpg",
+    "gps": {
+      "lat": 28.363636945,
+      "lon": 121.08598
+    }
+  },
+  "photo-ec4a081c77034213a20531d3f1613202": {
+    "source": "/Volumes/Photos/Pixcall/2026/20260625雁荡山/后期/DSC06277.jpg",
+    "gps": {
+      "lat": 28.367456666666666,
+      "lon": 121.077103055
+    }
+  },
+  "photo-89a69ee019ef4269a4795ccae5829314": {
+    "source": "/Volumes/Photos/Pixcall/2026/20260625雁荡山/后期/DSC06289.jpg",
+    "gps": {
+      "lat": 28.36614,
+      "lon": 121.080313055
+    }
+  },
+  "photo-4111d67fff2f40b49e640831a7719d4e": {
+    "source": "/Volumes/Photos/Pixcall/2026/20260625雁荡山/后期/DSC06295-DxO_DeepPRIME 3.jpg",
+    "gps": {
+      "lat": 28.365767778333332,
+      "lon": 121.081411945
+    }
+  },
+  "photo-066172d583584d5e8b2985811b1a017c": {
+    "source": "/Volumes/Photos/Pixcall/2026/20260625雁荡山/后期/DSC06298-DxO_DeepPRIME 3.jpg",
+    "gps": {
+      "lat": 28.364761945,
+      "lon": 121.08348277833333
+    }
+  },
+  "photo-58bbb3ee919f416f9f5ea1c8a1eb9acb": {
+    "source": "/Volumes/Photos/Pixcall/2026/20260625雁荡山/后期/DSC06307.jpg",
+    "gps": {
+      "lat": 28.360036945,
+      "lon": 121.14234888833333
     }
   }
 }
