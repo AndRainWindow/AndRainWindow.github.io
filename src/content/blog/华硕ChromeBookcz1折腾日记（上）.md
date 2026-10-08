@@ -1,16 +1,15 @@
 ---
-title: "华硕ChromeBookcz1折腾日记（上）"
+title: "华硕ChromeBookCz1折腾日记（上）"
 date: 2026-09-20
-updated: "2026-09-27 16:08:40"
+updated: "2026-10-08 15:42:42"
 topics: "Chromebook"
-heroImage: "/images/covers/ChatGPT_图像_2026年9月25日_22_42_15.webp"
-wordCount: 5024
+heroImage: "/images/covers/华硕ChromeBookcz1折腾日记-1789706303706.webp"
+wordCount: 4998
 readingTime: 17
 ---
 
 ## 背景
 这台机器是我上大二的时候从闲鱼淘来的，当时也不知道为啥中了ChromeOS的邪，或者更准确说我一直想要一台独立的，原生运行GNU/Linux的设备，笔记本嘛肯定不合适，一时半会配电脑也不太可能，再加之我对于这种大屏移动设备本身就很感兴趣，ChromeOS当时那个UI也很吸引我，Material3风格至今是我最喜欢的风格之一，ChromeWeb系统加Linux容器加Android虚拟机，貌似也很吸引人，有生产力还有娱乐性，价格也很低，只要300出头就能买下这么一款平板电脑，一切似乎都很美好，我在犹豫了一段时间后下单了。
-!![Screenshot_2026-09-17-10-58-05-106_com.taobao.idlefish.webp](/images/blog/Screenshot_2026-09-17-10-58-05-106_com.taobao.idlefish.webp)
 
 ## ChromeOS下的折腾
 #### <span style="color:#d65a5a">还是先过一下硬件</span>
