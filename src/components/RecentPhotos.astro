@@ -1,6 +1,7 @@
 ---
 import photosData from '../data/photos.json';
 import { displayPhotos } from '../data/photo-view.mjs';
+import { photoDayId } from '../data/photo-timeline.mjs';
 
 // 每组照片只取封面（组内第一张）作为一个时间轴节点
 type DisplayPhoto = {
@@ -47,7 +48,7 @@ const covers = groups.slice(0, 8);
 
 				<a
 					class="timeline-item"
-					href="/photos/"
+					href={`/photos/#${photoDayId(photo.day)}`}
 					aria-label={`查看作品：${photo.alt}`}
 				>
 

@@ -50,6 +50,45 @@ const server = http.createServer((req, res) => {
     await page.locator('.photo-frame img').first().evaluate(image => image.decode());
     await page.screenshot({ path: path.join(artifacts, 'desktop.png') });
 
+    // Homepage covers deep-link to day sections that exist on /photos/.
+    const base = url.replace(/photos\/$/, '');
+    await page.goto(base);
+    const homeHrefs = await page.locator('.timeline-item').evaluateAll(items => items.map(item => item.getAttribute('href')));
+    assert.ok(homeHrefs.length > 0 && homeHrefs.every(href => /^\/photos\/#photo-day-/.test(href)), 'covers link to day hashes');
+    assert.equal(await page.locator('.photo-more').getAttribute('href'), '/photos/');
+    await page.goto(url);
+    const dangling = await page.evaluate(hrefs => hrefs.filter(href => !document.getElementById(href.split('#')[1])), homeHrefs);
+    assert.deepEqual(dangling, [], 'every cover hash must resolve to an element on /photos/');
+
+    // Portrait frames narrow below the column, stay centered, and respect the height cap.
+    const portraitBox = await page.locator('.photo-item').evaluateAll(items => {
+      for (const item of items) {
+        const img = item.querySelector('.photo-frame img');
+        const w = Number(img.getAttribute('width')), h = Number(img.getAttribute('height'));
+        if (h > w) {
+          const frame = item.querySelector('.photo-frame').getBoundingClientRect();
+          const box = item.getBoundingClientRect();
+          return { id: item.id, width: frame.width, itemWidth: box.width, left: frame.left - box.left, right: box.right - frame.right, height: frame.height, viewport: innerHeight };
+        }
+      }
+      return null;
+    });
+    if (portraitBox) {
+      assert.ok(portraitBox.width < portraitBox.itemWidth - 1, 'portrait frames narrow below the column');
+      assert.ok(Math.abs(portraitBox.left - portraitBox.right) <= 2, 'portrait frames stay centered in the column');
+      assert.ok(portraitBox.height <= portraitBox.viewport * 0.78 + 6, 'portrait frame respects max height');
+      // The info panel slides beside the centered portrait and widens into the gap.
+      await page.goto(url + '#' + portraitBox.id);
+      await page.waitForTimeout(300);
+      const placement = await page.evaluate(id => {
+        const frame = document.getElementById(id).querySelector('.photo-frame').getBoundingClientRect();
+        const panel = document.querySelector('.photo-info').getBoundingClientRect();
+        return { gap: panel.left - frame.right, width: panel.width };
+      }, portraitBox.id);
+      assert.ok(placement.gap >= 25 && placement.gap <= 55, `info panel sits beside the centered portrait (gap ${placement.gap})`);
+      assert.ok(placement.width > 300, `info panel widens to absorb the freed space (width ${placement.width})`);
+    }
+
     for (const day of dayLinks) {
       await page.locator(`.timeline-link[data-day="${day.day}"]`).click();
       await page.waitForFunction(day => document.querySelector('[data-timeline-day]').value === day, day.day);
@@ -100,6 +139,10 @@ const server = http.createServer((req, res) => {
         assert.equal(await page.locator('.photo-info').isVisible(), false);
         assert.equal(await page.locator('[data-timeline]').isVisible(), true);
         assert.equal(await page.locator('.mobile-info').first().isVisible(), true);
+        assert.ok(await page.locator('.photo-frame').first().evaluate(frame => {
+          const w = frame.getBoundingClientRect().width;
+          return Math.abs(w - frame.parentElement.getBoundingClientRect().width) <= 2;
+        }), 'mobile frames stay full width');
       }
       await page.locator('.photo-frame img').first().evaluate(image => image.decode());
       await page.screenshot({ path: path.join(artifacts, `width-${width}.png`) });
