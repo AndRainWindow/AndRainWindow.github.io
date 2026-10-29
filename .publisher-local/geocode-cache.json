@@ -230,5 +230,157 @@
     "city": "温州市",
     "district": "乐清市",
     "message": "已识别到区县，请核对。"
+  },
+  "amap:24.91637,118.57947": {
+    "location": "泉州市 · 鲤城区",
+    "locationSource": "amap",
+    "province": "福建省",
+    "city": "泉州市",
+    "district": "鲤城区",
+    "message": "已识别到区县，请核对。"
+  },
+  "amap:25.56287,119.77325": {
+    "location": "福州市 · 平潭县",
+    "locationSource": "amap",
+    "province": "福建省",
+    "city": "福州市",
+    "district": "平潭县",
+    "message": "已识别到区县，请核对。"
+  },
+  "amap:24.91669,118.57869": {
+    "location": "泉州市 · 鲤城区",
+    "locationSource": "amap",
+    "province": "福建省",
+    "city": "泉州市",
+    "district": "鲤城区",
+    "message": "已识别到区县，请核对。"
+  },
+  "amap:24.91707,118.57974": {
+    "location": "泉州市 · 鲤城区",
+    "locationSource": "amap",
+    "province": "福建省",
+    "city": "泉州市",
+    "district": "鲤城区",
+    "message": "已识别到区县，请核对。"
+  },
+  "amap:24.91675,118.58030": {
+    "location": "泉州市 · 鲤城区",
+    "locationSource": "amap",
+    "province": "福建省",
+    "city": "泉州市",
+    "district": "鲤城区",
+    "message": "已识别到区县，请核对。"
+  },
+  "amap:24.91695,118.58113": {
+    "location": "泉州市 · 鲤城区",
+    "locationSource": "amap",
+    "province": "福建省",
+    "city": "泉州市",
+    "district": "鲤城区",
+    "message": "已识别到区县，请核对。"
+  },
+  "amap:24.91756,118.58122": {
+    "location": "泉州市 · 鲤城区",
+    "locationSource": "amap",
+    "province": "福建省",
+    "city": "泉州市",
+    "district": "鲤城区",
+    "message": "已识别到区县，请核对。"
+  },
+  "amap:24.91643,118.57955": {
+    "location": "泉州市 · 鲤城区",
+    "locationSource": "amap",
+    "province": "福建省",
+    "city": "泉州市",
+    "district": "鲤城区",
+    "message": "已识别到区县，请核对。"
+  },
+  "amap:24.91599,118.58192": {
+    "location": "泉州市 · 鲤城区",
+    "locationSource": "amap",
+    "province": "福建省",
+    "city": "泉州市",
+    "district": "鲤城区",
+    "message": "已识别到区县，请核对。"
+  },
+  "amap:24.91051,118.58993": {
+    "location": "泉州市 · 鲤城区",
+    "locationSource": "amap",
+    "province": "福建省",
+    "city": "泉州市",
+    "district": "鲤城区",
+    "message": "已识别到区县，请核对。"
+  },
+  "amap:24.90458,118.58821": {
+    "location": "泉州市 · 鲤城区",
+    "locationSource": "amap",
+    "province": "福建省",
+    "city": "泉州市",
+    "district": "鲤城区",
+    "message": "已识别到区县，请核对。"
+  },
+  "amap:24.89816,118.58408": {
+    "location": "泉州市 · 鲤城区",
+    "locationSource": "amap",
+    "province": "福建省",
+    "city": "泉州市",
+    "district": "鲤城区",
+    "message": "已识别到区县，请核对。"
+  },
+  "amap:24.75736,118.59142": {
+    "location": "泉州市 · 晋江市",
+    "locationSource": "amap",
+    "province": "福建省",
+    "city": "泉州市",
+    "district": "晋江市",
+    "message": "已识别到区县，请核对。"
+  },
+  "amap:24.75743,118.59148": {
+    "location": "泉州市 · 晋江市",
+    "locationSource": "amap",
+    "province": "福建省",
+    "city": "泉州市",
+    "district": "晋江市",
+    "message": "已识别到区县，请核对。"
+  },
+  "amap:24.75806,118.59154": {
+    "location": "泉州市 · 晋江市",
+    "locationSource": "amap",
+    "province": "福建省",
+    "city": "泉州市",
+    "district": "晋江市",
+    "message": "已识别到区县，请核对。"
+  },
+  "amap:24.75799,118.59095": {
+    "location": "泉州市 · 晋江市",
+    "locationSource": "amap",
+    "province": "福建省",
+    "city": "泉州市",
+    "district": "晋江市",
+    "message": "已识别到区县，请核对。"
+  },
+  "amap:24.75897,118.59127": {
+    "location": "泉州市 · 晋江市",
+    "locationSource": "amap",
+    "province": "福建省",
+    "city": "泉州市",
+    "district": "晋江市",
+    "message": "已识别到区县，请核对。"
+  },
+  "amap:24.75842,118.59277": {
+    "location": "泉州市 · 晋江市",
+    "locationSource": "amap",
+    "province": "福建省",
+    "city": "泉州市",
+    "district": "晋江市",
+    "message": "已识别到区县，请核对。"
+  },
+  "amap:24.75737,118.59311": {
+    "location": "泉州市 · 晋江市",
+    "locationSource": "amap",
+    "province": "福建省",
+    "city": "泉州市",
+    "district": "晋江市",
+    "message": "已识别到区县，请核对。"
   }
 }
