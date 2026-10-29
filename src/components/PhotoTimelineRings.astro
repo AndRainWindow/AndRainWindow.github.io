@@ -1,15 +1,14 @@
 ---
-import { photoDayId } from '../data/photo-timeline.mjs';
-
 const { timeline = [] } = Astro.props;
-const days = timeline.flatMap(year => year.months.flatMap(month => month.days));
-const first = days[0];
+const entries = timeline.flatMap(year => year.entries);
+const first = entries[0];
 const firstYear = first?.day.slice(0, 4) || '';
-const yearDays = days.filter(day => day.day.slice(0, 4) === firstYear);
+const yearEntries = entries.filter(entry => entry.day.slice(0, 4) === firstYear);
 ---
 
 <aside class="timeline-rings" aria-label="摄影时间导航" data-timeline>
-  <div class="date-dial" style={`--year-progress: ${timeline.length ? 100 / timeline.length : 0}; --day-progress: ${yearDays.length ? 100 / yearDays.length : 0}`}>
+  <!-- --day-progress keeps its name; it now tracks entry progress within the year. -->
+  <div class="date-dial" style={`--year-progress: ${timeline.length ? 100 / timeline.length : 0}; --day-progress: ${yearEntries.length ? 100 / yearEntries.length : 0}`}>
     <svg class="dial-rings" viewBox="0 0 200 200" fill="none" aria-hidden="true">
       <circle class="ring-track" cx="100" cy="100" r="92" />
       <circle class="ring-track" cx="100" cy="100" r="77" />
@@ -27,9 +26,9 @@ const yearDays = days.filter(day => day.day.slice(0, 4) === firstYear);
         </select>
       </label>
       <label class="dial-field dial-date">
-        <span class="sr-only">选择月日</span>
-        <select data-timeline-day disabled={true}>
-          {yearDays.map(({ day }) => <option value={day || 'undated'}>{day ? day.slice(5).replace('-', '.') : '—'}</option>)}
+        <span class="sr-only">选择分组</span>
+        <select data-timeline-entry disabled={true}>
+          {yearEntries.map(({ key, label }) => <option value={key}>{label}</option>)}
         </select>
       </label>
       <span class="dial-position" data-timeline-position>{first ? `01 / ${String(first.items.length).padStart(2, '0')}` : '暂无照片'}</span>
@@ -37,24 +36,31 @@ const yearDays = days.filter(day => day.day.slice(0, 4) === firstYear);
   </div>
 
   <div class="date-archive">
-    <p class="archive-label">光阴索引 <span>{days.length} 天</span></p>
-    <nav class="archive-scroll" aria-label="按拍摄日期浏览">
-      {timeline.map(({ year, months }) => (
+    <p class="archive-label">光阴索引 <span>{entries.length} 组</span></p>
+    <nav class="archive-scroll" aria-label="按分组浏览">
+      {timeline.map(({ year, entries: entryList }) => (
         <div class="archive-year">
           <h2>{year || '未记录日期'}</h2>
-          {months.flatMap(month => month.days).map(({ day, items }) => (
-            <a
-              class:list={['timeline-link', { active: day === first?.day }]}
-              href={`#${photoDayId(day)}`}
-              data-day={day || 'undated'}
-              data-year={year || 'undated'}
-              data-count={items.length}
-              aria-current={day === first?.day ? 'date' : undefined}
-              aria-label={`${day || '未记录日期'}，${items.length} 张照片`}
-            >
-              <span>{day ? day.slice(5).replace('-', '.') : '日期未知'}</span>
-              <span class="day-count">{String(items.length).padStart(2, '0')}</span>
-            </a>
+          {entryList.map((entry, index) => (
+            <Fragment>
+              {entry.month && (index === 0 || entry.month !== entryList[index - 1].month) && (
+                <p class="archive-month">{Number(entry.month)}月</p>
+              )}
+              <a
+                class:list={['timeline-link', { active: entry.key === first?.key }]}
+                href={`#${entry.id}`}
+                data-entry={entry.key}
+                data-label={entry.label}
+                data-year={year || 'undated'}
+                data-month={entry.month || 'undated'}
+                data-count={entry.items.length}
+                aria-current={entry.key === first?.key ? 'true' : undefined}
+                aria-label={`${entry.label}，${entry.items.length} 张照片`}
+              >
+                <span>{entry.label}</span>
+                <span class="day-count">{String(entry.items.length).padStart(2, '0')}</span>
+              </a>
+            </Fragment>
           ))}
         </div>
       ))}
@@ -98,6 +104,7 @@ const yearDays = days.filter(day => day.day.slice(0, 4) === firstYear);
   .dial-field select {
     display: block;
     width: 100%;
+    max-width: 100%;
     appearance: none;
     border: 0;
     border-radius: 4px;
@@ -107,6 +114,9 @@ const yearDays = days.filter(day => day.day.slice(0, 4) === firstYear);
     font: inherit;
     text-align: center;
     text-align-last: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
     cursor: pointer;
   }
   .dial-field option { background: #202c33; color: white; font-size: 14px; }
@@ -114,7 +124,7 @@ const yearDays = days.filter(day => day.day.slice(0, 4) === firstYear);
   .dial-field select:hover { background: rgba(255, 255, 255, .08); }
   .dial-field select:focus-visible, .timeline-link:focus-visible { outline: 1px solid #fff; outline-offset: 3px; }
   .dial-year { font-size: 14px; letter-spacing: 3px; color: rgba(255, 255, 255, .7); }
-  .dial-date { font-size: clamp(22px, 2.2vw, 30px); font-weight: 300; line-height: 1.3; color: #fff; }
+  .dial-date { font-size: clamp(14px, 1.5vw, 20px); font-weight: 300; line-height: 1.3; color: #fff; }
   .dial-position { margin-top: 5px; font-size: 10px; letter-spacing: 2px; color: rgba(255, 255, 255, .5); }
   .date-archive { margin: 22px 14px 0; }
   .archive-label { display: flex; justify-content: space-between; margin: 0 0 18px; font-size: 10px; letter-spacing: 2px; color: rgba(255, 255, 255, .55); }
@@ -122,6 +132,7 @@ const yearDays = days.filter(day => day.day.slice(0, 4) === firstYear);
   .archive-scroll { max-height: max(140px, calc(100dvh - 360px)); overflow-y: auto; scrollbar-width: thin; scrollbar-color: #ffffff30 transparent; padding: 4px; margin: -4px; }
   .archive-year + .archive-year { margin-top: 18px; }
   .archive-year h2 { margin: 0 0 7px; font-size: 11px; font-weight: 400; letter-spacing: 2px; color: rgba(255, 255, 255, .42); }
+  .archive-month { margin: 9px 0 4px; padding: 0 10px; font-size: 10px; letter-spacing: 2px; color: rgba(255, 255, 255, .3); }
   .timeline-link {
     display: flex;
     align-items: center;
@@ -152,7 +163,7 @@ const yearDays = days.filter(day => day.day.slice(0, 4) === firstYear);
     .archive-year h2 { margin-bottom: 4px; }
     .timeline-link { min-height: 44px; }
     .dial-face { inset: 20%; }
-    .dial-date { font-size: 23px; }
+    .dial-date { font-size: 15px; }
     .dial-year { font-size: 11px; }
     .dial-position { margin-top: 0; }
   }

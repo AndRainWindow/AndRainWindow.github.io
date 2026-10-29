@@ -1,40 +1,39 @@
-import { displayPhotos } from './photo-view.mjs';
+import { displayPhotos, photoEntryKey } from './photo-view.mjs';
+
+export { photoEntryKey };
 
 // Derived view only: keep photos.json and publisher group order untouched.
-export function photoDayId(day) {
-  return `photo-day-${day || 'undated'}`;
+export function photoEntryId(key) {
+  return `photo-entry-${key}`;
 }
 
 export function buildPhotoTimeline(records) {
   const photos = displayPhotos(records, { sort: 'date' });
 
-  const years = new Map();
-
-  for (const photo of photos) {
-    const year = photo.day.slice(0, 4);
-
-    if (!years.has(year)) years.set(year, new Map());
-    const months = years.get(year);
-
-    const monthKey = photo.day.slice(0, 7);
-    if (!months.has(monthKey)) months.set(monthKey, new Map());
-
-    const days = months.get(monthKey);
-    const dayKey = photo.day;
-    if (!days.has(dayKey)) days.set(dayKey, []);
-
-    days.get(dayKey).push(photo);
+  // dayStart marks the first photo of each distinct-day run in flat stream
+  // order (crossing entry boundaries); the page uses it for MM.DD tags and
+  // hairlines. Written onto the enriched copies, never onto photos.json rows.
+  for (let i = 0; i < photos.length; i++) {
+    photos[i].dayStart = i === 0 || photos[i].day !== photos[i - 1].day;
   }
 
-  return [...years.entries()].map(([year, months]) => ({
-    year,
-    months: [...months.entries()].map(([month, days]) => ({
-      month,
-      days: [...days.entries()].map(([day, items]) => ({
-        day,
-        id: photoDayId(day),
-        items,
-      })),
-    })),
-  }));
+  const entries = new Map();
+  for (const photo of photos) {
+    const key = photoEntryKey(photo);
+    if (!entries.has(key)) entries.set(key, []);
+    entries.get(key).push(photo);
+  }
+
+  const years = new Map();
+  for (const [key, items] of entries) {
+    const day = items[0].day;
+    const year = day.slice(0, 4);
+    const month = day.slice(5, 7);
+    const label = items.find(photo => photo.groupTitle)?.groupTitle
+      || (day ? day.slice(5).replace('-', '.') : '日期未知');
+    if (!years.has(year)) years.set(year, []);
+    years.get(year).push({ key, id: photoEntryId(key), day, month, label, items });
+  }
+
+  return [...years.entries()].map(([year, entries]) => ({ year, entries }));
 }

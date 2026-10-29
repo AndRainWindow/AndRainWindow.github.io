@@ -2279,7 +2279,7 @@
     "order": 6
   },
   {
-    "title": "",
+    "title": "开元寺",
     "note": "",
     "date": "2026-06-29T12:19",
     "location": "泉州市 · 鲤城区",
@@ -2305,10 +2305,10 @@
     "order": 7
   },
   {
-    "title": "",
+    "title": "开元寺",
     "note": "",
     "date": "2026-06-28T12:52",
-    "location": "",
+    "location": "泉州市 · 鲤城区",
     "camera": "SONY ZV-E10",
     "lens": "E PZ 16-50mm F3.5-5.6 OSS",
     "iso": "100",
@@ -2328,7 +2328,7 @@
     "manualOrder": true
   },
   {
-    "title": "",
+    "title": "泉州西街",
     "note": "",
     "date": "2026-06-28T14:00",
     "location": "泉州市 · 鲤城区",
@@ -2347,16 +2347,15 @@
     "sourceHash": "7b517a8e1d6486888d3f2a0005078e0cdddaa12d3b5ec2e8463d8265f96a5143",
     "hidden": false,
     "deleted": false,
-    "locationSource": "amap",
+    "manualOrder": true,
     "province": "福建省",
     "city": "泉州市",
     "district": "鲤城区",
-    "order": 9,
-    "manualOrder": true
+    "order": 9
   },
   {
-    "title": "",
-    "note": "",
+    "title": "泉州西街",
+    "note": "在这次泉州之行中，泉州的景区公交是我见过最方便的了，在手机上像叫出租车一样就能叫，然后自主选择地点，价格也很便宜，完美满足了这种老城区没有现代化公路，人多和交通不便的麻烦（没有图，但是想起来这个还是忍不住想写一写）。",
     "date": "2026-06-28T14:05",
     "location": "泉州市 · 鲤城区",
     "camera": "SONY ZV-E10",
@@ -2374,16 +2373,15 @@
     "sourceHash": "14eb7a8472785a9a29f5af0478799d032e27bf99db07c766529a304ee0a8d27b",
     "hidden": false,
     "deleted": false,
-    "locationSource": "amap",
+    "manualOrder": true,
     "province": "福建省",
     "city": "泉州市",
     "district": "鲤城区",
-    "order": 10,
-    "manualOrder": true
+    "order": 10
   },
   {
-    "title": "",
-    "note": "",
+    "title": "承天寺",
+    "note": "这个承天寺不是苏轼笔下的那个，只是撞名了。",
     "date": "2026-06-28T14:31",
     "location": "泉州市 · 鲤城区",
     "camera": "SONY ZV-E10",
@@ -2401,18 +2399,17 @@
     "sourceHash": "9765b1f47eb69502b74b4ec456d670661082dc5edbcdebe9ff529c4eaae3a6ca",
     "hidden": false,
     "deleted": false,
-    "locationSource": "amap",
+    "manualOrder": true,
     "province": "福建省",
     "city": "泉州市",
     "district": "鲤城区",
-    "order": 11,
-    "manualOrder": true
+    "order": 11
   },
   {
-    "title": "",
-    "note": "",
+    "title": "关岳庙",
+    "note": "泉州的香火可谓是相当兴旺，当时去的那天正好是关公的诞辰，那如此鼎盛的香火我是之前没怎么见过的。",
     "date": "2026-06-28T15:53",
-    "location": "",
+    "location": "泉州市 · 鲤城区",
     "camera": "SONY ZV-E10",
     "lens": "E PZ 16-50mm F3.5-5.6 OSS",
     "iso": "125",
@@ -2432,7 +2429,7 @@
     "manualOrder": true
   },
   {
-    "title": "",
+    "title": "关岳庙",
     "note": "",
     "date": "2026-06-28T15:54",
     "location": "泉州市 · 鲤城区",
@@ -2451,16 +2448,15 @@
     "sourceHash": "2e16a29f01c1130edfe9278ada83c1908caca1b33ffff34e3971d3318e1feff5",
     "hidden": false,
     "deleted": false,
-    "locationSource": "amap",
+    "manualOrder": true,
     "province": "福建省",
     "city": "泉州市",
     "district": "鲤城区",
-    "order": 13,
-    "manualOrder": true
+    "order": 13
   },
   {
-    "title": "",
-    "note": "",
+    "title": "天后寺",
+    "note": "泉州当地寺庙很多，当地人信仰也很多，妈祖，关公，岳飞，包括传统的佛道儒，还有外来宗教和文化的融合。",
     "date": "2026-06-28T17:07",
     "location": "泉州市 · 鲤城区",
     "camera": "SONY ZV-E10",
@@ -2478,16 +2474,15 @@
     "sourceHash": "39ec1a675062939a71d02e7495464fa42b4e25e7311037747fe0c9d1c675c504",
     "hidden": false,
     "deleted": false,
-    "locationSource": "amap",
+    "manualOrder": true,
     "province": "福建省",
     "city": "泉州市",
     "district": "鲤城区",
-    "order": 14,
-    "manualOrder": true
+    "order": 14
   },
   {
-    "title": "",
-    "note": "",
+    "title": "梧林古村落",
+    "note": "晋江这个地方，似乎比泉州本身都要出名，而晋江其实也有很多景点，我们第二天安排了半天的行程，前往了梧林这个古村落。",
     "date": "2026-06-29T09:58",
     "location": "泉州市 · 晋江市",
     "camera": "SONY ZV-E10",
@@ -2505,16 +2500,15 @@
     "sourceHash": "5afdde7380d03e0addb4f3e162986da3ca92ea86c866bf721e0216e0ac7bff04",
     "hidden": false,
     "deleted": false,
-    "locationSource": "amap",
+    "manualOrder": true,
     "province": "福建省",
     "city": "泉州市",
     "district": "晋江市",
-    "order": 15,
-    "manualOrder": true
+    "order": 15
   },
   {
-    "title": "",
-    "note": "",
+    "title": "梧林古村落",
+    "note": "这个地方也是挺有特色的，通红的墙壁，四合院和外来文化的融合建筑，也是体现出了当地的特色。",
     "date": "2026-06-29T09:58",
     "location": "泉州市 · 晋江市",
     "camera": "SONY ZV-E10",
@@ -2532,16 +2526,15 @@
     "sourceHash": "a2fa5acd161ea32ef2376e1ccbf9ecdaac6263696e61ce30126c0ca7f9280822",
     "hidden": false,
     "deleted": false,
-    "locationSource": "amap",
+    "manualOrder": true,
     "province": "福建省",
     "city": "泉州市",
     "district": "晋江市",
-    "order": 16,
-    "manualOrder": true
+    "order": 16
   },
   {
-    "title": "",
-    "note": "",
+    "title": "梧林古村落",
+    "note": "相比自身建筑的特色，我也对于泉州能保存这么一片完好的古建筑也是感到意外，这里的建筑原先就是当地居民的住所，后面是被政府加以直接收回作为一整个旅游景区来开发的了。",
     "date": "2026-06-29T10:11",
     "location": "泉州市 · 晋江市",
     "camera": "SONY ZV-E10",
@@ -2559,18 +2552,17 @@
     "sourceHash": "7649920d90a8fbbfc25b768dd19dde8dcb9a8cae8292f5c6380573f29dd4f79e",
     "hidden": false,
     "deleted": false,
-    "locationSource": "amap",
+    "manualOrder": true,
     "province": "福建省",
     "city": "泉州市",
     "district": "晋江市",
-    "order": 17,
-    "manualOrder": true
+    "order": 17
   },
   {
-    "title": "",
+    "title": "梧林古村落",
     "note": "",
     "date": "2026-06-29T10:18",
-    "location": "",
+    "location": "泉州市 · 晋江市",
     "camera": "SONY ZV-E10",
     "lens": "E PZ 16-50mm F3.5-5.6 OSS",
     "iso": "160",
@@ -2590,7 +2582,7 @@
     "manualOrder": true
   },
   {
-    "title": "",
+    "title": "梧林古村落",
     "note": "",
     "date": "2026-06-29T10:26",
     "location": "泉州市 · 晋江市",
@@ -2609,16 +2601,15 @@
     "sourceHash": "fa2f7e869ab0df9f3197456fd5542d8bab3f6a745c63ac8ae041e11d6cea5dea",
     "hidden": false,
     "deleted": false,
-    "locationSource": "amap",
+    "manualOrder": true,
     "province": "福建省",
     "city": "泉州市",
     "district": "晋江市",
-    "order": 19,
-    "manualOrder": true
+    "order": 19
   },
   {
-    "title": "",
-    "note": "",
+    "title": "梧林古村落",
+    "note": "桥批文化，随《给阿嬷的情书》的爆火让更多人了解，其实中国不缺特色的文化或故事，但能够被人利用为人所知，将文化讲述出来，就得看当地政府和文化创作者的本事了。",
     "date": "2026-06-29T10:28",
     "location": "泉州市 · 晋江市",
     "camera": "SONY ZV-E10",
@@ -2636,16 +2627,15 @@
     "sourceHash": "9eb4255ebd81aa7a5ab297adf32ab6d06d06fd227a461e61f4c5062183ffa061",
     "hidden": false,
     "deleted": false,
-    "locationSource": "amap",
+    "manualOrder": true,
     "province": "福建省",
     "city": "泉州市",
     "district": "晋江市",
-    "order": 20,
-    "manualOrder": true
+    "order": 20
   },
   {
-    "title": "",
-    "note": "",
+    "title": "梧林古村落",
+    "note": "相比福州，泉州似乎显得更有文化也更完整，也没有那么多奇奇怪怪的打卡点。",
     "date": "2026-06-29T10:43",
     "location": "泉州市 · 晋江市",
     "camera": "SONY ZV-E10",
@@ -2663,16 +2653,15 @@
     "sourceHash": "ad97bab7f9aae03c589690b47afa35daf50db9f6dac05e2de72fd4cc9d73be5f",
     "hidden": false,
     "deleted": false,
-    "locationSource": "amap",
+    "manualOrder": true,
     "province": "福建省",
     "city": "泉州市",
     "district": "晋江市",
-    "order": 21,
-    "manualOrder": true
+    "order": 21
   },
   {
-    "title": "",
-    "note": "",
+    "title": "梧林古村落",
+    "note": "一天半的泉州之行，整体来说体验还是很不错的，我总是忍不住拿泉州和福州来对比，泉州免费的景区，没有刻意为出片而矫揉造作的景点，泉州西街和梧林古村落两个地方，都很能体现当地特色和文化，当地方便的公交，本地化的美食，总体来说体验还是很好的。\n\n它给我留下的印象最深刻的特点应该是，当地的烟火味十足，无论是祭祀的香火还是本地人生活，都让我感觉这是一个生活气息很足的城市。相比杭沪这两个城市，泉州更像是一个贴近市民的城市，而不是服务于富商和权贵的。\n\n如果说缺点的话在于网上为人所诟病的泉州市区的老旧，的确，泉州的老城区都难以让人觉得这是一个GDP破万亿的城市，市区市容市貌整体还是上世纪的感觉，以及和城市区位不配套的公共交通（景区公交很不错，但市域交通很一般）。",
     "date": "2026-06-29T10:47",
     "location": "泉州市 · 晋江市",
     "camera": "SONY ZV-E10",
@@ -2690,11 +2679,10 @@
     "sourceHash": "1a5b2bc476ab3a56331ed70cc1571160e7d535e979a89ca827455b38d7285eb5",
     "hidden": false,
     "deleted": false,
-    "locationSource": "amap",
+    "manualOrder": true,
     "province": "福建省",
     "city": "泉州市",
     "district": "晋江市",
-    "order": 22,
-    "manualOrder": true
+    "order": 22
   }
 ]

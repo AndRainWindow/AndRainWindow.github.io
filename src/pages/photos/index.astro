@@ -9,8 +9,8 @@ import sharp from 'sharp';
 import { fileURLToPath } from 'node:url';
 
 const timeline = buildPhotoTimeline(photosData);
-const days = timeline.flatMap(year => year.months.flatMap(month => month.days));
-const photos = days.flatMap(day => day.items);
+const entries = timeline.flatMap(year => year.entries);
+const photos = entries.flatMap(entry => entry.items);
 // Reserve each image's actual aspect ratio so lazy loading cannot move date
 // anchors or change the active photo after a jump down the stream.
 const dimensions = new Map(await Promise.all(photos.map(async photo => {
@@ -124,25 +124,19 @@ const dimensions = new Map(await Promise.all(photos.map(async photo => {
 		}
 
 		.photo-stream,
-		.day-photos {
+		.entry-photos {
 			display: flex;
 			flex-direction: column;
 			gap: 120px;
 		}
 
-		.photo-day, .photo-item { scroll-margin-top: 70px; }
-		.day-heading {
-			display: flex;
-			align-items: center;
-			gap: 16px;
-			margin: 0 0 28px;
-			color: rgba(255,255,255,.68);
-			font: 12px/1.5 "Noto Serif SC", serif;
-			font-weight: 400;
-			letter-spacing: 2px;
+		.photo-entry, .photo-item { scroll-margin-top: 70px; }
+		/* Hairline between day runs; negative margins keep the photo rhythm. */
+		.day-break {
+			height: 1px;
+			background: rgba(255,255,255,.15);
+			margin-block: -59px;
 		}
-		.day-heading::after { content: ""; height: 1px; flex: 1; background: rgba(255,255,255,.15); }
-		.day-heading span { color: rgba(255,255,255,.4); font-size: 10px; letter-spacing: 0; }
 		.empty-state { color: rgba(255,255,255,.7); }
 		.photo-info [hidden] { display: none; }
 
@@ -151,6 +145,7 @@ const dimensions = new Map(await Promise.all(photos.map(async photo => {
 		}
 
 		.photo-frame {
+			position: relative;
 			width: 100%;
 			background: rgba(255,255,255,0.06);
 			border: 1px solid rgba(255,255,255,0.12);
@@ -187,6 +182,24 @@ const dimensions = new Map(await Promise.all(photos.map(async photo => {
 			width: 100%;
 			height: auto;
 			object-fit: contain;
+		}
+
+		/* MM.DD on the first photo of each day run. */
+		.photo-day-tag {
+			position: absolute;
+			top: 12px;
+			left: 12px;
+			z-index: 1;
+			padding: 3px 10px;
+			border-radius: 999px;
+			background: rgba(17, 24, 30, 0.45);
+			border: 1px solid rgba(255,255,255,0.18);
+			backdrop-filter: blur(8px);
+			-webkit-backdrop-filter: blur(8px);
+			color: rgba(255,255,255,0.9);
+			font: 11px/1.4 "Noto Serif SC", serif;
+			letter-spacing: 1px;
+			font-variant-numeric: tabular-nums;
 		}
 
 		.mobile-info {
@@ -264,8 +277,12 @@ const dimensions = new Map(await Promise.all(photos.map(async photo => {
 			}
 
 			.photo-stream,
-			.day-photos {
+			.entry-photos {
 				gap: 75px;
+			}
+
+			.day-break {
+				margin-block: -37px;
 			}
 
 			.mobile-info {
@@ -321,53 +338,58 @@ const dimensions = new Map(await Promise.all(photos.map(async photo => {
 
 		<section class="photo-stream" aria-label="摄影作品">
 			{!photos.length && <p class="empty-state">还没有公开的摄影作品。</p>}
-			{days.map(day => (
-			<section class="photo-day" id={day.id} aria-labelledby={`${day.id}-heading`}>
-				<h2 class="day-heading" id={`${day.id}-heading`}>
-					{day.day ? <time datetime={day.day}>{day.day.replaceAll('-', '.')}</time> : '未记录日期'}
-					<span>{day.items.length} 张</span>
-				</h2>
-				<div class="day-photos">
+			{entries.map((entry, entryIndex) => (
+			<section class="photo-entry" id={entry.id} aria-labelledby={`${entry.id}-heading`}>
+				<h2 class="sr-only" id={`${entry.id}-heading`}>{entry.label}</h2>
+				<div class="entry-photos">
 
-			{day.items.map((photo, index) => {
+			{entry.items.map((photo, index) => {
 				const dims = dimensions.get(photo.id);
 				const ratio = dims?.width && dims?.height ? (dims.width / dims.height).toFixed(6) : undefined;
 				return (
 
-				<article
-					id={photo.id}
-					class="photo-item"
-					data-photo={JSON.stringify(photo)}
-					data-day={day.day || 'undated'}
-					data-day-position={index + 1}
-				>
+				<Fragment>
+					{photo.dayStart && (entryIndex > 0 || index > 0) && (
+						<div class="day-break" aria-hidden="true"></div>
+					)}
+					<article
+						id={photo.id}
+						class="photo-item"
+						data-photo={JSON.stringify(photo)}
+						data-entry={entry.key}
+						data-entry-position={index + 1}
+					>
 
-					<div class="photo-frame" style={ratio ? `--photo-ratio: ${ratio}` : undefined}>
-						<img
-							src={photo.image}
-							alt={photo.alt}
-							width={dimensions.get(photo.id)?.width}
-							height={dimensions.get(photo.id)?.height}
-							loading={photo === photos[0] ? 'eager' : 'lazy'}
-							decoding="async"
-						/>
-					</div>
-
-					<div class="mobile-info">
-						{photo.title && <h2>{photo.title}</h2>}
-
-						<div class="mobile-meta">
-							{[photo.time, photo.location].filter(Boolean).join(' · ')}
-							{photo.equip && <div>{photo.equip}</div>}
-							{photo.exposure && <div>{photo.exposure}</div>}
+						<div class="photo-frame" style={ratio ? `--photo-ratio: ${ratio}` : undefined}>
+							{photo.dayStart && photo.day && (
+								<span class="photo-day-tag">{photo.day.slice(5).replace('-', '.')}</span>
+							)}
+							<img
+								src={photo.image}
+								alt={photo.alt}
+								width={dimensions.get(photo.id)?.width}
+								height={dimensions.get(photo.id)?.height}
+								loading={photo === photos[0] ? 'eager' : 'lazy'}
+								decoding="async"
+							/>
 						</div>
 
-						{photo.note && <p class="mobile-note">
-							{photo.note}
-						</p>}
-					</div>
+						<div class="mobile-info">
+							{photo.title && <h2>{photo.title}</h2>}
 
-				</article>
+							<div class="mobile-meta">
+								{[photo.time, photo.location].filter(Boolean).join(' · ')}
+								{photo.equip && <div>{photo.equip}</div>}
+								{photo.exposure && <div>{photo.exposure}</div>}
+							</div>
+
+							{photo.note && <p class="mobile-note">
+								{photo.note}
+							</p>}
+						</div>
+
+					</article>
+				</Fragment>
 
 				);
 			})}
@@ -399,7 +421,7 @@ const dimensions = new Map(await Promise.all(photos.map(async photo => {
 	const items = [...document.querySelectorAll<HTMLElement>('.photo-item')];
 	const links = [...document.querySelectorAll<HTMLAnchorElement>('.timeline-link')];
 	const yearSelect = document.querySelector<HTMLSelectElement>('[data-timeline-year]');
-	const daySelect = document.querySelector<HTMLSelectElement>('[data-timeline-day]');
+	const entrySelect = document.querySelector<HTMLSelectElement>('[data-timeline-entry]');
 	const dial = document.querySelector<HTMLElement>('.date-dial');
 	const position = document.querySelector('[data-timeline-position]');
 	const archive = document.querySelector<HTMLElement>('.archive-scroll');
@@ -440,33 +462,31 @@ const dimensions = new Map(await Promise.all(photos.map(async photo => {
 		if (note) { note.textContent = photo.note || ''; note.toggleAttribute('hidden', !photo.note); }
 		syncInfoPlacement(item);
 
-		const day = item.dataset.day;
-		const link = links.find(link => link.dataset.day === day);
+		const entryKey = item.dataset.entry;
+		const link = links.find(link => link.dataset.entry === entryKey);
 		if (!link) return;
 		const year = link.dataset.year || 'undated';
 		const yearLinks = links.filter(link => link.dataset.year === year);
 		if (yearSelect) yearSelect.value = year;
-		if (daySelect) {
+		if (entrySelect) {
 			if (activeYear !== year) {
-				daySelect.replaceChildren(...yearLinks.map(link => new Option(
-					link.dataset.day === 'undated' ? '—' : link.dataset.day!.slice(5).replace('-', '.'), link.dataset.day
-				)));
+				entrySelect.replaceChildren(...yearLinks.map(link => new Option(link.dataset.label || '—', link.dataset.entry!)));
 			}
-			daySelect.value = day || 'undated';
+			entrySelect.value = entryKey!;
 		}
 		activeYear = year;
 		dial?.style.setProperty('--year-progress', String((years.indexOf(year) + 1) / years.length * 100));
 		dial?.style.setProperty('--day-progress', String((yearLinks.indexOf(link) + 1) / yearLinks.length * 100));
 		if (position) {
-			position.textContent = `${String(item.dataset.dayPosition).padStart(2, '0')} / ${String(link.dataset.count).padStart(2, '0')}`;
-			position.setAttribute('aria-label', `当日第 ${item.dataset.dayPosition} 张，共 ${link.dataset.count} 张`);
+			position.textContent = `${String(item.dataset.entryPosition).padStart(2, '0')} / ${String(link.dataset.count).padStart(2, '0')}`;
+			position.setAttribute('aria-label', `本组第 ${item.dataset.entryPosition} 张，共 ${link.dataset.count} 张`);
 		}
 		links.forEach(candidate => {
 			candidate.classList.toggle('active', candidate === link);
-			if (candidate === link) candidate.setAttribute('aria-current', 'date');
+			if (candidate === link) candidate.setAttribute('aria-current', 'true');
 			else candidate.removeAttribute('aria-current');
 		});
-		// Keep the highlighted date inside its own list without moving the page.
+		// Keep the highlighted entry inside its own list without moving the page.
 		if (archive) {
 			const bounds = archive.getBoundingClientRect();
 			const current = link.getBoundingClientRect();
@@ -514,9 +534,9 @@ const dimensions = new Map(await Promise.all(photos.map(async photo => {
 			yearSelect.disabled = false;
 			yearSelect.addEventListener('change', () => links.find(link => link.dataset.year === yearSelect.value)?.click());
 		}
-		if (daySelect) {
-			daySelect.disabled = false;
-			daySelect.addEventListener('change', () => links.find(link => link.dataset.day === daySelect.value)?.click());
+		if (entrySelect) {
+			entrySelect.disabled = false;
+			entrySelect.addEventListener('change', () => links.find(link => link.dataset.entry === entrySelect.value)?.click());
 		}
 		window.addEventListener('scroll', scheduleUpdate, { passive: true });
 		window.addEventListener('resize', scheduleUpdate);

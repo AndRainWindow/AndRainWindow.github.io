@@ -31,30 +31,52 @@ const server = http.createServer((req, res) => {
     const errors = [];
     page.on('pageerror', error => errors.push(error.message));
     await page.goto(url);
-    const dayLinks = await page.locator('.timeline-link').evaluateAll(links => links.map(link => ({ day: link.dataset.day, count: Number(link.dataset.count), hash: link.getAttribute('href') })));
-    assert.equal(new Set(dayLinks.map(link => link.day)).size, dayLinks.length, 'dates must not repeat');
-    assert.equal(await page.locator('.photo-day').count(), dayLinks.length);
+    const entryLinks = await page.locator('.timeline-link').evaluateAll(links => links.map(link => ({
+      key: link.dataset.entry, year: link.dataset.year, label: link.dataset.label,
+      count: Number(link.dataset.count), hash: link.getAttribute('href'),
+    })));
+    assert.equal(new Set(entryLinks.map(link => link.key)).size, entryLinks.length, 'entry keys must not repeat');
+    assert.equal(await page.locator('.photo-entry').count(), entryLinks.length);
     const ids = await page.locator('.photo-item').evaluateAll(items => items.map(item => item.id));
     assert.equal(new Set(ids).size, ids.length, 'photo anchors must be unique');
     const rows = await page.locator('.photo-item').evaluateAll(items => items.map(item => {
       const photo = JSON.parse(item.dataset.photo);
-      return { day: photo.day, time: photo.time };
+      return { entry: item.dataset.entry, day: photo.day, time: photo.time };
     }));
-    const sections = [...new Set(rows.map(row => row.day))];
-    assert.deepEqual(sections, [...sections].sort().reverse(), 'date sections must descend');
-    for (const day of sections) {
-      const times = rows.filter(row => row.day === day && row.time).map(row => row.time);
-      assert.deepEqual(times, [...times].sort(), `photographs must ascend inside ${day || 'the undated section'}`);
+    // Entry covers run newest-first with the undated bucket last; inside one
+    // entry the days run earliest-first (a multi-day group ascends), and timed
+    // photos lead the date-only ones of their day.
+    const dayDesc = (a, b) => {
+      if (!a) return b ? 1 : 0;
+      if (!b) return -1;
+      return a < b ? 1 : a > b ? -1 : 0;
+    };
+    const dayAsc = (a, b) => {
+      if (!a) return b ? 1 : 0;
+      if (!b) return -1;
+      return a < b ? -1 : a > b ? 1 : 0;
+    };
+    const covers = entryLinks.map(link => rows.find(row => row.entry === link.key)?.day ?? '');
+    assert.deepEqual(covers, [...covers].sort(dayDesc), 'entry covers must descend');
+    for (const link of entryLinks) {
+      const members = rows.filter(row => row.entry === link.key);
+      const days = members.map(row => row.day);
+      assert.deepEqual(days, [...days].sort(dayAsc), `days must ascend inside ${link.label || link.key}`);
+      for (const day of [...new Set(days)]) {
+        const seq = members.filter(row => row.day === day).map(row => row.time);
+        assert.deepEqual(seq, [...seq.filter(Boolean)].sort().concat(seq.filter(time => !time)),
+          `timed photos ascend and date-only trail inside ${day || 'the undated day'}`);
+      }
     }
     assert.ok(await page.locator('.photo-frame img').evaluateAll(images => images.every(image => Number(image.getAttribute('width')) > 0 && Number(image.getAttribute('height')) > 0)), 'lazy images need reserved geometry');
     await page.locator('.photo-frame img').first().evaluate(image => image.decode());
     await page.screenshot({ path: path.join(artifacts, 'desktop.png') });
 
-    // Homepage covers deep-link to day sections that exist on /photos/.
+    // Homepage covers deep-link to entry sections that exist on /photos/.
     const base = url.replace(/photos\/$/, '');
     await page.goto(base);
     const homeHrefs = await page.locator('.timeline-item').evaluateAll(items => items.map(item => item.getAttribute('href')));
-    assert.ok(homeHrefs.length > 0 && homeHrefs.every(href => /^\/photos\/#photo-day-/.test(href)), 'covers link to day hashes');
+    assert.ok(homeHrefs.length > 0 && homeHrefs.every(href => /^\/photos\/#photo-entry-/.test(href)), 'covers link to entry hashes');
     assert.equal(await page.locator('.photo-more').getAttribute('href'), '/photos/');
     await page.goto(url);
     const dangling = await page.evaluate(hrefs => hrefs.filter(href => !document.getElementById(href.split('#')[1])), homeHrefs);
@@ -89,29 +111,29 @@ const server = http.createServer((req, res) => {
       assert.ok(placement.width > 300, `info panel widens to absorb the freed space (width ${placement.width})`);
     }
 
-    for (const day of dayLinks) {
-      await page.locator(`.timeline-link[data-day="${day.day}"]`).click();
-      await page.waitForFunction(day => document.querySelector('[data-timeline-day]').value === day, day.day);
-      const section = page.locator(day.hash);
-      assert.equal(await section.locator('.photo-item').count(), day.count);
+    for (const link of entryLinks) {
+      await page.locator(`.timeline-link[data-entry="${link.key}"]`).click();
+      await page.waitForFunction(key => document.querySelector('[data-timeline-entry]').value === key, link.key);
+      const section = page.locator(link.hash);
+      assert.equal(await section.locator('.photo-item').count(), link.count);
       const photo = await section.locator('.photo-item').first().getAttribute('data-photo').then(JSON.parse);
       await page.waitForFunction(expected => document.querySelector('#info-date').textContent === expected, [photo.time, photo.location].filter(Boolean).join(' · '));
       assert.equal(await page.locator('#info-equip').textContent(), photo.equip);
       assert.equal(await page.locator('#info-title').textContent(), photo.title);
       assert.equal(await page.locator('#info-note').textContent(), photo.note);
-      assert.equal(await page.locator('.timeline-link[aria-current="date"]').count(), 1);
+      assert.equal(await page.locator('.timeline-link[aria-current="true"]').count(), 1);
     }
 
     // Native controls, browser history, and existing photo deep links.
-    if (dayLinks.length) {
-      const first = dayLinks[0], last = dayLinks.at(-1);
-      await page.getByLabel('选择年份').selectOption(first.day.slice(0, 4));
-      await page.getByLabel('选择月日').selectOption(first.day);
-      await page.waitForFunction(day => document.querySelector('.timeline-link.active').dataset.day === day, first.day);
-      await page.locator(`.timeline-link[data-day="${last.day}"]`).click();
-      await page.waitForFunction(day => document.querySelector('.timeline-link.active').dataset.day === day, last.day);
+    if (entryLinks.length) {
+      const first = entryLinks[0], last = entryLinks.at(-1);
+      await page.getByLabel('选择年份').selectOption(first.year);
+      await page.getByLabel('选择分组').selectOption(first.key);
+      await page.waitForFunction(key => document.querySelector('.timeline-link.active').dataset.entry === key, first.key);
+      await page.locator(`.timeline-link[data-entry="${last.key}"]`).click();
+      await page.waitForFunction(key => document.querySelector('.timeline-link.active').dataset.entry === key, last.key);
       await page.goBack();
-      await page.waitForFunction(day => document.querySelector('.timeline-link.active').dataset.day === day, first.day);
+      await page.waitForFunction(key => document.querySelector('.timeline-link.active').dataset.entry === key, first.key);
     }
     if (ids.length > 1) {
       const id = ids[Math.floor(ids.length / 2)];
@@ -124,12 +146,40 @@ const server = http.createServer((req, res) => {
         const anchor = Math.min(innerHeight * .34, 260);
         const item = items.filter(item => item.getBoundingClientRect().top <= anchor).at(-1) || items[0];
         const data = JSON.parse(item.dataset.photo);
-        return { time: [data.time, data.location].filter(Boolean).join(' · '), day: item.dataset.day, position: item.dataset.dayPosition };
+        return { time: [data.time, data.location].filter(Boolean).join(' · '), entry: item.dataset.entry };
       });
       assert.equal(await page.locator('#info-date').textContent(), inReadingPosition.time);
-      assert.equal(await page.locator('.timeline-link.active').getAttribute('data-day'), inReadingPosition.day);
+      assert.equal(await page.locator('.timeline-link.active').getAttribute('data-entry'), inReadingPosition.entry);
       await page.screenshot({ path: path.join(artifacts, 'desktop-scrolled.png') });
     }
+
+    // Day tags sit on the first photo of every day run; hairlines mark day
+    // changes, none above the very first photo.
+    const marks = await page.locator('.photo-item').evaluateAll(items => items.map((item, index) => {
+      const photo = JSON.parse(item.dataset.photo);
+      const tag = item.querySelector('.photo-day-tag');
+      return {
+        index,
+        tagged: !!tag,
+        tagText: tag ? tag.textContent : null,
+        hasBreak: !!item.previousElementSibling?.classList.contains('day-break'),
+        expectTag: Boolean(photo.dayStart && photo.day),
+        expectedText: photo.day ? photo.day.slice(5).replace('-', '.') : null,
+        expectBreak: Boolean(photo.dayStart && index > 0),
+      };
+    }));
+    for (const mark of marks) {
+      assert.equal(mark.tagged, mark.expectTag, `day tags belong exactly on day-start photos (${mark.index})`);
+      if (mark.tagged) assert.equal(mark.tagText, mark.expectedText, `day tags read MM.DD (${mark.index})`);
+      assert.equal(mark.hasBreak, mark.expectBreak, `hairlines mark day changes except at the top (${mark.index})`);
+    }
+
+    // Month labels head one run of same-month entries, in list order.
+    const archiveMonths = await page.locator('.archive-month').allTextContents();
+    const linkMonths = await page.locator('.timeline-link').evaluateAll(links => links.map(link => link.dataset.month));
+    const monthRuns = linkMonths.filter((month, index) => index === 0 || month !== linkMonths[index - 1])
+      .filter(month => month !== 'undated');
+    assert.deepEqual(monthRuns.map(month => `${Number(month)}月`), archiveMonths, 'each month label heads one month run');
 
     for (const width of [820, 390]) {
       await page.setViewportSize({ width, height: 900 });
@@ -148,7 +198,7 @@ const server = http.createServer((req, res) => {
       await page.screenshot({ path: path.join(artifacts, `width-${width}.png`) });
     }
     assert.deepEqual(errors, [], 'no page script errors');
-    console.log(JSON.stringify({ ok: true, photos: ids.length, days: dayLinks.length, viewports: [1440, 820, 390] }));
+    console.log(JSON.stringify({ ok: true, photos: ids.length, entries: entryLinks.length, viewports: [1440, 820, 390] }));
   } finally {
     await browser.close();
     server.close();

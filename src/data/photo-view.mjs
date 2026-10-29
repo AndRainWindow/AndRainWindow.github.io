@@ -13,6 +13,13 @@ export function photoDateParts(value) {
   return { day: date, time, sortKey: time ? `${date}T${time}:${second}.${fraction.padEnd(9, '0')}` : date };
 }
 
+// Entry key shared by the timeline and the homepage deep links: a photo group
+// is one entry even when it spans days, and ungrouped rows share one entry per
+// calendar day. Keyed off the raw date so it works before enrichment.
+export function photoEntryKey(photo) {
+  return photo.groupId || `day-${photoDateParts(photo.date).day || 'undated'}`;
+}
+
 // Group members run earliest-capture-first. Compare the validated day, then the
 // time: a date-only record has no time, so it trails the timed photos of its own
 // day (matching the timeline), and a row with no usable date goes last rather
@@ -31,9 +38,9 @@ function byEarliestCapture(a, b) {
   return left.sortKey === right.sortKey ? 0 : (left.sortKey < right.sortKey ? -1 : 1);
 }
 
-// Timeline order: newest capture day first, earliest capture first within each
-// day, so a day section still reads chronologically. A row with no usable date
-// keeps company with the other undated rows at the end.
+// Entry order: newest capture day first, earliest capture first between
+// entries sharing a day, so a block still reads chronologically. A row with
+// no usable date keeps company with the other undated rows at the end.
 function byDayThenEarliestCapture(a, b) {
   const left = photoDateParts(a.date);
   const right = photoDateParts(b.date);
@@ -54,12 +61,30 @@ function orderedGroupMembers(members) {
 }
 
 // Homepage/group views order members as above. The photography timeline opts
-// into date ordering BEFORE applying the first-visible-member captions.
+// into entry-contiguous date ordering BEFORE applying the first-visible-member
+// captions.
 export function displayPhotos(records, { sort = 'group' } = {}) {
   const visible = records.filter(p => !p.hidden && !p.deleted && !p.groupHidden && !p.groupDeleted);
   let photos;
   if (sort === 'date') {
-    photos = [...visible].sort(byDayThenEarliestCapture);
+    // Timeline entries: one contiguous block per photoEntryKey (a group, or one
+    // bucket per day for ungrouped rows). Members run earliest-capture-first
+    // across days — manualOrder stays out of the timeline, as before — and
+    // blocks sort by their first member: cover day desc, same-day earliest
+    // first, undated last.
+    const blocks = new Map();
+    for (const photo of visible) {
+      const key = photoEntryKey(photo);
+      if (!blocks.has(key)) blocks.set(key, []);
+      blocks.get(key).push(photo);
+    }
+    const ordered = [...blocks.values()]
+      .map(members => {
+        const block = [...members].sort(byEarliestCapture);
+        return { block, cover: block[0] };
+      })
+      .sort((a, b) => byDayThenEarliestCapture(a.cover, b.cover));
+    photos = ordered.flatMap(({ block }) => block);
   } else {
     // Group-contiguous blocks (key = groupId || id, insertion order preserved):
     // a block's first photo is its cover, which dates the block. Blocks
