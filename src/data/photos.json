@@ -2123,7 +2123,7 @@
     "province": "福建省",
     "city": "泉州市",
     "district": "鲤城区",
-    "order": 3
+    "order": 0
   },
   {
     "title": "平潭的街头",
@@ -2149,7 +2149,7 @@
     "province": "福建省",
     "city": "福州市",
     "district": "平潭县",
-    "order": 0
+    "order": 1
   },
   {
     "title": "泉州西街的店面",
@@ -2171,7 +2171,7 @@
     "sourceHash": "6c4ce0cd9fe9d78b27eaff92ce7da708c785b68432dd6b3fc4e3f4e1ec181645",
     "hidden": false,
     "deleted": false,
-    "order": 1,
+    "order": 2,
     "manualOrder": true
   },
   {
@@ -2198,7 +2198,7 @@
     "province": "福建省",
     "city": "泉州市",
     "district": "鲤城区",
-    "order": 2
+    "order": 3
   },
   {
     "title": "开元寺",
