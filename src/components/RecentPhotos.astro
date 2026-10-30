@@ -582,6 +582,8 @@ const covers = groups.slice(0, 8);
 
 		let startLeft = 0;
 
+		let suppressClick = false;
+
 
 		timeline.addEventListener('pointerdown', (event) => {
 
@@ -595,6 +597,8 @@ const covers = groups.slice(0, 8);
 			startX = event.clientX;
 
 			startLeft = timeline.scrollLeft;
+
+			suppressClick = false;
 
 		});
 
@@ -610,6 +614,10 @@ const covers = groups.slice(0, 8);
 				startLeft -
 				(event.clientX - startX);
 
+			if (Math.abs(event.clientX - startX) > 6) {
+				suppressClick = true;
+			}
+
 		});
 
 
@@ -622,14 +630,12 @@ const covers = groups.slice(0, 8);
 		timeline.addEventListener('pointerleave', endDrag);
 
 
-		// 拖拽时不要误触发链接跳转
+		// 拖拽时不要误触发链接跳转。触摸端由浏览器自己区分点按与滑动，
+		// 这里只拦截真正用鼠标拖动过的那次点击。
 		timeline.addEventListener('click', (event) => {
 
-			if (
-				Math.abs(
-					(event as MouseEvent).clientX - startX
-				) > 6
-			) {
+			if (suppressClick) {
+				suppressClick = false;
 				event.preventDefault();
 			}
 

@@ -4,6 +4,11 @@ const entries = timeline.flatMap(year => year.entries);
 const first = entries[0];
 const firstYear = first?.day.slice(0, 4) || '';
 const yearEntries = entries.filter(entry => entry.day.slice(0, 4) === firstYear);
+// One dial option per distinct day run, so the ring tracks the scrolled photo.
+const dayRuns = entries.flatMap(entry => entry.items)
+  .filter(photo => photo.dayStart && photo.day)
+  .map(photo => ({ day: photo.day, year: photo.day.slice(0, 4) }));
+const yearDays = dayRuns.filter(run => run.year === firstYear);
 ---
 
 <aside class="timeline-rings" aria-label="摄影时间导航" data-timeline>
@@ -26,9 +31,9 @@ const yearEntries = entries.filter(entry => entry.day.slice(0, 4) === firstYear)
         </select>
       </label>
       <label class="dial-field dial-date">
-        <span class="sr-only">选择分组</span>
-        <select data-timeline-entry disabled={true}>
-          {yearEntries.map(({ key, day }) => <option value={key}>{day ? day.slice(5).replace('-', '.') : '—'}</option>)}
+        <span class="sr-only">选择月日</span>
+        <select data-timeline-day disabled={true}>
+          {yearDays.map(({ day }) => <option value={day}>{day.slice(5).replace('-', '.')}</option>)}
         </select>
       </label>
       <span class="dial-position" data-timeline-position>{first ? `01 / ${String(first.items.length).padStart(2, '0')}` : '暂无照片'}</span>
@@ -53,7 +58,6 @@ const yearEntries = entries.filter(entry => entry.day.slice(0, 4) === firstYear)
                 data-label={entry.label}
                 data-year={year || 'undated'}
                 data-month={entry.month || 'undated'}
-                data-day={entry.day || 'undated'}
                 data-count={entry.items.length}
                 aria-current={entry.key === first?.key ? 'true' : undefined}
                 aria-label={`${entry.label}，${entry.items.length} 张照片`}

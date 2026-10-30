@@ -82,6 +82,20 @@ const server = http.createServer((req, res) => {
     const dangling = await page.evaluate(hrefs => hrefs.filter(href => !document.getElementById(href.split('#')[1])), homeHrefs);
     assert.deepEqual(dangling, [], 'every cover hash must resolve to an element on /photos/');
 
+    // Mobile taps must navigate too: the strip only suppresses clicks after a
+    // real mouse drag, never on touch.
+    const touchPage = await browser.newPage({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
+    try {
+      await touchPage.goto(base);
+      await touchPage.locator('.timeline-item').first().tap();
+      await touchPage.waitForURL(/\/photos\/#photo-entry-/);
+      const tappedHash = await touchPage.evaluate(() => location.hash);
+      assert.ok(await touchPage.evaluate(id => !!document.getElementById(id), tappedHash.slice(1)),
+        'tapped cover hash resolves on mobile');
+    } finally {
+      await touchPage.close();
+    }
+
     // Portrait frames narrow below the column, stay centered, and respect the height cap.
     const portraitBox = await page.locator('.photo-item').evaluateAll(items => {
       for (const item of items) {
@@ -113,7 +127,7 @@ const server = http.createServer((req, res) => {
 
     for (const link of entryLinks) {
       await page.locator(`.timeline-link[data-entry="${link.key}"]`).click();
-      await page.waitForFunction(key => document.querySelector('[data-timeline-entry]').value === key, link.key);
+      await page.waitForFunction(key => document.querySelector('.timeline-link.active')?.dataset.entry === key, link.key);
       const section = page.locator(link.hash);
       assert.equal(await section.locator('.photo-item').count(), link.count);
       const photo = await section.locator('.photo-item').first().getAttribute('data-photo').then(JSON.parse);
@@ -127,10 +141,13 @@ const server = http.createServer((req, res) => {
     // Native controls, browser history, and existing photo deep links.
     if (entryLinks.length) {
       const first = entryLinks[0], last = entryLinks.at(-1);
+      const firstDay = rows.find(row => row.entry === first.key && row.day)?.day;
+      const lastDay = rows.filter(row => row.entry === last.key && row.day).at(-1)?.day;
       await page.getByLabel('选择年份').selectOption(first.year);
-      await page.getByLabel('选择分组').selectOption(first.key);
+      // The day dial jumps to the day's first photo; history restores the hop.
+      await page.getByLabel('选择月日').selectOption(firstDay);
       await page.waitForFunction(key => document.querySelector('.timeline-link.active').dataset.entry === key, first.key);
-      await page.locator(`.timeline-link[data-entry="${last.key}"]`).click();
+      await page.getByLabel('选择月日').selectOption(lastDay);
       await page.waitForFunction(key => document.querySelector('.timeline-link.active').dataset.entry === key, last.key);
       await page.goBack();
       await page.waitForFunction(key => document.querySelector('.timeline-link.active').dataset.entry === key, first.key);
@@ -146,44 +163,45 @@ const server = http.createServer((req, res) => {
         const anchor = Math.min(innerHeight * .34, 260);
         const item = items.filter(item => item.getBoundingClientRect().top <= anchor).at(-1) || items[0];
         const data = JSON.parse(item.dataset.photo);
-        return { time: [data.time, data.location].filter(Boolean).join(' · '), entry: item.dataset.entry };
+        return { time: [data.time, data.location].filter(Boolean).join(' · '), entry: item.dataset.entry, day: data.day };
       });
       assert.equal(await page.locator('#info-date').textContent(), inReadingPosition.time);
       assert.equal(await page.locator('.timeline-link.active').getAttribute('data-entry'), inReadingPosition.entry);
+      if (inReadingPosition.day) {
+        assert.equal(await page.locator('[data-timeline-day]').inputValue(), inReadingPosition.day,
+          'dial follows the scrolled photo day');
+      }
       await page.screenshot({ path: path.join(artifacts, 'desktop-scrolled.png') });
     }
 
-    // Day tags sit on the first photo of every day run; hairlines mark day
-    // changes, none above the very first photo.
+    // The day-change hairline carries that day's MM.DD on the line itself;
+    // no line above the very first photo, and undated changes stay unlabeled.
     const marks = await page.locator('.photo-item').evaluateAll(items => items.map((item, index) => {
       const photo = JSON.parse(item.dataset.photo);
-      const tag = item.querySelector('.photo-day-tag');
+      const previous = item.previousElementSibling;
+      const hasBreak = !!previous?.classList.contains('day-break');
       return {
         index,
-        tagged: !!tag,
-        tagText: tag ? tag.textContent : null,
-        hasBreak: !!item.previousElementSibling?.classList.contains('day-break'),
-        expectTag: Boolean(photo.dayStart && photo.day),
-        expectedText: photo.day ? photo.day.slice(5).replace('-', '.') : null,
+        hasBreak,
+        breakText: hasBreak ? previous.textContent.trim() : null,
         expectBreak: Boolean(photo.dayStart && index > 0),
+        expectDate: photo.dayStart && index > 0 && photo.day ? photo.day.slice(5).replace('-', '.') : '',
       };
     }));
     for (const mark of marks) {
-      assert.equal(mark.tagged, mark.expectTag, `day tags belong exactly on day-start photos (${mark.index})`);
-      if (mark.tagged) assert.equal(mark.tagText, mark.expectedText, `day tags read MM.DD (${mark.index})`);
       assert.equal(mark.hasBreak, mark.expectBreak, `hairlines mark day changes except at the top (${mark.index})`);
+      if (mark.hasBreak) assert.equal(mark.breakText, mark.expectDate, `hairline labels read MM.DD (${mark.index})`);
     }
 
-    // The dial reads each entry's cover day (the first photo's date) as MM.DD.
-    const dialOptions = await page.locator('[data-timeline-entry] option').evaluateAll(options =>
-      options.map(option => ({ key: option.value, text: option.textContent })));
-    for (const link of entryLinks) {
-      if (link.year !== entryLinks[0]?.year) continue;
-      const cover = rows.find(row => row.entry === link.key)?.day ?? '';
-      const option = dialOptions.find(candidate => candidate.key === link.key);
-      assert.ok(option, `dial lists an option for ${link.key}`);
-      assert.equal(option.text, cover ? cover.slice(5).replace('-', '.') : '—',
-        `dial shows the entry's first photo date (${link.key})`);
+    // The dial lists every distinct day run as MM.DD; it follows the scrolled
+    // photo's own day rather than pinning to the entry's first day.
+    const dialOptions = await page.locator('[data-timeline-day] option').evaluateAll(options =>
+      options.map(option => ({ day: option.value, text: option.textContent })));
+    const streamDays = [...new Set(rows.map(row => row.day).filter(Boolean))];
+    assert.deepEqual([...new Set(dialOptions.map(option => option.day))].sort(), [...streamDays].sort(),
+      'dial lists one option per distinct day');
+    for (const option of dialOptions) {
+      assert.equal(option.text, option.day.slice(5).replace('-', '.'), `dial options read MM.DD (${option.day})`);
     }
 
     // Month labels head one run of same-month entries, in list order.

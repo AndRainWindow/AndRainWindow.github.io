@@ -854,5 +854,93 @@
     "city": "厦门市",
     "district": "思明区",
     "message": "已识别到区县，请核对。"
+  },
+  "amap:24.51160,117.64984": {
+    "location": "漳州市 · 芗城区",
+    "locationSource": "amap",
+    "province": "福建省",
+    "city": "漳州市",
+    "district": "芗城区",
+    "message": "已识别到区县，请核对。"
+  },
+  "amap:24.51065,117.64955": {
+    "location": "漳州市 · 芗城区",
+    "locationSource": "amap",
+    "province": "福建省",
+    "city": "漳州市",
+    "district": "芗城区",
+    "message": "已识别到区县，请核对。"
+  },
+  "amap:24.51118,117.64958": {
+    "location": "漳州市 · 芗城区",
+    "locationSource": "amap",
+    "province": "福建省",
+    "city": "漳州市",
+    "district": "芗城区",
+    "message": "已识别到区县，请核对。"
+  },
+  "amap:24.50986,117.64839": {
+    "location": "漳州市 · 芗城区",
+    "locationSource": "amap",
+    "province": "福建省",
+    "city": "漳州市",
+    "district": "芗城区",
+    "message": "已识别到区县，请核对。"
+  },
+  "amap:24.50940,117.64888": {
+    "location": "漳州市 · 芗城区",
+    "locationSource": "amap",
+    "province": "福建省",
+    "city": "漳州市",
+    "district": "芗城区",
+    "message": "已识别到区县，请核对。"
+  },
+  "amap:24.50906,117.64956": {
+    "location": "漳州市 · 芗城区",
+    "locationSource": "amap",
+    "province": "福建省",
+    "city": "漳州市",
+    "district": "芗城区",
+    "message": "已识别到区县，请核对。"
+  },
+  "amap:24.50730,117.65023": {
+    "location": "漳州市 · 芗城区",
+    "locationSource": "amap",
+    "province": "福建省",
+    "city": "漳州市",
+    "district": "芗城区",
+    "message": "已识别到区县，请核对。"
+  },
+  "amap:24.50738,117.65023": {
+    "location": "漳州市 · 芗城区",
+    "locationSource": "amap",
+    "province": "福建省",
+    "city": "漳州市",
+    "district": "芗城区",
+    "message": "已识别到区县，请核对。"
+  },
+  "amap:24.50784,117.64735": {
+    "location": "漳州市 · 芗城区",
+    "locationSource": "amap",
+    "province": "福建省",
+    "city": "漳州市",
+    "district": "芗城区",
+    "message": "已识别到区县，请核对。"
+  },
+  "amap:24.50864,117.64729": {
+    "location": "漳州市 · 芗城区",
+    "locationSource": "amap",
+    "province": "福建省",
+    "city": "漳州市",
+    "district": "芗城区",
+    "message": "已识别到区县，请核对。"
+  },
+  "amap:24.79657,118.45246": {
+    "location": "泉州市 · 晋江市",
+    "locationSource": "amap",
+    "province": "福建省",
+    "city": "泉州市",
+    "district": "晋江市",
+    "message": "已识别到区县，请核对。"
   }
 }

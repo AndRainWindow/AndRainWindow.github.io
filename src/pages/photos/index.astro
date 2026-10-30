@@ -131,11 +131,23 @@ const dimensions = new Map(await Promise.all(photos.map(async photo => {
 		}
 
 		.photo-entry, .photo-item { scroll-margin-top: 70px; }
-		/* Hairline between day runs; negative margins keep the photo rhythm. */
+		/* Day-change hairline carrying the day's MM.DD on the line; negative
+		   margins absorb the label height so the photo rhythm stays put. */
 		.day-break {
+			display: flex;
+			align-items: center;
+			gap: 14px;
+			margin-block: -66px;
+			color: rgba(255,255,255,.55);
+			font: 11px/1 "Noto Serif SC", serif;
+			letter-spacing: 2px;
+			font-variant-numeric: tabular-nums;
+		}
+		.day-break::before, .day-break::after {
+			content: "";
+			flex: 1;
 			height: 1px;
 			background: rgba(255,255,255,.15);
-			margin-block: -59px;
 		}
 		.empty-state { color: rgba(255,255,255,.7); }
 		.photo-info [hidden] { display: none; }
@@ -145,7 +157,6 @@ const dimensions = new Map(await Promise.all(photos.map(async photo => {
 		}
 
 		.photo-frame {
-			position: relative;
 			width: 100%;
 			background: rgba(255,255,255,0.06);
 			border: 1px solid rgba(255,255,255,0.12);
@@ -182,24 +193,6 @@ const dimensions = new Map(await Promise.all(photos.map(async photo => {
 			width: 100%;
 			height: auto;
 			object-fit: contain;
-		}
-
-		/* MM.DD on the first photo of each day run. */
-		.photo-day-tag {
-			position: absolute;
-			top: 12px;
-			left: 12px;
-			z-index: 1;
-			padding: 3px 10px;
-			border-radius: 999px;
-			background: rgba(17, 24, 30, 0.45);
-			border: 1px solid rgba(255,255,255,0.18);
-			backdrop-filter: blur(8px);
-			-webkit-backdrop-filter: blur(8px);
-			color: rgba(255,255,255,0.9);
-			font: 11px/1.4 "Noto Serif SC", serif;
-			letter-spacing: 1px;
-			font-variant-numeric: tabular-nums;
 		}
 
 		.mobile-info {
@@ -282,7 +275,7 @@ const dimensions = new Map(await Promise.all(photos.map(async photo => {
 			}
 
 			.day-break {
-				margin-block: -37px;
+				margin-block: -44px;
 			}
 
 			.mobile-info {
@@ -350,7 +343,9 @@ const dimensions = new Map(await Promise.all(photos.map(async photo => {
 
 				<Fragment>
 					{photo.dayStart && (entryIndex > 0 || index > 0) && (
-						<div class="day-break" aria-hidden="true"></div>
+						<div class="day-break">
+							{photo.day && <span>{photo.day.slice(5).replace('-', '.')}</span>}
+						</div>
 					)}
 					<article
 						id={photo.id}
@@ -361,9 +356,6 @@ const dimensions = new Map(await Promise.all(photos.map(async photo => {
 					>
 
 						<div class="photo-frame" style={ratio ? `--photo-ratio: ${ratio}` : undefined}>
-							{photo.dayStart && photo.day && (
-								<span class="photo-day-tag">{photo.day.slice(5).replace('-', '.')}</span>
-							)}
 							<img
 								src={photo.image}
 								alt={photo.alt}
@@ -421,7 +413,12 @@ const dimensions = new Map(await Promise.all(photos.map(async photo => {
 	const items = [...document.querySelectorAll<HTMLElement>('.photo-item')];
 	const links = [...document.querySelectorAll<HTMLAnchorElement>('.timeline-link')];
 	const yearSelect = document.querySelector<HTMLSelectElement>('[data-timeline-year]');
-	const entrySelect = document.querySelector<HTMLSelectElement>('[data-timeline-entry]');
+	const daySelect = document.querySelector<HTMLSelectElement>('[data-timeline-day]');
+	// Day-run anchors: the first photo of each distinct day in stream order.
+	const dayRuns = items.flatMap(item => {
+		const photo = JSON.parse(item.dataset.photo || '{}');
+		return photo.dayStart && photo.day ? [{ day: photo.day, year: photo.day.slice(0, 4), id: item.id }] : [];
+	});
 	const dial = document.querySelector<HTMLElement>('.date-dial');
 	const position = document.querySelector('[data-timeline-position]');
 	const archive = document.querySelector<HTMLElement>('.archive-scroll');
@@ -465,16 +462,19 @@ const dimensions = new Map(await Promise.all(photos.map(async photo => {
 		const entryKey = item.dataset.entry;
 		const link = links.find(link => link.dataset.entry === entryKey);
 		if (!link) return;
-		const year = link.dataset.year || 'undated';
+		// The dial tracks the photo's own day, so a multi-day group updates its
+		// MM.DD when the reader scrolls past a day change.
+		const day = photo.day || '';
+		const year = day ? day.slice(0, 4) : link.dataset.year || 'undated';
 		const yearLinks = links.filter(link => link.dataset.year === year);
 		if (yearSelect) yearSelect.value = year;
-		if (entrySelect) {
+		if (daySelect) {
 			if (activeYear !== year) {
-				entrySelect.replaceChildren(...yearLinks.map(link => new Option(
-					link.dataset.day === 'undated' ? '—' : link.dataset.day!.slice(5).replace('-', '.'), link.dataset.entry
-				)));
+				daySelect.replaceChildren(...dayRuns
+					.filter(run => run.year === year)
+					.map(run => new Option(run.day.slice(5).replace('-', '.'), run.day)));
 			}
-			entrySelect.value = entryKey!;
+			if (day) daySelect.value = day;
 		}
 		activeYear = year;
 		dial?.style.setProperty('--year-progress', String((years.indexOf(year) + 1) / years.length * 100));
@@ -534,11 +534,18 @@ const dimensions = new Map(await Promise.all(photos.map(async photo => {
 		selectHash();
 		if (yearSelect) {
 			yearSelect.disabled = false;
-			yearSelect.addEventListener('change', () => links.find(link => link.dataset.year === yearSelect.value)?.click());
+			yearSelect.addEventListener('change', () => {
+				const run = dayRuns.find(candidate => candidate.year === yearSelect.value);
+				if (run) location.hash = `#${run.id}`;
+			});
 		}
-		if (entrySelect) {
-			entrySelect.disabled = false;
-			entrySelect.addEventListener('change', () => links.find(link => link.dataset.entry === entrySelect.value)?.click());
+		if (daySelect) {
+			daySelect.disabled = false;
+			daySelect.addEventListener('change', () => {
+				// A day that reappears in a later group resolves to its first run.
+				const run = dayRuns.find(candidate => candidate.day === daySelect.value);
+				if (run) location.hash = `#${run.id}`;
+			});
 		}
 		window.addEventListener('scroll', scheduleUpdate, { passive: true });
 		window.addEventListener('resize', scheduleUpdate);
