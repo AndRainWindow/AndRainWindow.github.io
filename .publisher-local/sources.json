@@ -400,7 +400,7 @@
     "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260628-0629泉州/后期/DSC06892.jpg",
     "gps": {
       "lat": 25.56287,
-      "lon": 119.77325166666667
+      "lon": 119.77325166666668
     }
   },
   "photo-d284cdd5af1a4d06af0066f67545be72": {
@@ -411,7 +411,7 @@
     "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260628-0629泉州/后期/DSC06912.jpg",
     "gps": {
       "lat": 24.91669,
-      "lon": 118.57868666666667
+      "lon": 118.57868666666668
     }
   },
   "photo-5cc8d35308d74d488e786c94f5fb707c": {
@@ -431,7 +431,7 @@
   "photo-8a846d0c6e5e4ec6b5d76dc4acf1be80": {
     "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260628-0629泉州/后期/DSC06928.jpg",
     "gps": {
-      "lat": 24.916947778333334,
+      "lat": 24.916947778333338,
       "lon": 118.581128055
     }
   },
@@ -450,14 +450,14 @@
     "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260628-0629泉州/后期/DSC06945.jpg",
     "gps": {
       "lat": 24.916426945,
-      "lon": 118.57954583333333
+      "lon": 118.57954583333331
     }
   },
   "photo-ab23eadd11344c65a264c0ab3a86684f": {
     "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260628-0629泉州/后期/DSC06951.jpg",
     "gps": {
       "lat": 24.915991666666667,
-      "lon": 118.58191666666667
+      "lon": 118.58191666666669
     }
   },
   "photo-4e7f028e84974d76bc3e591675f6b78a": {
@@ -496,13 +496,13 @@
     "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260628-0629泉州/后期/DSC07052.jpg",
     "gps": {
       "lat": 24.757431666666665,
-      "lon": 118.59147666666667
+      "lon": 118.59147666666668
     }
   },
   "photo-6873c2e32c5a474ca9211964c7cf25ba": {
     "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260628-0629泉州/后期/DSC07062.jpg",
     "gps": {
-      "lat": 24.758061666666666,
+      "lat": 24.758061666666663,
       "lon": 118.591538055
     }
   },
@@ -536,6 +536,474 @@
     "gps": {
       "lat": 24.75737,
       "lon": 118.59311
+    }
+  },
+  "photo-07cfda4c14dd4bca961e5973f316974e": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07139.jpg",
+    "gps": {
+      "lat": 24.43557,
+      "lon": 118.08396166666668
+    }
+  },
+  "photo-29a526db58d64068b07346ce4d1bffe5": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07166.jpg",
+    "gps": {
+      "lat": 24.455031666666667,
+      "lon": 118.16936666666666
+    }
+  },
+  "photo-170f3eac12614449a9b399ec372ce054": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07169-DxO_DeepPRIME 3.jpg",
+    "gps": null
+  },
+  "photo-ddeea61188574ba2915e346436c5800b": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07169.jpg",
+    "gps": null
+  },
+  "photo-fdc06959decb45a8ad24654438e8eb6b": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07181-DxO_DeepPRIME 3.jpg",
+    "gps": {
+      "lat": 24.444990833333332,
+      "lon": 118.08414583333334
+    }
+  },
+  "photo-5930f21ff7544961b3a7bd23375a2b80": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07187.jpg",
+    "gps": null
+  },
+  "photo-8718af0482344a9e81da8a42607fba7f": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07194.jpg",
+    "gps": {
+      "lat": 24.45743166666667,
+      "lon": 118.04631166666668
+    }
+  },
+  "photo-0a381186a51b4500b317025dd2c60013": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07204.jpg",
+    "gps": {
+      "lat": 24.44883,
+      "lon": 118.0538
+    }
+  },
+  "photo-d532c30362cd418eb4436d25715d9155": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07206.jpg",
+    "gps": {
+      "lat": 24.447578055,
+      "lon": 118.054543055
+    }
+  },
+  "photo-f900435d5373419baf6c598f8c2b41dc": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07207.jpg",
+    "gps": {
+      "lat": 24.44722,
+      "lon": 118.054748055
+    }
+  },
+  "photo-afa4e3e6869c475a99f96d8624a8621b": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07208.jpg",
+    "gps": {
+      "lat": 24.44714,
+      "lon": 118.05480166666666
+    }
+  },
+  "photo-553f5d29843d4315b0d729c24efd09de": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07210.jpg",
+    "gps": {
+      "lat": 24.444715,
+      "lon": 118.05505666666669
+    }
+  },
+  "photo-a003a0aa6cda4b8f9e9ec32f0d10d9d5": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07214.jpg",
+    "gps": {
+      "lat": 24.443655,
+      "lon": 118.0587
+    }
+  },
+  "photo-86d387804f064b6c9e7caed6f87f9c0f": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07215.jpg",
+    "gps": {
+      "lat": 24.44354166666667,
+      "lon": 118.05856
+    }
+  },
+  "photo-2c6b5e637e824ebb8951a21f2cede252": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07217.jpg",
+    "gps": {
+      "lat": 24.443031666666663,
+      "lon": 118.05835
+    }
+  },
+  "photo-53140b324db241aaab4e67a9513eefd1": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07220.jpg",
+    "gps": {
+      "lat": 24.441456666666667,
+      "lon": 118.059235
+    }
+  },
+  "photo-8d25a1989672415baa38536a6c94c3df": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07222.jpg",
+    "gps": {
+      "lat": 24.44158,
+      "lon": 118.05960666666668
+    }
+  },
+  "photo-162cb4263b2242528913f25b1d591d42": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07226.jpg",
+    "gps": {
+      "lat": 24.4421,
+      "lon": 118.061165
+    }
+  },
+  "photo-2d92fb6e9d9841f0953164e3c6b522ac": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07228.jpg",
+    "gps": null
+  },
+  "photo-5887b6641cda40e5b02d0a284f4c5f2e": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07244.jpg",
+    "gps": {
+      "lat": 24.444941666666665,
+      "lon": 118.0623
+    }
+  },
+  "photo-6d817efd57e44691915884855efec29d": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07249.jpg",
+    "gps": {
+      "lat": 24.4447,
+      "lon": 118.062408055
+    }
+  },
+  "photo-522eb2f6a1384eecb7d2b3d192bdc57d": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07251.jpg",
+    "gps": {
+      "lat": 24.444713055,
+      "lon": 118.062358055
+    }
+  },
+  "photo-5b737abf9394470d8de48a564b0acf7d": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07254.jpg",
+    "gps": {
+      "lat": 24.444746666666667,
+      "lon": 118.062358055
+    }
+  },
+  "photo-58852e96df07479097cce8f49d01a0fb": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07256.jpg",
+    "gps": {
+      "lat": 24.444768055,
+      "lon": 118.062283055
+    }
+  },
+  "photo-d298b87325ac4c769233a5733e5dfc81": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07286.jpg",
+    "gps": {
+      "lat": 24.44195,
+      "lon": 118.06415
+    }
+  },
+  "photo-ab8510e2fb6e48149a29a3fa0d118a19": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07293.jpg",
+    "gps": {
+      "lat": 24.440895,
+      "lon": 118.064408055
+    }
+  },
+  "photo-6e09205c77f744adb21a5565f54ec7a1": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07298.jpg",
+    "gps": {
+      "lat": 24.440808055,
+      "lon": 118.06483
+    }
+  },
+  "photo-313962a010094b94afca26ea68ee7119": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07304.jpg",
+    "gps": {
+      "lat": 24.441475,
+      "lon": 118.06475083333332
+    }
+  },
+  "photo-3827d56343dc4be09aa7afac4ef9025d": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07308.jpg",
+    "gps": {
+      "lat": 24.441162778333332,
+      "lon": 118.06544583333331
+    }
+  },
+  "photo-d3a353da13c34ec79c0a0377e679b0bf": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07327.jpg",
+    "gps": {
+      "lat": 24.442031945,
+      "lon": 118.06875
+    }
+  },
+  "photo-1893d059339845a7a88dc8926e65bd66": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07367.jpg",
+    "gps": {
+      "lat": 24.44399,
+      "lon": 118.07183
+    }
+  },
+  "photo-ed52cc62cea5492d862dcc8d3d499b8a": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07378.jpg",
+    "gps": {
+      "lat": 24.444293055,
+      "lon": 118.072073055
+    }
+  },
+  "photo-d327c58cacf04c42855b0448c0da3c22": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07380.jpg",
+    "gps": {
+      "lat": 24.444263055,
+      "lon": 118.07124
+    }
+  },
+  "photo-cc5742278585407db03571b8989a8880": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07394.jpg",
+    "gps": {
+      "lat": 24.447912778333333,
+      "lon": 118.0651
+    }
+  },
+  "photo-09c684227cb344d9a932d7c93b48cb2c": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07401.jpg",
+    "gps": {
+      "lat": 24.44989388833333,
+      "lon": 118.0636
+    }
+  },
+  "photo-360103cfbcc1486c91e9557edb978f07": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07429.jpg",
+    "gps": {
+      "lat": 24.454095833333337,
+      "lon": 118.062265
+    }
+  },
+  "photo-10d52adca8534062822286c35b0bb983": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07447.jpg",
+    "gps": {
+      "lat": 24.454330833333337,
+      "lon": 118.06291388833333
+    }
+  },
+  "photo-4cd81a908fb040829798702dd6b2c665": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07451.jpg",
+    "gps": {
+      "lat": 24.453356666666668,
+      "lon": 118.06384166666666
+    }
+  },
+  "photo-573037bb4f3b488d9740775d8e3d51b8": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07455.jpg",
+    "gps": {
+      "lat": 24.457163888333337,
+      "lon": 118.067461945
+    }
+  },
+  "photo-525e157179ba44d5a1af0bcab5bdba8e": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07468.jpg",
+    "gps": {
+      "lat": 24.443186666666666,
+      "lon": 118.09165666666668
+    }
+  },
+  "photo-3aadb72a9eab4aa5b9d5fd3a95d2617a": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07472.jpg",
+    "gps": {
+      "lat": 24.443275,
+      "lon": 118.09202166666668
+    }
+  },
+  "photo-34e79d7aefde46949a0664c547014df4": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07474.jpg",
+    "gps": {
+      "lat": 24.444490833333333,
+      "lon": 118.092601945
+    }
+  },
+  "photo-42804a563ea74a9e8bd0a41cb1cb3807": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07488.jpg",
+    "gps": {
+      "lat": 24.441045,
+      "lon": 118.0924
+    }
+  },
+  "photo-e2471ebbe1df4d83ad54b2f5c40eb152": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07498.jpg",
+    "gps": {
+      "lat": 24.439896666666662,
+      "lon": 118.093168055
+    }
+  },
+  "photo-39b252cce6fa4b73a2d547a16ec127e0": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07505.jpg",
+    "gps": {
+      "lat": 24.438838055,
+      "lon": 118.09336
+    }
+  },
+  "photo-13fd522a3d6e4a218f8f991bf424303e": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07515.jpg",
+    "gps": {
+      "lat": 24.439585,
+      "lon": 118.09443666666668
+    }
+  },
+  "photo-72b6255b437d42d1be2ea775e53045a0": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07549.jpg",
+    "gps": {
+      "lat": 24.436741666666663,
+      "lon": 118.093323055
+    }
+  },
+  "photo-3c47e85de2694f8090f46f049c456b9d": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07564.jpg",
+    "gps": {
+      "lat": 24.44011666666667,
+      "lon": 118.09930666666666
+    }
+  },
+  "photo-0bb6a9e8d08d4f8c8135ab17ba69e893": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07585-DxO_DeepPRIME 3.jpg",
+    "gps": {
+      "lat": 24.438102778333334,
+      "lon": 118.097346945
+    }
+  },
+  "photo-e2b96c8f61e148f6b1dee427624bdabe": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07591.jpg",
+    "gps": {
+      "lat": 24.456136666666666,
+      "lon": 118.09002
+    }
+  },
+  "photo-cb8f63cb93064f0eaf94273b8a98a409": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07594.jpg",
+    "gps": {
+      "lat": 24.456111666666665,
+      "lon": 118.090135
+    }
+  },
+  "photo-87acd8dcdacc409eab5632e48f9f492d": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07624.jpg",
+    "gps": {
+      "lat": 24.450785,
+      "lon": 118.09344166666666
+    }
+  },
+  "photo-961449baeb374fba81314b5f71fd6ef4": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07651.jpg",
+    "gps": {
+      "lat": 24.452475,
+      "lon": 118.09572277833334
+    }
+  },
+  "photo-d3cc65223d75419c8f99793785c842f0": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07662.jpg",
+    "gps": {
+      "lat": 24.454847778333335,
+      "lon": 118.09705777833334
+    }
+  },
+  "photo-8747bb7e4c994c89a05adfe9f9e3cc3e": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07667.jpg",
+    "gps": {
+      "lat": 24.455308888333334,
+      "lon": 118.094816945
+    }
+  },
+  "photo-b19aa61678364f64ad483251a963acf4": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07689.jpg",
+    "gps": {
+      "lat": 24.456121666666668,
+      "lon": 118.090228055
+    }
+  },
+  "photo-45798548ea824c1cb75ebf2454276cc4": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07696.jpg",
+    "gps": {
+      "lat": 24.456205,
+      "lon": 118.090115
+    }
+  },
+  "photo-6164a1a368524d33b7fd18a903162af0": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07699.jpg",
+    "gps": {
+      "lat": 24.4563,
+      "lon": 118.09004166666666
+    }
+  },
+  "photo-730452e9f9a64135bc4cd1fc35dbfd0c": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07704.jpg",
+    "gps": {
+      "lat": 24.456651666666662,
+      "lon": 118.08975
+    }
+  },
+  "photo-1bdb52a34f93493183832f1eac325d02": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07707.jpg",
+    "gps": {
+      "lat": 24.456715,
+      "lon": 118.08972666666666
+    }
+  },
+  "photo-1e019a447fc84726aa66664386963584": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07709.jpg",
+    "gps": {
+      "lat": 24.456715,
+      "lon": 118.08972666666666
+    }
+  },
+  "photo-90cf947fbc434769b5a4a73698d4c72d": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/20260701-DSC07724.jpg",
+    "gps": null
+  },
+  "photo-378aef5644dd4630921054e7643b2291": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07724.jpg",
+    "gps": {
+      "lat": 24.436950833333334,
+      "lon": 118.084061945
+    }
+  },
+  "photo-30cbf03eb6a64e808bfa576c00ede1ed": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07726.jpg",
+    "gps": {
+      "lat": 24.442662778333332,
+      "lon": 118.072646945
+    }
+  },
+  "photo-63f3b0bf8e8d40c9b1da9a3d1aa55d3a": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07744-DxO_DeepPRIME 3.jpg",
+    "gps": {
+      "lat": 24.434998055,
+      "lon": 118.085375
+    }
+  },
+  "photo-4075d76f445d4fbc93bd209622d700bb": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07747.jpg",
+    "gps": {
+      "lat": 24.434998055,
+      "lon": 118.085665
+    }
+  },
+  "photo-c921b4a338b748ad9c5b2364e823659b": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07139.jpg",
+    "gps": {
+      "lat": 24.43557,
+      "lon": 118.08396166666668
+    }
+  },
+  "photo-b5d65d4dad094722b975c9431c82c6dd": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07304.jpg",
+    "gps": {
+      "lat": 24.441475,
+      "lon": 118.06475083333332
+    }
+  },
+  "photo-9a0544e0b4774f17a5855c7ca440899a": {
+    "source": "/Volumes/Photos摄影相关/Pixcall/2026/20260629-0701厦门/后期/DSC07304.jpg",
+    "gps": {
+      "lat": 24.441475,
+      "lon": 118.06475083333333
     }
   }
 }
