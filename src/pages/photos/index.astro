@@ -470,7 +470,9 @@ const dimensions = new Map(await Promise.all(photos.map(async photo => {
 		if (yearSelect) yearSelect.value = year;
 		if (entrySelect) {
 			if (activeYear !== year) {
-				entrySelect.replaceChildren(...yearLinks.map(link => new Option(link.dataset.label || '—', link.dataset.entry!)));
+				entrySelect.replaceChildren(...yearLinks.map(link => new Option(
+					link.dataset.day === 'undated' ? '—' : link.dataset.day!.slice(5).replace('-', '.'), link.dataset.entry
+				)));
 			}
 			entrySelect.value = entryKey!;
 		}

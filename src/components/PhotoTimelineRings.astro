@@ -28,7 +28,7 @@ const yearEntries = entries.filter(entry => entry.day.slice(0, 4) === firstYear)
       <label class="dial-field dial-date">
         <span class="sr-only">选择分组</span>
         <select data-timeline-entry disabled={true}>
-          {yearEntries.map(({ key, label }) => <option value={key}>{label}</option>)}
+          {yearEntries.map(({ key, day }) => <option value={key}>{day ? day.slice(5).replace('-', '.') : '—'}</option>)}
         </select>
       </label>
       <span class="dial-position" data-timeline-position>{first ? `01 / ${String(first.items.length).padStart(2, '0')}` : '暂无照片'}</span>
@@ -53,6 +53,7 @@ const yearEntries = entries.filter(entry => entry.day.slice(0, 4) === firstYear)
                 data-label={entry.label}
                 data-year={year || 'undated'}
                 data-month={entry.month || 'undated'}
+                data-day={entry.day || 'undated'}
                 data-count={entry.items.length}
                 aria-current={entry.key === first?.key ? 'true' : undefined}
                 aria-label={`${entry.label}，${entry.items.length} 张照片`}
@@ -124,7 +125,7 @@ const yearEntries = entries.filter(entry => entry.day.slice(0, 4) === firstYear)
   .dial-field select:hover { background: rgba(255, 255, 255, .08); }
   .dial-field select:focus-visible, .timeline-link:focus-visible { outline: 1px solid #fff; outline-offset: 3px; }
   .dial-year { font-size: 14px; letter-spacing: 3px; color: rgba(255, 255, 255, .7); }
-  .dial-date { font-size: clamp(14px, 1.5vw, 20px); font-weight: 300; line-height: 1.3; color: #fff; }
+  .dial-date { font-size: clamp(18px, 2vw, 26px); font-weight: 300; line-height: 1.3; color: #fff; }
   .dial-position { margin-top: 5px; font-size: 10px; letter-spacing: 2px; color: rgba(255, 255, 255, .5); }
   .date-archive { margin: 22px 14px 0; }
   .archive-label { display: flex; justify-content: space-between; margin: 0 0 18px; font-size: 10px; letter-spacing: 2px; color: rgba(255, 255, 255, .55); }
@@ -163,7 +164,7 @@ const yearEntries = entries.filter(entry => entry.day.slice(0, 4) === firstYear)
     .archive-year h2 { margin-bottom: 4px; }
     .timeline-link { min-height: 44px; }
     .dial-face { inset: 20%; }
-    .dial-date { font-size: 15px; }
+    .dial-date { font-size: 20px; }
     .dial-year { font-size: 11px; }
     .dial-position { margin-top: 0; }
   }

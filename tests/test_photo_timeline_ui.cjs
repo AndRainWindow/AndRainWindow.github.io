@@ -174,6 +174,18 @@ const server = http.createServer((req, res) => {
       assert.equal(mark.hasBreak, mark.expectBreak, `hairlines mark day changes except at the top (${mark.index})`);
     }
 
+    // The dial reads each entry's cover day (the first photo's date) as MM.DD.
+    const dialOptions = await page.locator('[data-timeline-entry] option').evaluateAll(options =>
+      options.map(option => ({ key: option.value, text: option.textContent })));
+    for (const link of entryLinks) {
+      if (link.year !== entryLinks[0]?.year) continue;
+      const cover = rows.find(row => row.entry === link.key)?.day ?? '';
+      const option = dialOptions.find(candidate => candidate.key === link.key);
+      assert.ok(option, `dial lists an option for ${link.key}`);
+      assert.equal(option.text, cover ? cover.slice(5).replace('-', '.') : '—',
+        `dial shows the entry's first photo date (${link.key})`);
+    }
+
     // Month labels head one run of same-month entries, in list order.
     const archiveMonths = await page.locator('.archive-month').allTextContents();
     const linkMonths = await page.locator('.timeline-link').evaluateAll(links => links.map(link => link.dataset.month));
