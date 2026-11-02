@@ -77,10 +77,23 @@ const server = http.createServer((req, res) => {
     await page.goto(base);
     const homeHrefs = await page.locator('.timeline-item').evaluateAll(items => items.map(item => item.getAttribute('href')));
     assert.ok(homeHrefs.length > 0 && homeHrefs.every(href => /^\/photos\/#photo-entry-/.test(href)), 'covers link to entry hashes');
+    const homeCards = await page.locator('.timeline-item').evaluateAll(items => items.map(item => ({
+      href: item.getAttribute('href'), title: item.querySelector('.photo-caption h3')?.textContent ?? '',
+    })));
     assert.equal(await page.locator('.photo-more').getAttribute('href'), '/photos/');
     await page.goto(url);
     const dangling = await page.evaluate(hrefs => hrefs.filter(href => !document.getElementById(href.split('#')[1])), homeHrefs);
     assert.deepEqual(dangling, [], 'every cover hash must resolve to an element on /photos/');
+
+    // Homepage cards show the group title, matching the 光阴索引 label rather
+    // than the cover photo's own title (date-fallback labels are exempt).
+    for (const card of homeCards) {
+      const key = card.href.split('#photo-entry-')[1];
+      const label = await page.locator(`.timeline-link[data-entry="${key}"]`).getAttribute('data-label');
+      if (label && !/^\d{2}\.\d{2}$/.test(label)) {
+        assert.equal(card.title, label, `homepage card ${key} shows the group title`);
+      }
+    }
 
     // Mobile taps must navigate too: the strip only suppresses clicks after a
     // real mouse drag, never on touch.

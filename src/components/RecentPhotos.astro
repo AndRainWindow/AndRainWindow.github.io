@@ -9,6 +9,7 @@ type DisplayPhoto = {
 	groupId?: string;
 	day: string;
 	title?: string;
+	groupTitle?: string;
 	location?: string;
 	image: string;
 	alt: string;
@@ -49,7 +50,7 @@ const covers = groups.slice(0, 8);
 				<a
 					class="timeline-item"
 					href={`/photos/#${photoEntryId(photoEntryKey(photo))}`}
-					aria-label={`查看作品：${photo.alt}`}
+					aria-label={`查看作品：${photo.groupTitle || photo.alt}`}
 				>
 
 					<div class="timeline-date">
@@ -70,7 +71,7 @@ const covers = groups.slice(0, 8);
 						<div class="photo-gradient"></div>
 
 						<div class="photo-caption">
-							{photo.title && <h3>{photo.title}</h3>}
+							{(photo.groupTitle || photo.title) && <h3>{photo.groupTitle || photo.title}</h3>}
 							<p>
 								{photo.day.slice(0, 10)}
 								{photo.location && ` · ${photo.location}`}

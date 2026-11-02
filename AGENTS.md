@@ -320,7 +320,7 @@ right
 
 Preserve this layout unless explicitly asked to redesign it.
 
-The homepage photography preview may display recent photographs, but it should use the same `photos.json` data source rather than duplicate metadata.
+The homepage photography preview may display recent photographs, but it should use the same `photos.json` data source rather than duplicate metadata. Card headings show the group title (`groupTitle`), falling back to the cover photo's own title only when the group has none, so they stay consistent with the 光阴索引 labels on `/photos/`.
 
 ---
 
