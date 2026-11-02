@@ -942,5 +942,37 @@
     "city": "泉州市",
     "district": "晋江市",
     "message": "已识别到区县，请核对。"
+  },
+  "amap:28.20249,112.97052": {
+    "location": "长沙市 · 开福区",
+    "locationSource": "amap",
+    "province": "湖南省",
+    "city": "长沙市",
+    "district": "开福区",
+    "message": "已识别到区县，请核对。"
+  },
+  "amap:29.34359,110.45977": {
+    "location": "张家界市 · 武陵源区",
+    "locationSource": "amap",
+    "province": "湖南省",
+    "city": "张家界市",
+    "district": "武陵源区",
+    "message": "已识别到区县，请核对。"
+  },
+  "amap:29.34303,110.45872": {
+    "location": "张家界市 · 武陵源区",
+    "locationSource": "amap",
+    "province": "湖南省",
+    "city": "张家界市",
+    "district": "武陵源区",
+    "message": "已识别到区县，请核对。"
+  },
+  "amap:30.54051,114.26942": {
+    "location": "武汉市 · 汉阳区",
+    "locationSource": "amap",
+    "province": "湖北省",
+    "city": "武汉市",
+    "district": "汉阳区",
+    "message": "已识别到区县，请核对。"
   }
 }
