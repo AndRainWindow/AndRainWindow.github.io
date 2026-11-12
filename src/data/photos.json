@@ -8725,7 +8725,9 @@
     "deleted": true,
     "district": "路桥区",
     "province": "浙江省",
-    "city": "台州市"
+    "city": "台州市",
+    "order": 12,
+    "manualOrder": true
   },
   {
     "title": "",
@@ -8746,7 +8748,9 @@
     "groupNote": "",
     "sourceHash": "2d250c7d9ef4ca7901795f3f3079204dc4c8e3363d39739f49701f453d5ae5a4",
     "hidden": false,
-    "deleted": false
+    "deleted": false,
+    "order": 1,
+    "manualOrder": true
   },
   {
     "title": "",
@@ -8767,7 +8771,9 @@
     "groupNote": "",
     "sourceHash": "95fb46258993c7f62997051c3d87345eafc594d1d3319e3ea297ef14c14d1767",
     "hidden": false,
-    "deleted": false
+    "deleted": false,
+    "order": 2,
+    "manualOrder": true
   },
   {
     "title": "",
@@ -8788,7 +8794,9 @@
     "groupNote": "",
     "sourceHash": "20c34cbf820e16ee2c55c9eb193d1e8f644d501303f147c70a597d893c25bdd3",
     "hidden": false,
-    "deleted": false
+    "deleted": false,
+    "order": 3,
+    "manualOrder": true
   },
   {
     "title": "",
@@ -8809,7 +8817,9 @@
     "groupNote": "",
     "sourceHash": "5ec96659721d7ea666ac7115c71e02ef2d49d85321b9edd34ebf980839156c45",
     "hidden": false,
-    "deleted": false
+    "deleted": false,
+    "order": 4,
+    "manualOrder": true
   },
   {
     "title": "",
@@ -8830,7 +8840,9 @@
     "groupNote": "",
     "sourceHash": "375fe3850330f3d0bd78e99cf2eae749441c2c5f5f03936b327bb760b4ede8ea",
     "hidden": false,
-    "deleted": false
+    "deleted": false,
+    "order": 5,
+    "manualOrder": true
   },
   {
     "title": "",
@@ -8851,7 +8863,9 @@
     "groupNote": "",
     "sourceHash": "f160c89c9d26e8c9e51e846d97d911ca30b018b76068ae4561793630775a3d98",
     "hidden": false,
-    "deleted": false
+    "deleted": false,
+    "order": 6,
+    "manualOrder": true
   },
   {
     "title": "",
@@ -8872,7 +8886,9 @@
     "groupNote": "",
     "sourceHash": "e144043aeb8928c2cb08d2bdaa4bc6bc74fd675e5859aa1b0eb5eb1b68b234bd",
     "hidden": false,
-    "deleted": false
+    "deleted": false,
+    "order": 0,
+    "manualOrder": true
   },
   {
     "title": "",
@@ -8893,7 +8909,9 @@
     "groupNote": "",
     "sourceHash": "c58877ee9b9134bfa1f46e689a56c7080f27e982ac3c26ae4c902383626f3024",
     "hidden": false,
-    "deleted": false
+    "deleted": false,
+    "order": 7,
+    "manualOrder": true
   },
   {
     "title": "",
@@ -8914,7 +8932,9 @@
     "groupNote": "",
     "sourceHash": "16b3a4f6be96ed189ae0d3eba261c42ae6bb229eb40972d1358f35b2b8e34de1",
     "hidden": false,
-    "deleted": false
+    "deleted": false,
+    "order": 8,
+    "manualOrder": true
   },
   {
     "title": "",
@@ -8935,7 +8955,9 @@
     "groupNote": "",
     "sourceHash": "f8733fee6b634ad2812c55e8422d309fff4ae547f1f0a5d69fe6b5e8eb883167",
     "hidden": false,
-    "deleted": false
+    "deleted": false,
+    "order": 9,
+    "manualOrder": true
   },
   {
     "title": "",
@@ -8956,7 +8978,9 @@
     "groupNote": "",
     "sourceHash": "c26b95471d6083a6cc0d017a6d538d274da85490100734c4fff1ed404eef669d",
     "hidden": false,
-    "deleted": false
+    "deleted": false,
+    "order": 10,
+    "manualOrder": true
   },
   {
     "title": "",
@@ -8977,7 +9001,9 @@
     "groupNote": "",
     "sourceHash": "7e0d0485fef5dd913f34e694a7bc8f14a23566f65edb65cfc08a0923a4a22fdd",
     "hidden": false,
-    "deleted": false
+    "deleted": false,
+    "order": 11,
+    "manualOrder": true
   },
   {
     "title": "",
@@ -9001,7 +9027,9 @@
     "deleted": false,
     "district": "路桥区",
     "province": "浙江省",
-    "city": "台州市"
+    "city": "台州市",
+    "order": 13,
+    "manualOrder": true
   },
   {
     "title": "",
@@ -9026,6 +9054,8 @@
     "locationSource": "amap",
     "province": "浙江省",
     "city": "台州市",
-    "district": "路桥区"
+    "district": "路桥区",
+    "order": 14,
+    "manualOrder": true
   }
 ]
