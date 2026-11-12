@@ -974,5 +974,181 @@
     "city": "武汉市",
     "district": "汉阳区",
     "message": "已识别到区县，请核对。"
+  },
+  "amap:30.77276,120.74556": {
+    "location": "嘉兴市 · 南湖区",
+    "locationSource": "amap",
+    "province": "浙江省",
+    "city": "嘉兴市",
+    "district": "南湖区",
+    "message": "已识别到区县，请核对。"
+  },
+  "amap:30.77343,120.74539": {
+    "location": "嘉兴市 · 南湖区",
+    "locationSource": "amap",
+    "province": "浙江省",
+    "city": "嘉兴市",
+    "district": "南湖区",
+    "message": "已识别到区县，请核对。"
+  },
+  "amap:30.77392,120.74621": {
+    "location": "嘉兴市 · 南湖区",
+    "locationSource": "amap",
+    "province": "浙江省",
+    "city": "嘉兴市",
+    "district": "南湖区",
+    "message": "已识别到区县，请核对。"
+  },
+  "amap:30.33628,120.32431": {
+    "location": "杭州市 · 钱塘区",
+    "locationSource": "amap",
+    "province": "浙江省",
+    "city": "杭州市",
+    "district": "钱塘区",
+    "message": "已识别到区县，请核对。"
+  },
+  "amap:30.34019,120.32005": {
+    "location": "杭州市 · 钱塘区",
+    "locationSource": "amap",
+    "province": "浙江省",
+    "city": "杭州市",
+    "district": "钱塘区",
+    "message": "已识别到区县，请核对。"
+  },
+  "amap:30.33974,120.31950": {
+    "location": "杭州市 · 钱塘区",
+    "locationSource": "amap",
+    "province": "浙江省",
+    "city": "杭州市",
+    "district": "钱塘区",
+    "message": "已识别到区县，请核对。"
+  },
+  "amap:30.34274,120.31924": {
+    "location": "杭州市 · 钱塘区",
+    "locationSource": "amap",
+    "province": "浙江省",
+    "city": "杭州市",
+    "district": "钱塘区",
+    "message": "已识别到区县，请核对。"
+  },
+  "amap:30.34294,120.31919": {
+    "location": "杭州市 · 钱塘区",
+    "locationSource": "amap",
+    "province": "浙江省",
+    "city": "杭州市",
+    "district": "钱塘区",
+    "message": "已识别到区县，请核对。"
+  },
+  "amap:30.34472,120.31937": {
+    "location": "杭州市 · 钱塘区",
+    "locationSource": "amap",
+    "province": "浙江省",
+    "city": "杭州市",
+    "district": "钱塘区",
+    "message": "已识别到区县，请核对。"
+  },
+  "amap:30.34464,120.31939": {
+    "location": "杭州市 · 钱塘区",
+    "locationSource": "amap",
+    "province": "浙江省",
+    "city": "杭州市",
+    "district": "钱塘区",
+    "message": "已识别到区县，请核对。"
+  },
+  "amap:30.34925,120.31810": {
+    "location": "杭州市 · 钱塘区",
+    "locationSource": "amap",
+    "province": "浙江省",
+    "city": "杭州市",
+    "district": "钱塘区",
+    "message": "已识别到区县，请核对。"
+  },
+  "amap:30.34930,120.31808": {
+    "location": "杭州市 · 钱塘区",
+    "locationSource": "amap",
+    "province": "浙江省",
+    "city": "杭州市",
+    "district": "钱塘区",
+    "message": "已识别到区县，请核对。"
+  },
+  "amap:30.35066,120.31784": {
+    "location": "杭州市 · 钱塘区",
+    "locationSource": "amap",
+    "province": "浙江省",
+    "city": "杭州市",
+    "district": "钱塘区",
+    "message": "已识别到区县，请核对。"
+  },
+  "amap:30.35065,120.31528": {
+    "location": "杭州市 · 钱塘区",
+    "locationSource": "amap",
+    "province": "浙江省",
+    "city": "杭州市",
+    "district": "钱塘区",
+    "message": "已识别到区县，请核对。"
+  },
+  "amap:30.35219,120.31678": {
+    "location": "杭州市 · 钱塘区",
+    "locationSource": "amap",
+    "province": "浙江省",
+    "city": "杭州市",
+    "district": "钱塘区",
+    "message": "已识别到区县，请核对。"
+  },
+  "amap:30.35000,120.31278": {
+    "location": "杭州市 · 钱塘区",
+    "locationSource": "amap",
+    "province": "浙江省",
+    "city": "杭州市",
+    "district": "钱塘区",
+    "message": "已识别到区县，请核对。"
+  },
+  "amap:30.34733,120.31296": {
+    "location": "杭州市 · 钱塘区",
+    "locationSource": "amap",
+    "province": "浙江省",
+    "city": "杭州市",
+    "district": "钱塘区",
+    "message": "已识别到区县，请核对。"
+  },
+  "amap:30.34471,120.31373": {
+    "location": "杭州市 · 钱塘区",
+    "locationSource": "amap",
+    "province": "浙江省",
+    "city": "杭州市",
+    "district": "钱塘区",
+    "message": "已识别到区县，请核对。"
+  },
+  "amap:30.33951,120.30234": {
+    "location": "杭州市 · 钱塘区",
+    "locationSource": "amap",
+    "province": "浙江省",
+    "city": "杭州市",
+    "district": "钱塘区",
+    "message": "已识别到区县，请核对。"
+  },
+  "amap:30.33944,120.30228": {
+    "location": "杭州市 · 钱塘区",
+    "locationSource": "amap",
+    "province": "浙江省",
+    "city": "杭州市",
+    "district": "钱塘区",
+    "message": "已识别到区县，请核对。"
+  },
+  "amap:28.61349,121.32746": {
+    "location": "台州市 · 路桥区",
+    "locationSource": "amap",
+    "province": "浙江省",
+    "city": "台州市",
+    "district": "路桥区",
+    "message": "已识别到区县，请核对。"
+  },
+  "amap:28.61404,121.32741": {
+    "location": "台州市 · 路桥区",
+    "locationSource": "amap",
+    "province": "浙江省",
+    "city": "台州市",
+    "district": "路桥区",
+    "message": "已识别到区县，请核对。"
   }
 }
